@@ -10,7 +10,6 @@ import ArtworkScroll from './sections/ArtworkScroll';
 import EncyclopediaSection from './sections/EncyclopediaSection';
 import FooterSection from './sections/FooterSection';
 import SectionNav from './sections/SectionNav';
-import FaceCapture from './sections/FaceCapture';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,9 +20,6 @@ function App() {
 
   return (
     <div className="relative min-h-[100dvh]" style={{ cursor: 'none' }}>
-      {/* Face fragments scattered on page sides */}
-      <FaceCapture />
-
       {/* Blood cursor effect - z-9999, on top of everything */}
       <BloodCursor />
 

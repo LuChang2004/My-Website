@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import AutoplayVideo from '../components/AutoplayVideo';
 
 
 export default function HeroSection() {
@@ -24,17 +25,14 @@ export default function HeroSection() {
           {/* LEFT: Video - no border, larger */}
           <motion.div
             className="w-full md:w-[55%] flex items-center justify-center"
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ x: -40 }}
+            animate={{ x: 0 }}
             transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="relative w-full">
-              <video
+            <div className="relative w-full min-h-[120px]">
+              <AutoplayVideo
                 src="/images/dance.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
+                priority
                 className="w-full h-auto block"
               />
             </div>

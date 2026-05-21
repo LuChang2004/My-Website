@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, BookOpen, MessageCircle, Share2, Download, Send } from 'lucide-react';
+import OptimizedImage from '../components/OptimizedImage';
 
 const commentKey = (id: number) => `flf_enc_comment_${id}`;
 
@@ -223,7 +224,7 @@ function Lightbox({ entry, onClose, onPrev, onNext }: {
 
 export default function EncyclopediaSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
+  const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const handlePrev = () => setSelectedIndex(i => i === null ? null : i === 0 ? entries.length - 1 : i - 1);
@@ -255,11 +256,13 @@ export default function EncyclopediaSection() {
               transition={{ duration: 0.5, delay: 0.08 * i }}
               onClick={() => setSelectedIndex(i)}>
               <div className="relative aspect-square bg-white border border-[rgba(26,26,26,0.06)] overflow-hidden group-hover:border-[rgba(200,16,46,0.4)] transition-colors duration-300">
-                <motion.img src={entry.image} alt={entry.title}
-                  className="w-full h-full object-contain p-4 md:p-5"
-                  whileHover={{ scale: 1.08 }}
-                  transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-                  loading="lazy" />
+                <div className="w-full h-full p-4 md:p-5 flex items-center justify-center overflow-hidden">
+                  <OptimizedImage
+                    src={entry.image}
+                    alt={entry.title}
+                    className="w-full h-full object-contain max-h-full"
+                  />
+                </div>
                 <NumberBadge
                   id={entry.id}
                   className="absolute bottom-2 left-2 text-[10px] px-2 py-0.5"

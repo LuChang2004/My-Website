@@ -28,13 +28,12 @@
 
   * {
     @apply border-border;
-    cursor: none;
   }
 
-  /* Camera intro modal: normal cursor */
-  .camera-intro-modal,
-  .camera-intro-modal * {
-    cursor: default !important;
+  /* 仅作品集子站隐藏系统光标 */
+  .flf-site,
+  .flf-site * {
+    cursor: none;
   }
 
   html {

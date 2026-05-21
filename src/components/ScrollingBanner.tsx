@@ -19,7 +19,10 @@ export default function ScrollingBanner({
   opacity = 0.7,
 }: ScrollingBannerProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, amount: 0 });
+  const isInView = useInView(ref, { once: true, amount: 0, margin: '200px 0px' });
+  const resolvedSrc = src.startsWith('http')
+    ? src
+    : `${import.meta.env.BASE_URL || '/'}${src.startsWith('/') ? src.slice(1) : src}`;
 
   // Alternate direction per row
   const getRowDirection = (rowIndex: number) => {
@@ -58,17 +61,21 @@ export default function ScrollingBanner({
                 } as React.CSSProperties
               }
             >
-              {/* Repeat the image 6 times (3 visible + 3 for seamless loop) */}
-              {Array.from({ length: 6 }).map((_, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt={alt}
-                  className="h-[50px] md:h-[65px] w-auto flex-shrink-0 mx-1"
-                  style={{ opacity }}
-                  draggable={false}
-                />
-              ))}
+              {/* 4 份副本即可无缝循环，进入视口后再加载 */}
+              {isInView &&
+                Array.from({ length: 4 }).map((_, i) => (
+                  <img
+                    key={i}
+                    src={resolvedSrc}
+                    alt={alt}
+                    className="h-[50px] md:h-[65px] w-auto flex-shrink-0 mx-1"
+                    style={{ opacity }}
+                    loading="lazy"
+                    decoding="async"
+                    fetchPriority="low"
+                    draggable={false}
+                  />
+                ))}
             </div>
           );
         })}

@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import AutoplayVideo from '../components/AutoplayVideo';
 
 export default function PhilosophySection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -66,13 +67,9 @@ export default function PhilosophySection() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="w-full md:w-[55%]">
-            <video
+          <div className="w-full md:w-[55%] min-h-[120px]">
+            <AutoplayVideo
               src="/images/philosophy_shapes.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
               className="w-full h-auto block"
             />
           </div>

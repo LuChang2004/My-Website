@@ -1,41 +1,14 @@
-import { useEffect } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import './App.css';
+import { Routes, Route } from 'react-router';
+import HubPage from './pages/HubPage';
+import FinalLimbFantasyPage from './pages/FinalLimbFantasyPage';
+import AxiomBreachPage from './pages/AxiomBreachPage';
 
-import BloodCursor from './sections/BloodCursor';
-import HeroSection from './sections/HeroSection';
-import PhilosophySection from './sections/PhilosophySection';
-import ArtworkScroll from './sections/ArtworkScroll';
-import EncyclopediaSection from './sections/EncyclopediaSection';
-import FooterSection from './sections/FooterSection';
-import SectionNav from './sections/SectionNav';
-
-gsap.registerPlugin(ScrollTrigger);
-
-function App() {
-  useEffect(() => {
-    ScrollTrigger.refresh();
-  }, []);
-
+export default function App() {
   return (
-    <div className="relative min-h-[100dvh]" style={{ cursor: 'none' }}>
-      {/* Blood cursor effect - z-9999, on top of everything */}
-      <BloodCursor />
-
-      {/* Section navigation - z-50 */}
-      <SectionNav />
-
-      {/* Page content */}
-      <div className="relative z-10">
-        <HeroSection />
-        <PhilosophySection />
-        <ArtworkScroll />
-        <EncyclopediaSection />
-        <FooterSection />
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<HubPage />} />
+      <Route path="/final-limb-fantasy" element={<FinalLimbFantasyPage />} />
+      <Route path="/axiom-breach" element={<AxiomBreachPage />} />
+    </Routes>
   );
 }
-
-export default App;

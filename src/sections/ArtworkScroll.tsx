@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { LayoutGrid } from 'lucide-react';
 import ScrollingBanner from '../components/ScrollingBanner';
+import OptimizedImage from '../components/OptimizedImage';
 
 /* ===== Lightbox ===== */
 function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
@@ -47,7 +48,7 @@ function PillLabel({ text }: { text: string }) {
 
 function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, amount: 0.12 });
+  const isInView = useInView(ref, { once: true, amount: 0.12 });
   return (
     <motion.div ref={ref} className={className}
       initial={{ opacity: 0, y: 40 }}
@@ -58,18 +59,17 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
   );
 }
 
-/* 图片组件：带编号 + 悬停放大 + 可点击灯箱 */
+/* 图片组件：懒加载 + 编号 + 悬停放大 */
 function ArtImage({ src, alt, number, className = '', onClick }: { src: string; alt: string; number?: string; className?: string; onClick?: () => void }) {
   return (
     <motion.div
-      className={`relative inline-block ${className} ${onClick ? 'cursor-pointer' : ''}`}
+      className={`relative inline-block ${className}`}
       whileHover={{ scale: 1.03 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-      onClick={onClick}
     >
-      <img src={src} alt={alt} className="block w-full h-auto" loading="lazy" />
+      <OptimizedImage src={src} alt={alt} className="block w-full h-auto" onClick={onClick} />
       {number && (
-        <span className="absolute bottom-2 left-2 bg-transparent border border-[#1A1A1A] text-[#1A1A1A] font-space text-[10px] px-1.5 py-[1px] tracking-wider">
+        <span className="absolute bottom-2 left-2 z-10 bg-transparent border border-[#1A1A1A] text-[#1A1A1A] font-space text-[10px] px-1.5 py-[1px] tracking-wider pointer-events-none">
           {number}
         </span>
       )}

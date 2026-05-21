@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router';
-import { ArrowLeft } from 'lucide-react';
 import { gsap } from 'gsap';
+import ProjectBackButton from '../components/ProjectBackButton';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import '../App.css';
 
@@ -36,14 +35,7 @@ export default function FinalLimbFantasyPage() {
 
   return (
     <div className="flf-site relative min-h-[100dvh]">
-      <Link
-        to="/"
-        aria-label="返回项目列表"
-        className="fixed top-4 left-4 z-[60] w-11 h-11 rounded-full border border-[rgba(26,26,26,0.15)] bg-white/90 flex items-center justify-center text-[#1A1A1A] hover:border-[#c8102e] hover:text-[#c8102e] transition-colors duration-200 shadow-sm"
-        style={{ cursor: 'none' }}
-      >
-        <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={1.5} />
-      </Link>
+      <ProjectBackButton hideSystemCursor />
 
       <BloodCursor />
       <SectionNav />

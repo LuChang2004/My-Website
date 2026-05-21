@@ -26,6 +26,7 @@ app/
 │   ├── App.css             # стили лендинга
 │   ├── index.css           # глобальные / Tailwind
 │   ├── components/
+│   │   ├── ProjectBackButton.tsx  # круглая кнопка «назад» на подстраницах проектов
 │   │   ├── ScrollingBanner.tsx
 │   │   └── ui/             # shadcn (40+ компонентов)
 │   ├── sections/           # основной контент страницы

@@ -1,9 +1,15 @@
-import { useEffect } from 'react';
-import { Link } from 'react-router';
+import { useEffect, useState } from 'react';
+import { HelpCircle } from 'lucide-react';
+import ProjectBackButton from '../components/ProjectBackButton';
+import AxiomBreachTutorial, {
+  shouldShowAxiomTutorial,
+} from '../components/AxiomBreachTutorial';
 
 const gameSrc = `${import.meta.env.BASE_URL}games/axiom-breach/index.html`;
 
 export default function AxiomBreachPage() {
+  const [showTutorial, setShowTutorial] = useState(shouldShowAxiomTutorial);
+
   useEffect(() => {
     document.title = 'AXIOM BREACH — luchang.fun';
     document.body.style.overflow = 'hidden';
@@ -14,12 +20,19 @@ export default function AxiomBreachPage() {
 
   return (
     <div className="fixed inset-0 bg-black">
-      <Link
-        to="/"
-        className="fixed top-4 left-4 z-[100] font-space text-[10px] tracking-widest text-[#888888] hover:text-[#c8102e] transition-colors bg-black/80 border border-[rgba(255,255,255,0.15)] px-3 py-1.5"
+      <ProjectBackButton />
+
+      <button
+        type="button"
+        onClick={() => setShowTutorial(true)}
+        aria-label="查看操作说明"
+        className="fixed top-4 right-4 z-[100] w-10 h-10 rounded-full border border-[rgba(255,255,255,0.2)] bg-black/80 flex items-center justify-center text-[#888888] hover:text-[#0ff] hover:border-[rgba(0,255,255,0.4)] transition-colors"
       >
-        ← 返回
-      </Link>
+        <HelpCircle className="w-[18px] h-[18px]" strokeWidth={1.5} />
+      </button>
+
+      <AxiomBreachTutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
+
       <iframe
         title="AXIOM BREACH"
         src={gameSrc}

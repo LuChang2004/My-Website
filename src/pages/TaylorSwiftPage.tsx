@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router';
+import ProjectBackButton from '../components/ProjectBackButton';
 
 const projectSrc = `${import.meta.env.BASE_URL}projects/taylor-swift/index.html`;
 
@@ -14,12 +14,7 @@ export default function TaylorSwiftPage() {
 
   return (
     <div className="fixed inset-0 bg-[#f5f4f8]">
-      <Link
-        to="/"
-        className="fixed top-4 left-4 z-[100] font-space text-[10px] tracking-widest text-[#666666] hover:text-[#c8102e] transition-colors bg-white/90 border border-[rgba(26,26,26,0.1)] px-3 py-1.5 shadow-sm"
-      >
-        ← 返回
-      </Link>
+      <ProjectBackButton />
       <iframe
         title="Taylor Swift — Career in Data"
         src={projectSrc}

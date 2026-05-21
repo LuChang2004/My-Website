@@ -39,7 +39,7 @@ export const projects: Project[] = [
     id: 'chord-diary',
     title: '和弦日记',
     titleEn: 'Chord Diary',
-    description: '听见自己的日记 — 音乐 × 情绪交互原型，含写日记、和弦推荐与制歌流程演示。',
+    description: '听见自己的日记 — 记录选和弦，一周成曲，可分享。情绪音乐日记交互原型。',
     tags: ['交互原型', 'UI/UX', '音乐'],
     href: '/chord-diary',
   },

@@ -6,10 +6,6 @@ const projectSrc = `${import.meta.env.BASE_URL}projects/chord-diary/index.html`;
 export default function ChordDiaryPage() {
   useEffect(() => {
     document.title = '和弦日记 — Chord Diary';
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, []);
 
   return (

@@ -77,6 +77,19 @@ npm run build
 npm run preview
 ```
 
+## Chord Diary（соседний репозиторий）
+
+```
+Chord Diary/
+├── docs/PRODUCT_AND_UX.md   # 产品定位、商业价值、竞品、人群、UX（中文）
+├── lib/portfolio-design-doc.ts
+├── components/shell/          # PortfolioLanding, DesignBrief, PrototypeWorkspace
+└── PROJECT.md                 #  полный план / AI / MVP
+```
+
+- Портфолио: `npm run build:chord-diary` → `app/public/projects/chord-diary/`
+- Страница: `/chord-diary` (`ChordDiaryPage.tsx`)
+
 ## Заметки
 
 - `base: './'` в Vite — относительные пути для деплоя.

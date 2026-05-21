@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:chord-diary": "cd \"../Chord Diary\" && NEXT_PUBLIC_BASE_PATH=/projects/chord-diary npm run build && rm -rf ../app/public/projects/chord-diary && cp -R out ../app/public/projects/chord-diary",
     "lint": "eslint .",
     "preview": "vite preview"
   },

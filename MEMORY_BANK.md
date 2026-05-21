@@ -20,6 +20,10 @@ app/
 ├── index.html              # meta, шрифты Noto SC / Roboto
 ├── public/
 │   ├── images/             # hero, работы work_01–11, мозг, маски, видео dance.mp4
+│   ├── projects/
+│   │   ├── taylor-swift/   # статический билд подпроекта
+│   │   └── chord-diary/    # статический билд Chord Diary (Next export)
+│   ├── games/axiom-breach/
 ├── src/
 │   ├── main.tsx            # точка входа React
 │   ├── App.tsx             # сборка секций, gsap ScrollTrigger
@@ -40,7 +44,13 @@ app/
 │   │   ├── FooterSection.tsx
 │   │   ├── SectionNav.tsx
 │   │   ├── BloodCursor.tsx
-│   ├── pages/Home.tsx      # (если используется роутинг)
+│   ├── pages/
+│   │   ├── HubPage.tsx
+│   │   ├── FinalLimbFantasyPage.tsx
+│   │   ├── TaylorSwiftPage.tsx
+│   │   ├── AxiomBreachPage.tsx
+│   │   ├── ChordDiaryPage.tsx
+│   ├── data/projects.ts    # список проектов на хабе
 │   ├── hooks/use-mobile.ts
 │   └── lib/utils.ts
 ├── vite.config.ts          # port 3000, alias @ → src

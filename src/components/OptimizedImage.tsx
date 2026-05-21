@@ -11,6 +11,7 @@ type OptimizedImageProps = {
   src: string;
   alt: string;
   className?: string;
+  wrapperClassName?: string;
   /** 首屏关键图，提前加载 */
   priority?: boolean;
   onClick?: () => void;
@@ -20,6 +21,7 @@ export default function OptimizedImage({
   src,
   alt,
   className = 'block w-full h-auto',
+  wrapperClassName = '',
   priority = false,
   onClick,
 }: OptimizedImageProps) {
@@ -49,12 +51,12 @@ export default function OptimizedImage({
   return (
     <div
       ref={containerRef}
-      className={`relative ${onClick ? 'cursor-pointer' : ''}`}
+      className={`relative ${wrapperClassName} ${onClick ? 'cursor-pointer' : ''}`}
       onClick={onClick}
     >
       {!loaded && (
         <div
-          className="w-full min-h-[120px] bg-[rgba(26,26,26,0.04)] animate-pulse"
+          className="w-full h-full min-h-[80px] bg-[rgba(26,26,26,0.04)] animate-pulse"
           aria-hidden
         />
       )}

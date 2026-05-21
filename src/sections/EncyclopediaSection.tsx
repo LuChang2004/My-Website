@@ -5,14 +5,21 @@ import OptimizedImage from '../components/OptimizedImage';
 
 const commentKey = (id: number) => `flf_enc_comment_${id}`;
 
-function NumberBadge({ id, className = '' }: { id: number; className?: string }) {
+function NumberBadge({ number, className = '' }: { number: string; className?: string }) {
   return (
     <span
       className={`bg-[#1A1A1A] text-white font-space tracking-wider ${className}`}
     >
-      {String(id).padStart(2, '0')}
+      {number}
     </span>
   );
+}
+
+function resolveImageSrc(src: string) {
+  if (src.startsWith('http') || src.startsWith('data:')) return src;
+  const path = src.startsWith('/') ? src.slice(1) : src;
+  const base = import.meta.env.BASE_URL || '/';
+  return `${base}${path}`;
 }
 
 function CircleIconButton({
@@ -79,25 +86,32 @@ async function shareArtwork(entry: EncEntry) {
 
 interface EncEntry {
   id: number;
+  /** 与画廊 ArtworkScroll 编号一致 */
+  number: string;
   title: string;
   titleEn: string;
   image: string;
   description: string;
+  /** 图鉴网格预览相对默认尺寸的倍数，默认 1 */
+  previewScale?: number;
 }
 
+/** 名称、序号、配图与画廊（ArtworkScroll）一致 */
 const entries: EncEntry[] = [
-  { id: 1, title: '感官礼物', titleEn: 'Sensory Gift', image: '/images/work_01_sensory.png', description: '感官像是一种来自于上帝的礼物，就像情人节收到的鲜花一样珍贵。' },
-  { id: 2, title: '人的动物性', titleEn: 'Human Animality', image: '/images/work_02_animality.png', description: '奶牛人、金钱豹人、鱼人——我们所有。' },
-  { id: 3, title: '休闲时光', titleEn: 'Leisure Time', image: '/images/work_05_leisure.png', description: '三个简笔人带着猫，享受闲暇。' },
-  { id: 4, title: 'How we shed tears?', titleEn: 'Tears & Rain', image: '/images/work_06_tears_brain.png', description: '眼泪是大脑在下雨，泪腺是排水管道。' },
-  { id: 5, title: '能量池', titleEn: 'Energy Pool', image: '/images/work_04_energy.png', description: '我养了一株会说话的花，代价是我自己的鲜血。' },
-  { id: 6, title: '平衡系统', titleEn: 'Balance System', image: '/images/work_07_balance.png', description: '维持这台机器运转的微妙平衡。' },
-  { id: 7, title: '脏话 / 闭嘴', titleEn: 'Swear / Shut Up', image: '/images/work_08b_mouth.png', description: '使用暴力往往能快速让人闭嘴。骂人的话总是离不开生殖器。' },
-  { id: 8, title: '苍蝇拍', titleEn: 'Fly Swatter', image: '/images/work_09_flyswatter.png', description: '苍蝇拍：塑料诞生之前。' },
-  { id: 9, title: '偷窥镜', titleEn: 'Peeping Mirror', image: '/images/work_10_peep.png', description: '窥视这台机器的内部运转。' },
-  { id: 10, title: '人立方', titleEn: 'Human Cube', image: '/images/work_11a_cube.png', description: '由无数碎片组成的人。' },
-  { id: 11, title: '眼泪碗', titleEn: 'Bowl of Tears', image: '/images/work_03_tears_bowl.png', description: '盛满泪水的碗，承载着悲伤的出口。' },
-  { id: 12, title: '暴力语法', titleEn: 'Violence Grammar', image: '/images/work_08a_fist.png', description: '拳头是最原始的语言，暴力是语法。' },
+  { id: 1, number: '01', title: '感官礼物', titleEn: 'Sensory Gift', image: '/images/work_01_sensory.png', description: '感官像是一种来自于上帝的礼物，就像情人节收到的鲜花一样珍贵。', previewScale: 1.2 },
+  { id: 2, number: '02a', title: '奶牛人', titleEn: 'Cow Human', image: '/images/frame10.png', description: '人的动物性 — 奶牛人。' },
+  { id: 3, number: '02b', title: '金钱豹人', titleEn: 'Leopard Human', image: '/images/frame11.png', description: '人的动物性 — 金钱豹人。' },
+  { id: 4, number: '02c', title: '鱼人', titleEn: 'Fish Human', image: '/images/frame12.png', description: '人的动物性 — 鱼人。' },
+  { id: 5, number: '03', title: '感官沙拉', titleEn: 'Sensory Salad', image: '/images/work_03_tears_bowl.png', description: '老一辈说："吃啥补啥。"', previewScale: 1.2 },
+  { id: 6, number: '04', title: '能量池', titleEn: 'Energy Pool', image: '/images/work_04_energy.png', description: '我养了一株会说话的花，代价是我自己的鲜血。', previewScale: 0.6 },
+  { id: 7, number: '05', title: '休闲时光', titleEn: 'Leisure Time', image: '/images/work_05_leisure.png', description: '三个简笔人带着猫，享受与机器无关的闲暇。' },
+  { id: 8, number: '06', title: 'How we shed tears?', titleEn: 'Tears & Rain', image: '/images/work_06_tears_brain.png', description: '眼泪是大脑在下雨，泪腺是排水管道。' },
+  { id: 9, number: '07', title: '蓄电池', titleEn: 'Battery', image: '/images/work_07_battery.png', description: '将双腿插入池中获取能量。', previewScale: 1.5 },
+  { id: 10, number: '08a', title: '脏话', titleEn: 'Swear', image: '/images/work_08b_mouth.png', description: '骂人的话总是离不开生殖器。', previewScale: 0.75 },
+  { id: 11, number: '08b', title: '闭嘴', titleEn: 'Shut Up', image: '/images/work_08a_fist.png', description: '使用暴力往往能快速让人闭嘴。' },
+  { id: 12, number: '09', title: '苍蝇拍：塑料诞生之前', titleEn: 'Fly Swatter', image: '/images/work_09_flyswatter.png', description: '苍蝇拍：塑料诞生之前。', previewScale: 0.75 },
+  { id: 13, number: '10', title: '偷窥镜', titleEn: 'Peeping Mirror', image: '/images/work_10_peep.png', description: '窥视这台机器的内部运转。', previewScale: 0.85 },
+  { id: 14, number: '11', title: '平衡木', titleEn: 'Balance Beam', image: '/images/work_11a_cube.png', description: '由无数碎片组成的人。', previewScale: 0.75 },
 ];
 
 function Lightbox({ entry, onClose, onPrev, onNext }: {
@@ -150,10 +164,14 @@ function Lightbox({ entry, onClose, onPrev, onNext }: {
         initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="w-[60%] mb-6 relative">
-          <img src={entry.image} alt={entry.title} className="w-full h-auto" />
+        <div className="w-full max-w-md mb-6 relative flex items-center justify-center min-h-[160px] max-h-[min(65vh,520px)]">
+          <img
+            src={resolveImageSrc(entry.image)}
+            alt={entry.title}
+            className="max-w-full max-h-[min(65vh,520px)] w-auto h-auto object-contain"
+          />
           <NumberBadge
-            id={entry.id}
+            number={entry.number}
             className="absolute bottom-2 left-2 text-[10px] px-1.5 py-0.5"
           />
         </div>
@@ -256,16 +274,20 @@ export default function EncyclopediaSection() {
               transition={{ duration: 0.5, delay: 0.08 * i }}
               onClick={() => setSelectedIndex(i)}>
               <div className="relative aspect-square bg-white border border-[rgba(26,26,26,0.06)] overflow-hidden group-hover:border-[rgba(200,16,46,0.4)] transition-colors duration-300">
-                <div className="w-full h-full p-4 md:p-5 flex items-center justify-center overflow-hidden">
+                <div
+                  className="absolute inset-0 p-4 md:p-5 flex items-center justify-center origin-center"
+                  style={{ transform: `scale(${entry.previewScale ?? 1})` }}
+                >
                   <OptimizedImage
                     src={entry.image}
                     alt={entry.title}
-                    className="w-full h-full object-contain max-h-full"
+                    wrapperClassName="max-w-full max-h-full flex items-center justify-center"
+                    className="block max-w-full max-h-full w-auto h-auto object-contain"
                   />
                 </div>
                 <NumberBadge
-                  id={entry.id}
-                  className="absolute bottom-2 left-2 text-[10px] px-2 py-0.5"
+                  number={entry.number}
+                  className="absolute bottom-2 left-2 z-10 text-[10px] px-2 py-0.5"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[rgba(200,16,46,0.08)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>

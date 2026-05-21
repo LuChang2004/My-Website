@@ -187,13 +187,16 @@ export default function ArtworkScroll() {
           </FadeIn>
         </ParallaxSection>
 
-        {/* 03 感官碗 */}
+        {/* 03 感官沙拉 */}
         <ParallaxSection speed={0.25}>
           <FadeIn className="py-10">
-            <PillLabel text="感官盛宴" />
+            <PillLabel text="感官沙拉" />
             <div className="mt-6 flex justify-center">
-              <ArtImage src="/images/work_03_tears_bowl.png" alt="感官盛宴" number="03" className="w-[48%]" />
+              <ArtImage src="/images/work_03_tears_bowl.png" alt="感官沙拉" number="03" className="w-[48%]" />
             </div>
+            <p className="text-[#555555] text-[12px] leading-relaxed mt-5 text-center">
+              老一辈说：&ldquo;吃啥补啥。&rdquo;
+            </p>
           </FadeIn>
         </ParallaxSection>
 
@@ -288,12 +291,12 @@ export default function ArtworkScroll() {
           </FadeIn>
         </ParallaxSection>
 
-        {/* 11 人立方 */}
+        {/* 11 平衡木 */}
         <ParallaxSection speed={0.3}>
           <FadeIn className="py-10">
-            <PillLabel text="人立方" />
+            <PillLabel text="平衡木" />
             <div className="mt-6 flex justify-center">
-              <ArtImage src="/images/work_11a_cube.png" alt="人立方" number="11" className="w-[55%]" />
+              <ArtImage src="/images/work_11a_cube.png" alt="平衡木" number="11" className="w-[55%]" />
             </div>
           </FadeIn>
         </ParallaxSection>

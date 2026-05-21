@@ -36,6 +36,14 @@ export const projects: Project[] = [
     href: '/axiom-breach',
   },
   {
+    id: 'chord-diary',
+    title: '和弦日记',
+    titleEn: 'Chord Diary',
+    description: '听见自己的日记 — 音乐 × 情绪交互原型，含写日记、和弦推荐与制歌流程演示。',
+    tags: ['交互原型', 'UI/UX', '音乐'],
+    href: '/chord-diary',
+  },
+  {
     id: 'placeholder-1',
     title: '新项目',
     titleEn: 'Coming Soon',

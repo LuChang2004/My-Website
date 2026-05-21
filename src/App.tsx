@@ -3,6 +3,7 @@ import HubPage from './pages/HubPage';
 import FinalLimbFantasyPage from './pages/FinalLimbFantasyPage';
 import AxiomBreachPage from './pages/AxiomBreachPage';
 import TaylorSwiftPage from './pages/TaylorSwiftPage';
+import ChordDiaryPage from './pages/ChordDiaryPage';
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
       <Route path="/final-limb-fantasy" element={<FinalLimbFantasyPage />} />
       <Route path="/taylor-swift" element={<TaylorSwiftPage />} />
       <Route path="/axiom-breach" element={<AxiomBreachPage />} />
+      <Route path="/chord-diary" element={<ChordDiaryPage />} />
     </Routes>
   );
 }

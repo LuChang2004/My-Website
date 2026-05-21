@@ -20,6 +20,14 @@ export const projects: Project[] = [
     href: '/final-limb-fantasy',
   },
   {
+    id: 'taylor-swift-data',
+    title: 'Taylor Swift 数据叙事',
+    titleEn: 'Career in Data',
+    description: '数据可视化课程项目 — 用交互图表讲述 Taylor Swift 音乐生涯与专辑数据故事。',
+    tags: ['数据可视化', '叙事', '同济'],
+    href: '/taylor-swift',
+  },
+  {
     id: 'axiom-breach',
     title: 'AXIOM BREACH',
     titleEn: 'Web Game',

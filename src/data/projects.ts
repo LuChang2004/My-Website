@@ -12,12 +12,12 @@ export type Project = {
 /** 首页项目列表 — 在此追加新项目 */
 export const projects: Project[] = [
   {
-    id: 'final-limb-fantasy',
-    title: '最终肢体幻想',
-    titleEn: 'Final Limb Fantasy',
-    description: '视觉设计 / 概念设计 / 系列插画。解构肢体，重构意义。',
-    tags: ['插画', '视觉传达', '2026'],
-    href: '/final-limb-fantasy',
+    id: 'chord-diary',
+    title: '和弦日记',
+    titleEn: 'Chord Diary',
+    description: '听见自己的日记 — 记录选和弦，一周成曲，可分享。情绪音乐日记交互原型。',
+    tags: ['交互原型', 'UI/UX', '音乐'],
+    href: '/chord-diary',
   },
   {
     id: 'taylor-swift-data',
@@ -36,12 +36,12 @@ export const projects: Project[] = [
     href: '/axiom-breach',
   },
   {
-    id: 'chord-diary',
-    title: '和弦日记',
-    titleEn: 'Chord Diary',
-    description: '听见自己的日记 — 记录选和弦，一周成曲，可分享。情绪音乐日记交互原型。',
-    tags: ['交互原型', 'UI/UX', '音乐'],
-    href: '/chord-diary',
+    id: 'final-limb-fantasy',
+    title: '最终肢体幻想',
+    titleEn: 'Final Limb Fantasy',
+    description: '视觉设计 / 概念设计 / 系列插画。解构肢体，重构意义。',
+    tags: ['插画', '视觉传达', '2026'],
+    href: '/final-limb-fantasy',
   },
   {
     id: 'placeholder-1',

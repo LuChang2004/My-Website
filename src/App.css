@@ -1,0 +1,32 @@
+/* Scrolling banner animations */
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-right {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.scroll-left {
+  animation: scroll-left var(--scroll-speed, 20s) linear infinite;
+}
+
+.scroll-right {
+  animation: scroll-right var(--scroll-speed, 20s) linear infinite;
+}
+
+/* Pause animation when not in viewport */
+.scroll-left[data-paused="true"],
+.scroll-right[data-paused="true"] {
+  animation-play-state: paused;
+}

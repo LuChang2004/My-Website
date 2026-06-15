@@ -1,0 +1,91 @@
+.sib-page {
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.sib-main {
+  position: relative;
+  background: #ffffff;
+}
+
+.sib-section {
+  scroll-margin-top: 96px;
+}
+
+.sib-section-label {
+  margin: 0 0 20px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #969696;
+}
+
+.sib-video-wrap {
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.sib-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.sib-brief {
+  max-width: 720px;
+}
+
+.sib-brief p {
+  margin: 0 0 1.25rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+  color: #444444;
+}
+
+.sib-brief p:last-child {
+  margin-bottom: 0;
+}
+
+.sib-collage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  background: #ffffff;
+}
+
+.sib-collage-item {
+  position: relative;
+  margin: 0;
+  background: #ffffff;
+}
+
+.sib-collage-caption {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 1;
+  margin: 0;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  color: #aaaaaa;
+  pointer-events: none;
+}
+
+.sib-collage-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 768px) {
+  .sib-collage-grid {
+    gap: 24px;
+  }
+}

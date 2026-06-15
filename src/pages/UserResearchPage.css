@@ -1,0 +1,20 @@
+.ur-page {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(200, 16, 46, 0.08), transparent 55%),
+    #000000;
+}
+
+.ur-header-glow {
+  background: radial-gradient(circle, rgba(200, 16, 46, 0.18) 0%, transparent 70%);
+  filter: blur(24px);
+}
+
+.ur-main {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ur-header-glow {
+    display: none;
+  }
+}

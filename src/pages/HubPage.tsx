@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { projects } from '../data/projects';
 import { pdfProjects } from '../data/pdfProjects';
 import { solarSpecialMeta } from '../data/solarSpecialContent';
@@ -212,7 +212,7 @@ function WorksContent() {
       <div style={{ height: scaledCanvasHeight, position: 'relative' }}>
         <FigmaCanvas scale={scale} height={canvasHeight} verticalAlign="top">
         {cards.map((card, index) => (
-          <a key={card.id} href={card.href} className="work-card" style={{ ...styles.workCard, left: card.left, top: card.top }}>
+          <Link key={card.id} to={card.href} className="work-card" style={{ ...styles.workCard, left: card.left, top: card.top }}>
             <ProjectThumb />
             <div className="work-card-text" style={styles.workTextStack}>
               <div style={styles.workHeadingGroup}>
@@ -223,7 +223,7 @@ function WorksContent() {
               </div>
               <p style={styles.workDescription}>{card.description}</p>
             </div>
-          </a>
+          </Link>
         ))}
         </FigmaCanvas>
       </div>

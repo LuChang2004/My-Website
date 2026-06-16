@@ -23,6 +23,7 @@ export type SolarBlock =
       alt: string;
       matchHeightTo: string;
       caption?: string;
+      heightScale?: number;
     }
   | {
       kind: 'centerImageRow';
@@ -133,6 +134,7 @@ export const solarSpecialSections: SolarSection[] = [
             alt: 'Making scene 制作场景',
             matchHeightTo: 'scene-hero',
             caption: 'Making scene 制作场景',
+            heightScale: 0.36,
           },
           {
             kind: 'centerImageRow',

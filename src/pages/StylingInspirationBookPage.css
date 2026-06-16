@@ -34,14 +34,6 @@
   vertical-align: middle;
 }
 
-.sib-video-wrap .external-video__fallback {
-  color: #767676;
-}
-
-.sib-video-wrap .external-video__fallback:hover {
-  color: #1a1a1a;
-}
-
 .sib-brief {
   max-width: 720px;
 }

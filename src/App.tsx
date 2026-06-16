@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router';
-import SitePositionNav from './components/SitePositionNav';
 import FinalLimbFantasyPage from './pages/FinalLimbFantasyPage';
 import AxiomBreachPage from './pages/AxiomBreachPage';
 import TaylorSwiftPage from './pages/TaylorSwiftPage';
@@ -25,12 +24,10 @@ function LegacyHashRedirect() {
 export default function App() {
   const location = useLocation();
   const isHubRoute = isHubTabPath(location.pathname);
-  const hidePositionNav = location.pathname === '/works/solar-special';
 
   return (
     <>
       <LegacyHashRedirect />
-      {!hidePositionNav && <SitePositionNav />}
       {isHubRoute ? (
         <HubTabLayout />
       ) : (

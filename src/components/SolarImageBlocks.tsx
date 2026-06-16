@@ -88,7 +88,8 @@ export function SolarCenterImageBlock({ block }: { block: CenterImageBlock }) {
 type HorizontalScrollImageBlock = Extract<SolarBlock, { kind: 'horizontalScrollImage' }>;
 
 export function SolarHorizontalScrollImageBlock({ block }: { block: HorizontalScrollImageBlock }) {
-  const height = useSolarImageHeight(block.matchHeightTo);
+  const matchedHeight = useSolarImageHeight(block.matchHeightTo);
+  const height = matchedHeight ? matchedHeight * (block.heightScale ?? 1) : undefined;
   const src = resolvePublicAssetSrc(block.src);
 
   return (

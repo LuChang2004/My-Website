@@ -34,17 +34,17 @@ export default function ExternalVideo({
             loading="lazy"
             referrerPolicy="strict-origin-when-cross-origin"
           />
+          {watchUrl && (
+            <a
+              className="external-video__fallback"
+              href={watchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              若无法播放，前往 B 站观看
+            </a>
+          )}
         </div>
-        {watchUrl && (
-          <a
-            className="external-video__fallback"
-            href={watchUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            若无法播放，前往 B 站观看
-          </a>
-        )}
       </div>
     );
   }

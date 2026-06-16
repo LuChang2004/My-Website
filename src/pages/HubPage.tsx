@@ -211,14 +211,12 @@ function WorksContent() {
     <section id="works" className="relative bg-white" data-node-id="42:2">
       <div style={{ height: scaledCanvasHeight, position: 'relative' }}>
         <FigmaCanvas scale={scale} height={canvasHeight} verticalAlign="top">
-        {cards.map((card, index) => (
+        {cards.map((card) => (
           <Link key={card.id} to={card.href} className="work-card" style={{ ...styles.workCard, left: card.left, top: card.top }}>
             <ProjectThumb />
             <div className="work-card-text" style={styles.workTextStack}>
               <div style={styles.workHeadingGroup}>
-                <h2 style={styles.workTitle}>
-                  {index + 1} {card.title}
-                </h2>
+                <h2 style={styles.workTitle}>{card.title}</h2>
                 <p style={styles.workSubtitle}>{card.meta}</p>
               </div>
               <p style={styles.workDescription}>{card.description}</p>
@@ -428,29 +426,9 @@ type WorkProject = {
 };
 
 const projectById = Object.fromEntries(projects.map((project) => [project.id, project]));
+const pdfById = Object.fromEntries(pdfProjects.map((project) => [project.id, project]));
 
 const workProjects: WorkProject[] = [
-  {
-    id: 'chord-diary',
-    title: projectById['chord-diary'].title,
-    meta: 'UI/UX / 交互原型',
-    description: '把日记、情绪与和弦生成串成一条可体验的音乐记录流程。',
-    href: projectById['chord-diary'].href || '/works',
-  },
-  {
-    id: 'taylor-swift-data',
-    title: 'Taylor Swift with her music',
-    meta: '数据可视化 / 叙事',
-    description: '以专辑、音乐特征与时间线组织 Taylor Swift 的职业数据故事。',
-    href: projectById['taylor-swift-data'].href || '/works',
-  },
-  {
-    id: 'axiom-breach',
-    title: projectById['axiom-breach'].title,
-    meta: 'Web Game / 实验',
-    description: '浏览器中的俯视弹幕射击实验，聚焦节奏、反馈与生存压力。',
-    href: projectById['axiom-breach'].href || '/works',
-  },
   {
     id: 'final-limb-fantasy',
     title: projectById['final-limb-fantasy'].title,
@@ -458,13 +436,6 @@ const workProjects: WorkProject[] = [
     description: '围绕身体、感官与荒诞叙事展开的概念视觉系统。',
     href: projectById['final-limb-fantasy'].href || '/works',
   },
-  ...pdfProjects.map((project) => ({
-    id: project.id,
-    title: project.title,
-    meta: project.meta,
-    description: project.description,
-    href: project.href,
-  })),
   {
     id: 'solar-special',
     title: solarSpecialMeta.worksTitle,
@@ -473,11 +444,25 @@ const workProjects: WorkProject[] = [
     href: '/works/solar-special',
   },
   {
-    id: userResearchMeta.id,
-    title: userResearchMeta.title,
-    meta: userResearchMeta.meta,
-    description: userResearchMeta.description,
-    href: userResearchMeta.href,
+    id: 'music-robber',
+    title: pdfById['music-robber'].title,
+    meta: pdfById['music-robber'].meta,
+    description: pdfById['music-robber'].description,
+    href: pdfById['music-robber'].href,
+  },
+  {
+    id: 'taylor-swift-data',
+    title: 'Taylor Swift with Her Music',
+    meta: '数据可视化 / 叙事',
+    description: '以专辑、音乐特征与时间线组织 Taylor Swift 的职业数据故事。',
+    href: projectById['taylor-swift-data'].href || '/works',
+  },
+  {
+    id: 'axiom-breach',
+    title: 'Axiom Breach',
+    meta: 'Web Game / 实验',
+    description: '浏览器中的俯视弹幕射击实验，聚焦节奏、反馈与生存压力。',
+    href: projectById['axiom-breach'].href || '/works',
   },
   {
     id: stylingInspirationBookMeta.id,
@@ -485,6 +470,34 @@ const workProjects: WorkProject[] = [
     meta: stylingInspirationBookMeta.worksMeta,
     description: stylingInspirationBookMeta.worksDescription,
     href: stylingInspirationBookMeta.href,
+  },
+  {
+    id: 'chord-diary',
+    title: projectById['chord-diary'].title,
+    meta: 'UI/UX / 交互原型',
+    description: '把日记、情绪与和弦生成串成一条可体验的音乐记录流程。',
+    href: projectById['chord-diary'].href || '/works',
+  },
+  {
+    id: 'keiji-ai',
+    title: pdfById['keiji-ai'].title,
+    meta: pdfById['keiji-ai'].meta,
+    description: pdfById['keiji-ai'].description,
+    href: pdfById['keiji-ai'].href,
+  },
+  {
+    id: 'narrative-mutation-lab',
+    title: pdfById['narrative-mutation-lab'].title,
+    meta: pdfById['narrative-mutation-lab'].meta,
+    description: pdfById['narrative-mutation-lab'].description,
+    href: pdfById['narrative-mutation-lab'].href,
+  },
+  {
+    id: userResearchMeta.id,
+    title: userResearchMeta.title,
+    meta: userResearchMeta.meta,
+    description: userResearchMeta.description,
+    href: userResearchMeta.href,
   },
 ];
 

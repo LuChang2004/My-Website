@@ -9,10 +9,24 @@ export default function PdfProjectPage() {
   const project = projectId ? getPdfProject(projectId) : undefined;
 
   useEffect(() => {
-    if (project) {
-      document.title = `${project.title} — Works`;
-    }
-  }, [project]);
+    if (!project) return;
+    document.title = `${project.title} — Works`;
+    const pdfSrc = `${import.meta.env.BASE_URL}projects/pdfs/${project.file}`;
+    // #region agent log
+    fetch('http://127.0.0.1:7734/ingest/c4aa5d67-1b6b-4384-b0db-0dac920ad961', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '5d41c5' },
+      body: JSON.stringify({
+        sessionId: '5d41c5',
+        location: 'PdfProjectPage.tsx',
+        message: 'pdf project mounted',
+        data: { projectId, pdfSrc, host: window.location.host },
+        hypothesisId: 'H5',
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+  }, [project, projectId]);
 
   if (!project) {
     return <Navigate to="/works" replace />;

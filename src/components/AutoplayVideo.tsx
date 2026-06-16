@@ -1,10 +1,9 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 
+import { resolvePublicAssetSrc } from '../utils/resolvePublicAssetSrc';
+
 function resolveVideoSrc(src: string) {
-  if (src.startsWith('http')) return src;
-  const path = src.startsWith('/') ? src.slice(1) : src;
-  const base = import.meta.env.BASE_URL || '/';
-  return `${base}${path}`;
+  return resolvePublicAssetSrc(src);
 }
 
 type AutoplayVideoProps = {

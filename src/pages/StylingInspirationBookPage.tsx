@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import ProjectBackButton from '../components/ProjectBackButton';
+import ExternalVideo from '../components/ExternalVideo';
 import {
   getStylingInspirationAssetSrc,
   stylingInspirationBookBrief,
@@ -35,15 +36,12 @@ export default function StylingInspirationBookPage() {
           <p className="sib-section-label">Video</p>
           {stylingInspirationBookVideos.map((video) => (
             <div key={video.id} className="sib-video-wrap">
-              <video
+              <ExternalVideo
+                src={video.src}
                 className="sib-video"
-                src={getStylingInspirationAssetSrc(video.file)}
-                controls
-                playsInline
-                preload="metadata"
-              >
-                您的浏览器不支持视频播放。
-              </video>
+                videoClassName="sib-video"
+                title={video.title}
+              />
             </div>
           ))}
         </section>

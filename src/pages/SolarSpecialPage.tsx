@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNod
 import ProjectBackButton from '../components/ProjectBackButton';
 import { solarSpecialMeta, solarSpecialSections, type SolarBlock } from '../data/solarSpecialContent';
 import { SOLAR_DESIGN_WIDTH, solarColors, solarType } from '../data/solarSpecialTypography';
+import ExternalVideo from '../components/ExternalVideo';
+import { resolvePublicAssetSrc } from '../utils/resolvePublicAssetSrc';
 import './SolarSpecialPage.css';
 
 const STAR_COUNT = 420;
@@ -191,7 +193,7 @@ function BlockRenderer({ block }: { block: SolarBlock }) {
   }
 
   if (block.kind === 'centerImage') {
-    const src = `${import.meta.env.BASE_URL}${block.src}`;
+    const src = resolvePublicAssetSrc(block.src);
     return (
       <figure className="ss-center-image">
         <img src={src} alt={block.alt} loading="lazy" decoding="async" />
@@ -207,9 +209,7 @@ function BlockRenderer({ block }: { block: SolarBlock }) {
             key={rowIndex}
             className={`ss-motion-video-row ss-motion-video-row--${row.columns}${row.width === 'half' ? ' ss-motion-video-row--half' : ''}`}
           >
-            {row.items.map((item) => {
-              const src = `${import.meta.env.BASE_URL}${item.src}`;
-              return (
+            {row.items.map((item) => (
                 <article key={item.title} className="ss-motion-video">
                   <div className="ss-motion-video-head">
                     <SolarText token={solarType.featureTitleEn} as="h3" className="ss-motion-video-title">
@@ -222,13 +222,15 @@ function BlockRenderer({ block }: { block: SolarBlock }) {
                     )}
                   </div>
                   <div className="ss-center-video">
-                    <video controls playsInline preload="metadata" src={src}>
-                      <track kind="captions" />
-                    </video>
+                    <ExternalVideo
+                      src={item.src}
+                      className="ss-motion-video-player"
+                      videoClassName="ss-motion-video-player"
+                      title={item.title}
+                    />
                   </div>
                 </article>
-              );
-            })}
+              ))}
           </div>
         ))}
       </div>

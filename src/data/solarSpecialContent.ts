@@ -1,3 +1,5 @@
+import { externalVideoUrls, pickVideoSrc } from './externalMediaUrls';
+
 export type SolarSection = {
   id: string;
   titleCn: string;
@@ -219,14 +221,34 @@ export const solarSpecialSections: SolarSection[] = [
               {
                 columns: 2,
                 items: [
-                  { title: 'Start', src: 'projects/solar-special/videos/start-deluxe.mp4' },
-                  { title: 'Day Off', src: 'projects/solar-special/videos/day-off-deluxe.mp4' },
+                  {
+                    title: 'Start',
+                    src: pickVideoSrc(
+                      externalVideoUrls.solarSpecial.start,
+                      'projects/solar-special/videos/start-deluxe.mp4',
+                    ),
+                  },
+                  {
+                    title: 'Day Off',
+                    src: pickVideoSrc(
+                      externalVideoUrls.solarSpecial.dayOff,
+                      'projects/solar-special/videos/day-off-deluxe.mp4',
+                    ),
+                  },
                 ],
               },
               {
                 columns: 1,
                 width: 'half',
-                items: [{ title: 'Envelop', src: 'projects/solar-special/videos/envelop-deluxe.mp4' }],
+                items: [
+                  {
+                    title: 'Envelop',
+                    src: pickVideoSrc(
+                      externalVideoUrls.solarSpecial.envelop,
+                      'projects/solar-special/videos/envelop-deluxe.mp4',
+                    ),
+                  },
+                ],
               },
               {
                 columns: 3,
@@ -234,17 +256,26 @@ export const solarSpecialSections: SolarSection[] = [
                   {
                     title: 'Solid Station',
                     description: '固体研磨与加入杯中的操作反馈',
-                    src: 'projects/solar-special/videos/solid-station-deluxe.mp4',
+                    src: pickVideoSrc(
+                      externalVideoUrls.solarSpecial.solidStation,
+                      'projects/solar-special/videos/solid-station-deluxe.mp4',
+                    ),
                   },
                   {
                     title: 'Liquid Station',
                     description: '液体充能与加注的时机动效',
-                    src: 'projects/solar-special/videos/liquid-area-deluxe.mp4',
+                    src: pickVideoSrc(
+                      externalVideoUrls.solarSpecial.liquidArea,
+                      'projects/solar-special/videos/liquid-area-deluxe.mp4',
+                    ),
                   },
                   {
                     title: 'Gas Station',
                     description: '气瓶夸张的胀瓶与排气效果',
-                    src: 'projects/solar-special/videos/gas-station-deluxe.mp4',
+                    src: pickVideoSrc(
+                      externalVideoUrls.solarSpecial.gasStation,
+                      'projects/solar-special/videos/gas-station-deluxe.mp4',
+                    ),
                   },
                 ],
               },

@@ -1,3 +1,6 @@
+import { externalVideoUrls, pickVideoSrc } from './externalMediaUrls';
+import { resolvePublicAssetSrc } from '../utils/resolvePublicAssetSrc';
+
 export type StylingInspirationAsset = {
   id: string;
   file: string;
@@ -28,7 +31,14 @@ export const stylingInspirationBookBrief = {
 };
 
 export const stylingInspirationBookVideos = [
-  { id: 'display', file: 'video/display.mov', title: 'Video Display' },
+  {
+    id: 'display',
+    title: 'Video Display',
+    src: pickVideoSrc(
+      externalVideoUrls.stylingInspirationBook.display,
+      'projects/styling-inspiration-book/video/display.mov',
+    ),
+  },
 ];
 
 export const stylingInspirationBookCollageImages: StylingInspirationAsset[] = [
@@ -42,5 +52,5 @@ export const stylingInspirationBookCollageImages: StylingInspirationAsset[] = [
 ];
 
 export function getStylingInspirationAssetSrc(file: string) {
-  return `${import.meta.env.BASE_URL}projects/styling-inspiration-book/${file}`;
+  return resolvePublicAssetSrc(`projects/styling-inspiration-book/${file}`);
 }

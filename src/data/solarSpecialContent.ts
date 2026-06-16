@@ -16,7 +16,19 @@ export type SolarBlock =
   | { kind: 'bulletGroup'; items: string[] }
   | { kind: 'flow'; steps: string[] }
   | { kind: 'artFeatures'; items: { title: string; description: string }[] }
-  | { kind: 'centerImage'; src: string; alt: string }
+  | { kind: 'centerImage'; src: string; alt: string; imageId?: string; size?: 'quarter' | 'sixteenth'; caption?: string }
+  | {
+      kind: 'horizontalScrollImage';
+      src: string;
+      alt: string;
+      matchHeightTo: string;
+      caption?: string;
+    }
+  | {
+      kind: 'centerImageRow';
+      columns: 2 | 3;
+      items: { src: string; alt: string; caption?: string }[];
+    }
   | {
       kind: 'motionVideos';
       rows: {
@@ -44,29 +56,9 @@ export const solarSpecialSections: SolarSection[] = [
     titleEn: 'Core Concept',
     blocks: [
       {
-        kind: 'subsection',
-        cn: '游戏类型',
-        blocks: [
-          {
-            kind: 'keywordPills',
-            items: ['模拟经营类', '解密类', '探索', '体验', '感受'],
-          },
-        ],
-      },
-      {
-        kind: 'subsection',
-        cn: '游戏介绍',
-        blocks: [
-          { kind: 'keywordPills', items: ['2D平面游戏', '揭秘'] },
-          {
-            kind: 'paragraphs',
-            items: [
-              '本游戏是一款以太阳系为叙事背景的模拟经营类游戏。',
-              '玩家通过经营一家行星主题饮品店获取资源与奖励，并在经营与探索的过程中逐步解锁隐藏剧情，揭示店铺背后不为人知的宇宙秘密。',
-              '游戏将经营系统与叙事推进相结合，使玩法本身成为故事展开的重要载体。',
-            ],
-          },
-        ],
+        kind: 'centerImage',
+        src: 'projects/solar-special/core-concept.png',
+        alt: '核心概念 Core Concept',
       },
     ],
   },
@@ -76,32 +68,9 @@ export const solarSpecialSections: SolarSection[] = [
     titleEn: 'Game Background',
     blocks: [
       {
-        kind: 'subsection',
-        cn: 'Demo 游戏剧情',
-        blocks: [
-          {
-            kind: 'paragraphs',
-            items: [
-              '遥远的未来，太阳系里住着各种各样的外星生物，而他们都有一个共同点——爱喝饮料。更麻烦的是，他们对口味极其执着：一旦喝不到喜欢的饮料就会情绪失控，甚至引发骚乱和暴乱。',
-              '因此，太阳系里有一家看似温馨可爱的饮品店，实际上却是维系秩序的关键岗位。你每天要面对挑剔又危险的顾客，用不同星球的特产物质调出他们"必须喝到"的味道，稍有差池就可能出事。',
-              '你因为犯了错被派遣到这里，从上一任店长手里接过工作。他一边教你上手，一边留下若有若无的警告：这份差事到底是惩罚，还是你真正会热爱的生活？一切从你开店的第一天开始。',
-            ],
-          },
-        ],
-      },
-      {
-        kind: 'subsection',
-        cn: 'Demo 日程',
-        blocks: [
-          {
-            kind: 'bulletGroup',
-            items: [
-              '第一天 — 接受新手引导，但被老店长整蛊获得低分。',
-              '第二天 — 收到银河政府压力信函，开始勘探星球和营业。',
-              '第三天 — 逐渐熟练后自由经营。',
-            ],
-          },
-        ],
+        kind: 'centerImage',
+        src: 'projects/solar-special/game-background.png',
+        alt: '游戏背景 Game Background',
       },
     ],
   },
@@ -129,6 +98,11 @@ export const solarSpecialSections: SolarSection[] = [
         src: 'projects/solar-special/core-gameplay.png',
         alt: '核心玩法 Core Gameplay',
       },
+      {
+        kind: 'centerImage',
+        src: 'projects/solar-special/core-gameplay-detail.png',
+        alt: '核心玩法详情 Core Gameplay Detail',
+      },
     ],
   },
   {
@@ -147,13 +121,35 @@ export const solarSpecialSections: SolarSection[] = [
         blocks: [
           { kind: 'pillSubheading', cn: '场景设计' },
           {
-            kind: 'paragraphs',
+            kind: 'centerImage',
+            src: 'projects/solar-special/scene-design/03-game-start.png',
+            alt: 'Opening 开场',
+            imageId: 'scene-hero',
+            caption: 'Opening 开场',
+          },
+          {
+            kind: 'horizontalScrollImage',
+            src: 'projects/solar-special/facility-design/01-making-scene-whole.png',
+            alt: 'Making scene 制作场景',
+            matchHeightTo: 'scene-hero',
+            caption: 'Making scene 制作场景',
+          },
+          {
+            kind: 'centerImageRow',
+            columns: 2,
             items: [
-              '饮品店内外景、星球环境与外星顾客等场景插画，为叙事推进提供具象化的世界观与氛围支撑。',
+              {
+                src: 'projects/solar-special/scene-design/01-exploring-scene.png',
+                alt: 'Planet exploration 星球探索',
+                caption: 'Planet exploration 星球探索',
+              },
+              {
+                src: 'projects/solar-special/scene-design/02-shopping-scene.png',
+                alt: 'Substance exploration 物质勘探',
+                caption: 'Substance exploration 物质勘探',
+              },
             ],
           },
-          { kind: 'keywords', items: ['场景氛围', '外星角色', '饮品店', '行星环境'] },
-          { kind: 'placeholder', label: '场景插画（图片待补充）' },
           { kind: 'pillSubheading', cn: '星球与物质设计' },
           {
             kind: 'paragraphs',
@@ -161,48 +157,48 @@ export const solarSpecialSections: SolarSection[] = [
               '以太阳系各行星为灵感，为固体、液体、气体三类物质设计差异化视觉形象，并以卡片形式呈现其来源与基本属性。',
             ],
           },
-          { kind: 'keywords', items: ['Solar System', '行星物质', 'Solid', 'Liquid', 'Gas'] },
-          { kind: 'placeholder', label: '行星与物质插画（图片待补充）' },
+          {
+            kind: 'centerImage',
+            src: 'projects/solar-special/planet-substance-design.png',
+            alt: '星球与物质设计 Planet and Substance Design',
+          },
           { kind: 'pillSubheading', cn: '经营设施设计' },
           {
-            kind: 'paragraphs',
+            kind: 'centerImageRow',
+            columns: 3,
             items: [
-              '围绕饮品店日常经营，设计加工站点、操作设备与引导角色等设施相关视觉元素，强化玩法与场景的关联。',
+              {
+                src: 'projects/solar-special/facility-design/02-present-03.png',
+                alt: '经营设施 Facility Design 03',
+              },
+              {
+                src: 'projects/solar-special/facility-design/03-present-04.png',
+                alt: '经营设施 Facility Design 04',
+              },
+              {
+                src: 'projects/solar-special/facility-design/04-present-05.png',
+                alt: '经营设施 Facility Design 05',
+              },
             ],
           },
           {
-            kind: 'artFeatures',
-            items: [
-              { title: 'Teacher()', description: '三重人格的新手引导员角色设计' },
-              { title: 'Alien Intelligences', description: '固体加工区的外星智能体角色插画' },
-              { title: 'Liquid Creatures', description: '为液体充能的小怪兽角色设计' },
-            ],
+            kind: 'centerImage',
+            src: 'projects/solar-special/facility-design/05-present-06.png',
+            alt: '经营设施 Facility Design 06',
+            size: 'sixteenth',
           },
-          { kind: 'placeholder', label: '经营设施插画（图片待补充）' },
+          {
+            kind: 'centerImage',
+            src: 'projects/solar-special/facility-design/06-present-07.png',
+            alt: '经营设施 Facility Design 07',
+            size: 'sixteenth',
+          },
         ],
       },
       {
         kind: 'subsection',
         cn: 'UI设计',
-        blocks: [
-          {
-            kind: 'paragraphs',
-            items: [
-              '界面围绕订单接收、物质调配与信息反馈三条主线展开，确保高频操作下层级清晰、反馈即时。',
-              '物质卡片、站点面板与政府来函等模块沿用统一的图形语言，与整体视觉风格保持连贯。',
-            ],
-          },
-          {
-            kind: 'artFeatures',
-            items: [
-              { title: 'Substance Cards', description: '行星物质信息卡，展示来源、属性与收集进度' },
-              { title: 'Station Panels', description: '固体 / 液体 / 气体三站的操作界面与订单指示' },
-              { title: 'Letters', description: '来自银河政府的压力信函界面' },
-              { title: 'Daily News', description: '每日新闻播报的信息展示布局' },
-            ],
-          },
-          { kind: 'placeholder', label: 'UI 界面展示（图片待补充）' },
-        ],
+        blocks: [],
       },
       {
         kind: 'subsection',

@@ -246,11 +246,127 @@ body.solar-special-active ::-webkit-scrollbar-thumb {
   margin: 0;
 }
 
+.ss-image-frame {
+  width: var(--ss-content-image-width);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.ss-image-frame--quarter {
+  width: calc(var(--ss-content-image-width) * 0.25);
+}
+
+.ss-image-frame--sixteenth,
+.ss-center-image--sixteenth {
+  width: calc(var(--ss-content-image-width) * 0.0625);
+}
+
+.ss-center-image--quarter {
+  width: calc(var(--ss-content-image-width) * 0.25);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ss-center-image--sixteenth {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ss-image-frame--panorama {
+  width: var(--ss-content-image-width);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ss-image-frame--row-item {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.ss-image-caption {
+  margin: 0 0 calc(8px * var(--ss-scale));
+  font-family: 'Source Han Sans SC', 'Noto Sans SC', 'PingFang SC', sans-serif;
+  font-size: calc(24px * var(--ss-scale));
+  font-weight: 400;
+  line-height: 1.65;
+  color: #ffffff;
+}
+
+.ss-image-display {
+  width: 100%;
+}
+
+.ss-image-display img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 .ss-center-image img {
   width: var(--ss-content-image-width);
   max-width: 100%;
   height: auto;
   display: block;
+}
+
+.ss-center-image-row {
+  display: grid;
+  width: 100%;
+  max-width: var(--ss-content-image-width);
+  margin: 0 auto;
+  gap: calc(24px * var(--ss-scale));
+  align-items: start;
+}
+
+.ss-center-image-row--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ss-center-image-row--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ss-center-image-row .ss-image-display img {
+  width: 100%;
+}
+
+.ss-image-frame--quarter .ss-image-display img,
+.ss-image-frame--sixteenth .ss-image-display img,
+.ss-center-image--quarter img,
+.ss-center-image--sixteenth img {
+  width: 100%;
+  max-width: 100%;
+}
+
+.ss-panorama-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.ss-panorama-scroll:active {
+  cursor: grabbing;
+}
+
+.ss-panorama-scroll img {
+  height: 100%;
+  width: auto;
+  max-width: none;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .ss-motion-videos {

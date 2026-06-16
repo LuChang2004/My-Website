@@ -3,6 +3,12 @@ import ProjectBackButton from '../components/ProjectBackButton';
 import { solarSpecialMeta, solarSpecialSections, type SolarBlock } from '../data/solarSpecialContent';
 import { SOLAR_DESIGN_WIDTH, solarColors, solarType } from '../data/solarSpecialTypography';
 import ExternalVideo from '../components/ExternalVideo';
+import {
+  SolarCenterImageBlock,
+  SolarHorizontalScrollImageBlock,
+  SolarImageCaption,
+  SolarImageHeightProvider,
+} from '../components/SolarImageBlocks';
 import { resolvePublicAssetSrc } from '../utils/resolvePublicAssetSrc';
 import './SolarSpecialPage.css';
 
@@ -193,11 +199,28 @@ function BlockRenderer({ block }: { block: SolarBlock }) {
   }
 
   if (block.kind === 'centerImage') {
-    const src = resolvePublicAssetSrc(block.src);
+    return <SolarCenterImageBlock block={block} />;
+  }
+
+  if (block.kind === 'horizontalScrollImage') {
+    return <SolarHorizontalScrollImageBlock block={block} />;
+  }
+
+  if (block.kind === 'centerImageRow') {
     return (
-      <figure className="ss-center-image">
-        <img src={src} alt={block.alt} loading="lazy" decoding="async" />
-      </figure>
+      <div className={`ss-center-image-row ss-center-image-row--${block.columns}`}>
+        {block.items.map((item) => {
+          const src = resolvePublicAssetSrc(item.src);
+          return (
+            <figure key={item.src} className="ss-image-frame ss-image-frame--row-item">
+              {item.caption && <SolarImageCaption>{item.caption}</SolarImageCaption>}
+              <div className="ss-image-display">
+                <img src={src} alt={item.alt} loading="lazy" decoding="async" />
+              </div>
+            </figure>
+          );
+        })}
+      </div>
     );
   }
 
@@ -321,6 +344,7 @@ export default function SolarSpecialPage() {
       <SolarStarfield />
       <ProjectBackButton className="solar-back-btn" />
       <div className="solar-special-scroll">
+        <SolarImageHeightProvider>
         <div ref={containerRef} className="solar-special-canvas" style={{ ['--ss-scale' as string]: scale }}>
           <header id="ss-cover" className="ss-cover">
             <SolarText token={solarType.coverTitleEn} as="h1" className="ss-cover-title-en">
@@ -362,6 +386,7 @@ export default function SolarSpecialPage() {
             </section>
           ))}
         </div>
+        </SolarImageHeightProvider>
       </div>
     </div>
   );

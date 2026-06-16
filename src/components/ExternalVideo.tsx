@@ -1,5 +1,5 @@
 import { resolvePublicAssetSrc } from '../utils/resolvePublicAssetSrc';
-import { getBilibiliEmbedUrl, isBilibiliVideoUrl } from '../utils/videoEmbed';
+import { getBilibiliEmbedUrl, getBilibiliWatchUrl, isBilibiliVideoUrl } from '../utils/videoEmbed';
 import './ExternalVideo.css';
 
 type ExternalVideoProps = {
@@ -19,17 +19,32 @@ export default function ExternalVideo({
 }: ExternalVideoProps) {
   if (isBilibiliVideoUrl(src)) {
     const embedUrl = getBilibiliEmbedUrl(src);
+    const watchUrl = getBilibiliWatchUrl(src);
     if (!embedUrl) return null;
 
     return (
       <div className={`external-video external-video--bilibili ${className}`.trim()}>
-        <iframe
-          src={embedUrl}
-          title={title}
-          className={`external-video__iframe ${iframeClassName}`.trim()}
-          allowFullScreen
-          referrerPolicy="no-referrer"
-        />
+        <div className="external-video__iframe-wrap">
+          <iframe
+            src={embedUrl}
+            title={title}
+            className={`external-video__iframe ${iframeClassName}`.trim()}
+            allow="autoplay; fullscreen"
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+        {watchUrl && (
+          <a
+            className="external-video__fallback"
+            href={watchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            若无法播放，前往 B 站观看
+          </a>
+        )}
       </div>
     );
   }

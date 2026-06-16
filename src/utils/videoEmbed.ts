@@ -8,15 +8,38 @@ export function isBilibiliVideoUrl(url: string): boolean {
 export function getBilibiliEmbedUrl(url: string): string | null {
   const bvMatch = url.match(BILIBILI_BV_RE);
   if (bvMatch) {
-    const page = new URL(url).searchParams.get('p');
-    const base = `https://player.bilibili.com/player.html?bvid=${bvMatch[1]}&high_quality=1&danmaku=0`;
-    return page ? `${base}&page=${page}` : base;
+    const page = new URL(url).searchParams.get('p') || '1';
+    const params = new URLSearchParams({
+      bvid: bvMatch[1],
+      isOutside: 'true',
+      danmaku: '0',
+      autoplay: '0',
+      p: page,
+    });
+    return `https://player.bilibili.com/player.html?${params.toString()}`;
   }
 
   const avMatch = url.match(/\/video\/av(\d+)/i);
   if (avMatch) {
-    return `https://player.bilibili.com/player.html?aid=${avMatch[1]}&high_quality=1&danmaku=0`;
+    const params = new URLSearchParams({
+      aid: avMatch[1],
+      isOutside: 'true',
+      danmaku: '0',
+      autoplay: '0',
+    });
+    return `https://player.bilibili.com/player.html?${params.toString()}`;
   }
 
   return null;
+}
+
+export function getBilibiliWatchUrl(url: string): string | null {
+  if (!isBilibiliVideoUrl(url)) return null;
+  try {
+    const parsed = new URL(url);
+    parsed.hash = '';
+    return parsed.toString();
+  } catch {
+    return url;
+  }
 }

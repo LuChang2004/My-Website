@@ -3,7 +3,16 @@
 }
 
 .external-video--bilibili {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.external-video__iframe-wrap {
   position: relative;
+  width: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
   background: #000000;
@@ -15,4 +24,18 @@
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+.external-video__fallback {
+  display: inline-block;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.external-video__fallback:hover {
+  color: #ffffff;
 }

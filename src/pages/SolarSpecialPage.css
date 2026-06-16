@@ -441,8 +441,9 @@ body.solar-special-active ::-webkit-scrollbar-thumb {
 .ss-center-video .external-video--bilibili.ss-motion-video-player {
   width: var(--ss-content-image-width);
   max-width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
+}
+
+.ss-center-video .external-video--bilibili.ss-motion-video-player .external-video__iframe-wrap {
   border-radius: calc(36px * var(--ss-scale));
   border: calc(1px * var(--ss-scale)) solid #ffffff;
 }

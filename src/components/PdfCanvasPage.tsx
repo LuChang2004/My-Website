@@ -89,7 +89,6 @@ export default function PdfCanvasPage({
         const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined;
 
         await page.render({
-          canvas,
           canvasContext: context,
           viewport,
           transform,

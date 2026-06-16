@@ -7,10 +7,8 @@ import { userResearchMeta } from '../data/userResearchContent';
 import { stylingInspirationBookMeta } from '../data/stylingInspirationBookContent';
 import {
   dispatchHubAboutProgress,
-  HUB_ABOUT_PROGRESS_EVENT,
   HUB_ABOUT_SCROLL_RANGE,
   HUB_ABOUT_SCROLL_TO_EVENT,
-  isAboutMeProgress,
   resolveInitialAboutProgress,
 } from '../hub/aboutProgress';
 import { useHubNavOpacity } from '../hub/hubNavContext';

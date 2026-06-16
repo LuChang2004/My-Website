@@ -70,7 +70,6 @@ function PdfPage({ pdf, pageNumber, width }: PdfPageProps) {
       const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined;
 
       await page.render({
-        canvas,
         canvasContext: context,
         viewport,
         transform,

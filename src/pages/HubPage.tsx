@@ -13,9 +13,11 @@ import {
 } from '../hub/aboutProgress';
 import { useHubNavOpacity } from '../hub/hubNavContext';
 import { FigmaCanvas, useFigmaScale, DESIGN_H } from '../hub/hubUi';
+import { useIsMobile } from '../hooks/use-mobile';
 
 export function HubAboutPage() {
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     document.title = 'luchang.fun — 陆畅';
@@ -25,7 +27,9 @@ export function HubAboutPage() {
     };
   }, []);
 
-  return (
+  return isMobile ? (
+    <MobileAboutContent />
+  ) : (
     <div className="h-full overflow-hidden">
       <IntroScrollFlow key={location.key} />
     </div>
@@ -33,26 +37,315 @@ export function HubAboutPage() {
 }
 
 export function HubWorksPage() {
+  const isMobile = useIsMobile();
+
   useEffect(() => {
     document.title = 'Works — luchang.fun';
   }, []);
 
   return (
-    <div className="h-full overflow-y-auto">
-      <WorksContent />
+    <div className="hub-works-scrollbar h-full overflow-y-auto">
+      {isMobile ? <MobileWorksContent /> : <WorksContent />}
     </div>
   );
 }
 
 export function HubContactPage() {
+  const isMobile = useIsMobile();
+
   useEffect(() => {
     document.title = 'Contact — luchang.fun';
   }, []);
 
-  return (
+  return isMobile ? (
+    <MobileContactContent />
+  ) : (
     <div className="h-full overflow-hidden">
       <ContactContent />
     </div>
+  );
+}
+
+function MobileAboutContent() {
+  const location = useLocation();
+  const { setOpacity: setNavOpacity } = useHubNavOpacity();
+  const initialProgress = resolveInitialAboutProgress(location.state);
+  const [progress, setProgress] = useState(initialProgress);
+  const progressRef = useRef(initialProgress);
+
+  useEffect(() => {
+    let touchY: number | null = null;
+
+    const setProgressValue = (value: number) => {
+      const next = clamp(value);
+      progressRef.current = next;
+      setProgress(next);
+      dispatchHubAboutProgress(next);
+    };
+
+    const startProgress = resolveInitialAboutProgress(location.state);
+    progressRef.current = startProgress;
+    setProgress(startProgress);
+    dispatchHubAboutProgress(startProgress);
+
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      setProgressValue(progressRef.current + event.deltaY / HUB_ABOUT_SCROLL_RANGE);
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      touchY = event.touches[0]?.clientY ?? null;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (touchY === null) return;
+      event.preventDefault();
+      const currentY = event.touches[0]?.clientY ?? touchY;
+      const delta = (touchY - currentY) / (HUB_ABOUT_SCROLL_RANGE * 0.45);
+      touchY = currentY;
+      setProgressValue(progressRef.current + delta);
+    };
+
+    const onTouchEnd = () => {
+      touchY = null;
+    };
+
+    const onScrollTo = (event: Event) => {
+      const target = (event as CustomEvent<number>).detail;
+      if (typeof target === 'number') {
+        setProgressValue(target);
+      }
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener(HUB_ABOUT_SCROLL_TO_EVENT, onScrollTo);
+
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener(HUB_ABOUT_SCROLL_TO_EVENT, onScrollTo);
+    };
+  }, [location.key, location.state]);
+
+  const firstExit = smoothRange(progress, 0.04, 0.24);
+  const secondExit = smoothRange(progress, 0.5, 0.68);
+  const p1Opacity = 1 - smoothRange(progress, 0.04, 0.2);
+  const p21Opacity = fadeInOut(progress, 0.12, 0.26, 0.56, 0.7);
+  const p22Opacity = smoothRange(progress, 0.64, 0.76);
+  const navOpacity = smoothRange(progress, 0.08, 0.22);
+  const scrollPromptOpacity = 1 - smoothRange(progress, 0.82, 0.92);
+
+  useEffect(() => {
+    setNavOpacity(navOpacity);
+    return () => setNavOpacity(1);
+  }, [navOpacity, setNavOpacity]);
+
+  return (
+    <section className="relative h-full overflow-hidden bg-white px-5">
+      <div className="pointer-events-none absolute left-0 right-0 top-[92px] h-[42vh] min-h-[306px] overflow-visible">
+        <MobilePhotoStack firstExit={firstExit} secondExit={secondExit} />
+      </div>
+
+      <div className="absolute bottom-[12vh] left-5 right-5 h-[244px]">
+        <div
+          className="absolute inset-x-0 top-0 text-center"
+          style={{
+            opacity: p1Opacity,
+            visibility: p1Opacity > 0.01 ? 'visible' : 'hidden',
+            transform: `translateY(${mix(0, 44, firstExit)}px)`,
+            pointerEvents: p1Opacity > 0.5 ? 'auto' : 'none',
+          }}
+        >
+          <h1 className="m-0 font-['Roboto',sans-serif] text-[42px] font-bold leading-none text-black">
+            Hi, I&rsquo;m Lucas
+          </h1>
+          <p className="m-0 mt-3 font-['Noto_Sans_SC',sans-serif] text-[22px] leading-8 text-[#767676]">
+            你好，我是陆畅
+          </p>
+        </div>
+
+        <div
+          className="absolute inset-x-0 top-0 text-center"
+          style={{
+            opacity: p21Opacity,
+            visibility: p21Opacity > 0.01 ? 'visible' : 'hidden',
+            transform: `translateY(${progress < 0.56 ? mix(-44, 0, smoothRange(progress, 0.12, 0.26)) : mix(0, 44, secondExit)}px)`,
+            pointerEvents: p21Opacity > 0.5 ? 'auto' : 'none',
+          }}
+        >
+          <p className="m-0 font-['Roboto',sans-serif] text-sm text-[#969696]">
+            I&rsquo;m committed to
+          </p>
+          <div className="mt-3 space-y-2 font-['Roboto',sans-serif] text-[30px] font-bold leading-none text-black">
+            <p className="m-0">UI/UX Design</p>
+            <p className="m-0">Visual Design</p>
+            <p className="m-0">Motion Design</p>
+          </div>
+          <p className="mx-auto mb-0 mt-6 max-w-[350px] font-['Noto_Sans_SC',sans-serif] text-base leading-7 text-[#767676]">
+            我希望成为一个具有产品思维，集合视觉、体验、动效设计能力为一体的专业设计师
+          </p>
+        </div>
+
+        <div
+          className="absolute inset-x-0 top-0 mx-auto max-w-[350px] text-left font-['Noto_Sans_SC',sans-serif] text-[18px] leading-8 text-black"
+          style={{
+            opacity: p22Opacity,
+            visibility: p22Opacity > 0.01 ? 'visible' : 'hidden',
+            transform: `translateY(${mix(44, 0, smoothRange(progress, 0.58, 0.72))}px)`,
+            pointerEvents: p22Opacity > 0.5 ? 'auto' : 'none',
+          }}
+        >
+          <p className="m-0 font-bold">教育经历</p>
+          <p className="m-0 mt-3 text-[#444444]">同济大学设计与创意学院</p>
+          <p className="m-0 text-[#444444]">视觉传达设计-人工智能双学位</p>
+          <p className="m-0 mt-7 font-bold">语言能力</p>
+          <p className="m-0 mt-3 text-[#444444]">CET-4：589；CET-6：638</p>
+        </div>
+      </div>
+
+      <p
+        className="absolute bottom-6 left-1/2 m-0 -translate-x-1/2 font-['Roboto',sans-serif] text-sm text-[#969696]"
+        style={{ opacity: scrollPromptOpacity }}
+      >
+        Scroll to view
+      </p>
+    </section>
+  );
+}
+
+function MobilePhotoStack({ firstExit, secondExit }: { firstExit: number; secondExit: number }) {
+  return (
+    <div className="relative mx-auto h-full w-full max-w-[390px]">
+      <MobilePhotoBox
+        src="/images/figma-home/p3.jpg"
+        left="22%"
+        top="2%"
+        rotate={0}
+        shadow="none"
+      />
+      <MobilePhotoBox
+        src="/images/figma-home/p2.jpg"
+        left="25%"
+        top="2%"
+        rotate={mix(-13.8, 16, secondExit)}
+        translateX={mix(0, 360, secondExit)}
+        opacity={1 - smoothRange(secondExit, 0.72, 1)}
+        shadow="0px 4px 16px rgba(0,0,0,0.3)"
+      />
+      <MobilePhotoBox
+        src="/images/figma-home/p1.jpg"
+        left="22%"
+        top="5%"
+        rotate={mix(10.59, 26, firstExit)}
+        translateX={mix(0, 360, firstExit)}
+        opacity={1 - smoothRange(firstExit, 0.72, 1)}
+        shadow="0px 4px 32px rgba(0,0,0,0.3)"
+      />
+    </div>
+  );
+}
+
+function MobilePhotoBox({
+  src,
+  left,
+  top,
+  rotate,
+  translateX = 0,
+  opacity = 1,
+  shadow,
+}: {
+  src: string;
+  left: string;
+  top: string;
+  rotate: number;
+  translateX?: number;
+  opacity?: number;
+  shadow: string;
+}) {
+  return (
+    <div
+      className="absolute aspect-[411/548] w-[56%] overflow-hidden rounded-[24px]"
+      style={{
+        left,
+        top,
+        opacity,
+        boxShadow: shadow,
+        transform: `translateX(${translateX}px) rotate(${rotate}deg)`,
+        transformOrigin: '50% 50%',
+        willChange: 'transform, opacity',
+      }}
+    >
+      <img src={src} alt="" className="block h-full w-full object-cover" />
+    </div>
+  );
+}
+
+function MobileWorksContent() {
+  return (
+    <section className="bg-white px-5 pb-12 pt-24">
+      <div className="mx-auto grid w-full max-w-[460px] grid-cols-2 gap-x-4 gap-y-8">
+        {workProjects.map((project) => (
+          <Link key={project.id} to={project.href} className="block text-black no-underline">
+            <div className="aspect-square w-full border border-[#e8e8e8] bg-white" aria-hidden="true" />
+            <div className="mt-4">
+              <h2 className="m-0 font-['Noto_Sans_SC',sans-serif] text-[17px] font-bold leading-6">
+                {project.title}
+              </h2>
+              <p className="m-0 mt-2 font-['Noto_Sans_SC',sans-serif] text-[12px] leading-5 text-black">
+                {project.meta}
+              </p>
+              <p className="m-0 mt-2 font-['Noto_Sans_SC',sans-serif] text-[12px] leading-5 text-[#767676]">
+                {project.description}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MobileContactContent() {
+  return (
+    <section className="flex h-full items-center bg-white px-6 pt-16">
+      <div className="w-full">
+        <p className="m-0 font-['Roboto',sans-serif] text-[42px] font-bold leading-none text-black">
+          Contact
+        </p>
+        <div className="mt-8 space-y-5">
+          <p className="m-0">
+            <span className="block font-['Roboto',sans-serif] text-xs font-bold uppercase tracking-[0.08em] text-[#969696]">
+              Tel
+            </span>
+            <a href="tel:+8613615694585" className="font-['Roboto',sans-serif] text-xl leading-9 text-black no-underline">
+              (+86) 136 1569 4585
+            </a>
+          </p>
+          <p className="m-0">
+            <span className="block font-['Roboto',sans-serif] text-xs font-bold uppercase tracking-[0.08em] text-[#969696]">
+              WeChat
+            </span>
+            <span className="font-['Roboto',sans-serif] text-xl leading-9 text-black">lucas20041220</span>
+          </p>
+          <p className="m-0">
+            <span className="block font-['Roboto',sans-serif] text-xs font-bold uppercase tracking-[0.08em] text-[#969696]">
+              Email
+            </span>
+            <a href="mailto:lulululuu2004@outlook.com" className="block break-all font-['Roboto',sans-serif] text-xl leading-8 text-black no-underline">
+              lulululuu2004@outlook.com
+            </a>
+            <a href="mailto:2352463@tongji.edu.cn" className="block break-all font-['Roboto',sans-serif] text-xl leading-8 text-black no-underline">
+              2352463@tongji.edu.cn
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }
 

@@ -482,3 +482,53 @@ body.solar-special-active ::-webkit-scrollbar-thumb {
     animation: none;
   }
 }
+
+@media (max-width: 767px) {
+  .solar-special-canvas {
+    --ss-scale: 0.48;
+    --ss-content-image-width: 100%;
+    width: 100%;
+    padding: 80px 18px 72px;
+  }
+
+  .ss-cover {
+    margin-bottom: 48px;
+  }
+
+  .ss-section {
+    margin-bottom: 52px;
+  }
+
+  .ss-section-body {
+    margin-top: 28px;
+    gap: 32px;
+  }
+
+  .ss-center-image-row,
+  .ss-center-image-row--2,
+  .ss-center-image-row--3,
+  .ss-motion-video-row,
+  .ss-motion-video-row--2,
+  .ss-motion-video-row--3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ss-motion-videos {
+    gap: 36px;
+  }
+
+  .ss-motion-video-title,
+  .ss-motion-video-row--3 .ss-motion-video-desc {
+    min-height: 0;
+  }
+
+  .ss-motion-video-row--half .ss-motion-video {
+    width: 100%;
+  }
+
+  .ss-center-video .ss-motion-video-player,
+  .ss-center-video video,
+  .ss-center-video .external-video--bilibili.ss-motion-video-player .external-video__iframe-wrap {
+    border-radius: 18px;
+  }
+}

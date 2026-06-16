@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import ProjectBackButton from '../components/ProjectBackButton';
+import DemoPreviewFrame from '../components/DemoPreviewFrame';
 
 const projectSrc = `${import.meta.env.BASE_URL}projects/chord-diary/index.html`;
 
@@ -9,14 +10,12 @@ export default function ChordDiaryPage() {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-[#e8e6e1]">
+    <DemoPreviewFrame
+      title="和弦日记 — Chord Diary"
+      src={projectSrc}
+      backgroundClassName="bg-[#e8e6e1]"
+    >
       <ProjectBackButton />
-      <iframe
-        title="和弦日记 — Chord Diary"
-        src={projectSrc}
-        className="w-full h-full border-0"
-        allow="autoplay"
-      />
-    </div>
+    </DemoPreviewFrame>
   );
 }

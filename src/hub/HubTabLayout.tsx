@@ -16,6 +16,38 @@ import {
 } from './hubTabs';
 import { FigmaCanvas, HubTopNav, useFigmaScale, useHubNavigate } from './hubUi';
 import { HubAboutPage, HubContactPage, HubWorksPage } from '../pages/HubPage';
+import { useIsMobile } from '../hooks/use-mobile';
+
+function MobileHubTopNav({
+  active,
+  opacity,
+  onNavigate,
+}: {
+  active: NavItem | null;
+  opacity: number;
+  onNavigate: (item: NavItem) => void;
+}) {
+  return (
+    <nav
+      aria-label="Primary"
+      className="pointer-events-auto fixed left-0 top-0 z-30 flex h-[88px] w-full items-end justify-center gap-10 bg-white/80 pb-5 backdrop-blur"
+      style={{ opacity }}
+    >
+      {(['About Me', 'Works', 'Contact'] as NavItem[]).map((item) => (
+        <button
+          key={item}
+          type="button"
+          onClick={() => onNavigate(item)}
+          className={`m-0 border-0 bg-transparent p-0 font-['Roboto',sans-serif] text-[16px] font-bold leading-none transition-colors ${
+            item === active ? 'text-black' : 'text-[#969696]'
+          }`}
+        >
+          {item}
+        </button>
+      ))}
+    </nav>
+  );
+}
 
 function resolveHubTopNavActive(pathname: string, aboutProgress: number): NavItem | null {
   if (pathname === '/works') return 'Works';
@@ -28,6 +60,7 @@ function HubTabLayoutInner() {
   const location = useLocation();
   const onNavigate = useHubNavigate();
   const scale = useFigmaScale();
+  const isMobile = useIsMobile();
   const { opacity: aboutNavOpacity } = useHubNavOpacity();
 
   const pathname = isHubTabPath(location.pathname) ? location.pathname : '/';
@@ -78,9 +111,13 @@ function HubTabLayoutInner() {
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-white">
       <div className="pointer-events-none absolute inset-0 z-30">
-        <FigmaCanvas scale={scale}>
-          <HubTopNav active={activeNav} opacity={navOpacity} onNavigate={onNavigate} />
-        </FigmaCanvas>
+        {isMobile ? (
+          <MobileHubTopNav active={activeNav} opacity={navOpacity} onNavigate={onNavigate} />
+        ) : (
+          <FigmaCanvas scale={scale}>
+            <HubTopNav active={activeNav} opacity={navOpacity} onNavigate={onNavigate} />
+          </FigmaCanvas>
+        )}
       </div>
 
       <div className="absolute inset-0 z-10 overflow-hidden">

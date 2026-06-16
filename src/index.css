@@ -171,6 +171,28 @@
   .work-card:focus-visible .work-cover-placeholder {
     border-color: #d0d0d0;
   }
+
+  .hub-works-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #b9dcff transparent;
+  }
+
+  .hub-works-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .hub-works-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .hub-works-scrollbar::-webkit-scrollbar-thumb {
+    background: #b9dcff;
+    border-radius: 999px;
+  }
+
+  .hub-works-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #9ecbff;
+  }
 }
 
 @layer utilities {

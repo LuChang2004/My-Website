@@ -52,6 +52,15 @@ export const projects: Project[] = [
     href: '/axiom-breach',
   },
   {
+    id: 'floor-tile-mosaic-line-generator',
+    title: 'Floor Tile Mosaic Line Generator',
+    titleEn: 'Floor Tile Mosaic Line Generator',
+    description:
+      '基于表面逻辑的平面地砖生成器，用模拟环境数据驱动黑白马赛克地面图案的密度、偏移、方向与线条节奏。',
+    tags: ['生成艺术', 'Web', '交互实验'],
+    href: '/works/floor-tile-mosaic-line-generator',
+  },
+  {
     id: 'styling-inspiration-book',
     title: 'Styling Inspiration Book',
     titleEn: 'Visual Form Creation',

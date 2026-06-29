@@ -1,0 +1,4311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Floor Tile Mosaic Line Generator</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background: #FFFFFF;
+    color: #111;
+  }
+
+  body {
+    overflow: hidden;
+  }
+
+  .app {
+    display: block;
+    height: 100vh;
+  }
+
+  .sidebar {
+    display: none;
+    background: #ffffff;
+    border-right: 1px solid #e5e5dd;
+    padding: 22px 18px;
+    overflow-y: auto;
+  }
+
+  .preview {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+  }
+
+  .subtitle {
+    margin: 8px 0 20px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #666;
+  }
+
+  .section {
+    border-top: 1px solid #ecece7;
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+
+  .section:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 12px;
+  }
+
+  .control {
+    margin-bottom: 14px;
+  }
+
+  .control:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 650;
+    margin-bottom: 7px;
+  }
+
+  select,
+  input[type="number"],
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    height: 38px;
+    border: 1px solid #d8d8d0;
+    border-radius: 10px;
+    padding: 0 10px;
+    background: #fff;
+    font-size: 13px;
+    outline: none;
+  }
+
+  input[type="color"] {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #d8d8d0;
+    border-radius: 10px;
+    padding: 3px;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  input[type="range"] {
+    width: 100%;
+  }
+
+  .range-row {
+    display: grid;
+    grid-template-columns: 1fr 44px;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .range-value {
+    font-size: 12px;
+    color: #555;
+    font-weight: 800;
+    text-align: right;
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .swatch {
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .fixed-box,
+  .data-box {
+    display: grid;
+    gap: 7px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+  }
+
+  .fixed-row,
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .fixed-row span:last-child,
+  .data-row span:last-child {
+    font-weight: 750;
+    color: #111;
+    text-align: right;
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .api-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  button {
+    height: 40px;
+    border: none;
+    border-radius: 999px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+  }
+
+  .primary {
+    grid-column: span 2;
+    background: #111;
+    color: #fff;
+  }
+
+  .secondary {
+    background: #ecece7;
+    color: #111;
+  }
+
+  .mini-btn {
+    height: 34px;
+    font-size: 12px;
+    border-radius: 10px;
+    background: #ecece7;
+    color: #111;
+  }
+
+  .canvas-card {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    max-height: none;
+    padding: 0;
+    background: #FFFFFF;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    background: #FFFFFF;
+  }
+
+  #chairLayer {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    background: transparent;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .connection-card {
+    position: relative;
+    padding: 12px;
+    border: 1px solid #e1e1d8;
+    border-radius: 14px;
+    background: #fafaf7;
+  }
+
+  .connection-line {
+    position: absolute;
+    left: -1px;
+    top: 12px;
+    bottom: 12px;
+    width: 4px;
+    border-radius: 999px;
+    background: #d9d9cf;
+  }
+
+  .connection-line.active {
+    background: linear-gradient(#FF6A00, #0057FF);
+  }
+
+  .connection-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: #aaa;
+    flex-shrink: 0;
+  }
+
+  .dot.active {
+    background: #19c37d;
+    box-shadow: 0 0 0 4px rgba(25,195,125,0.12);
+  }
+
+  .connection-title {
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .connection-subtitle {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.45;
+    margin-bottom: 8px;
+  }
+
+  .status {
+    min-height: 18px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #666;
+    margin-top: 8px;
+  }
+
+  .status.error {
+    color: #c62828;
+  }
+
+  .status.ok {
+    color: #087f5b;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    margin-top: 4px;
+  }
+
+  .data-list {
+    display: grid;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .data-chip {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid #e5e5dd;
+    border-radius: 10px;
+    padding: 7px 8px;
+    background: #fff;
+    font-size: 12px;
+  }
+
+  .data-chip span:first-child {
+    color: #666;
+  }
+
+  .data-chip span:last-child {
+    font-weight: 800;
+    text-align: right;
+  }
+
+  @media (max-width: 900px) {
+    body {
+      overflow: auto;
+    }
+
+    .app {
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+
+    .sidebar {
+      border-right: none;
+      border-bottom: 1px solid #e5e5dd;
+    }
+
+    .preview {
+      padding: 16px;
+    }
+  }
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <h1>Floor Tile Generator</h1>
+    <p class="subtitle">
+      A flat graphic floor-tile generator based on the original surface logic. Fake environmental data now changes the density, offset, direction, and line rhythm of a black-and-white mosaic floor pattern.
+    </p>
+
+    <div class="section">
+      <div class="section-title">Data Link</div>
+
+      <div class="connection-card">
+        <div class="connection-line" id="connectionLine"></div>
+
+        <div class="connection-head">
+          <div class="dot" id="connectionDot"></div>
+          <div class="connection-title">Visual Data Connection</div>
+        </div>
+
+        <div class="connection-subtitle">
+          Offline demo uses fake data. In the floor-tile view, Wind Power increases geometric drift, Humidity tightens the mosaic density, Temperature adds fracture lines, Weather changes tile scale, Wind Direction biases the field, and Report Time shifts the line rhythm.
+        </div>
+
+        <div class="control">
+          <label for="connectionMode">Connection Mode</label>
+          <select id="connectionMode">
+            <option value="offline">Offline Demo · Fake Wind Data</option>
+            <option value="online">Online AMap API</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="amapKey">AMap Web Service Key</label>
+          <input type="password" id="amapKey" value="1ce3781a00ea5c061adc8b3987cec6e5">
+        </div>
+
+        <div class="control">
+          <label for="cityInput">City / Adcode</label>
+          <input type="text" id="cityInput" value="上海" placeholder="e.g. 上海 / 310000">
+        </div>
+
+        <div class="control">
+          <label for="dataSource">Linked Data Type</label>
+          <select id="dataSource">
+            <option value="live.windpower" selected>Live Weather · Wind Power</option>
+            <option value="live.winddirection">Live Weather · Wind Direction · Peeling Patch Texture</option>
+            <option value="live.temperature">Live Weather · Temperature</option>
+            <option value="live.weather">Live Weather · Weather</option>
+            <option value="live.humidity">Live Weather · Humidity</option>
+            <option value="live.reporttime">Live Weather · Report Time · Accent Brick Color</option>
+            <option value="forecast.daypower">Forecast · Day Wind Power</option>
+            <option value="forecast.daywind">Forecast · Day Wind</option>
+            <option value="forecast.daytemp">Forecast · Day Temperature</option>
+            <option value="forecast.nighttemp">Forecast · Night Temperature</option>
+            <option value="location.city">Location · City</option>
+            <option value="location.province">Location · Province</option>
+            <option value="location.adcode">Location · Adcode</option>
+          </select>
+          <div class="pill" id="linkedPill">Linked: Live Weather · Wind Power</div>
+        </div>
+
+        <div class="control">
+          <label for="demoFrames">Demo Refresh Frames</label>
+          <div class="range-row">
+            <input type="range" id="demoFrames" min="15" max="180" step="5" value="45">
+            <span class="range-value" id="demoFramesVal">45</span>
+          </div>
+        </div>
+
+        <div class="api-buttons">
+          <button class="mini-btn" id="locateBtn">Use IP Location</button>
+          <button class="mini-btn" id="fetchWeatherBtn">Fetch Weather</button>
+        </div>
+
+        <div class="status ok" id="apiStatus">Offline demo running.</div>
+
+        <div class="data-list">
+          <div class="data-chip"><span>Connection</span><span id="dataConnection">Offline Demo</span></div>
+          <div class="data-chip"><span>Location</span><span id="dataLocation">Demo Area</span></div>
+          <div class="data-chip"><span>Selected Value</span><span id="selectedValue">≤3</span></div>
+          <div class="data-chip"><span>Arrangement</span><span id="arrangementValue">Aligned Bond</span></div>
+          <div class="data-chip"><span>Updated</span><span id="dataUpdated">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Wall Categories</div>
+
+      <div class="control">
+        <label for="wallFamily">Wall Family</label>
+        <select id="wallFamily">
+          <option value="brick">Brick Surface System</option>
+          <option value="stucco">Relief Plaster Wall</option>
+          <option value="pebble">Pebble Aggregate Wall</option>
+          <option value="mosaic" selected>Black White Mosaic Floor Tile</option>
+        </select>
+      </div>
+
+      <div class="control" id="stuccoModeControl" style="display:none;">
+        <label for="stuccoMode">Stucco Pattern</label>
+        <select id="stuccoMode">
+          <option value="auto" selected>Auto Mix</option>
+          <option value="fine">Fine Dense Web</option>
+          <option value="broad">Large Flake Web</option>
+        </select>
+      </div>
+
+      <div class="fixed-box" id="wallCategoryNote">
+        <div class="fixed-row"><span>Brick Surface System</span><span>All previous brick studies grouped here</span></div>
+        <div class="fixed-row"><span>Type 01</span><span>Relief plaster / fine web wall</span></div>
+        <div class="fixed-row"><span>Type 02</span><span>Pebble aggregate wall</span></div>
+        <div class="fixed-row"><span>Type 03</span><span>Black-white single-line floor tile</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Color</div>
+
+      <div class="control">
+        <label for="palette">Color Preset</label>
+        <select id="palette">
+          <option value="lineMono" selected>Black Line × White Tile</option>
+          <option value="hotBlueOrange">Hot Orange × Bright Blue</option>
+          <option value="lemonPurple">Lemon Yellow × Purple</option>
+          <option value="aquaCoral">Aqua Blue × Coral</option>
+          <option value="neonPinkTeal">Neon Pink × Teal</option>
+          <option value="acidGreenNavy">Acid Green × Electric Blue</option>
+          <option value="magentaYellow">Magenta × Yellow</option>
+          <option value="blackLime">Black × Electric Lime</option>
+          <option value="mintViolet">Mint × Violet</option>
+          <option value="custom">Custom</option>
+        </select>
+
+        <div class="swatches">
+          <div class="swatch" id="swatchBrick"></div>
+          <div class="swatch" id="swatchMortar"></div>
+        </div>
+      </div>
+
+      <div class="control">
+        <label for="brickColor">Tile Fill</label>
+        <input type="color" id="brickColor" value="#FFFFFF">
+      </div>
+
+      <div class="control">
+        <label for="mortarColor">Line Color</label>
+        <input type="color" id="mortarColor" value="#000000">
+      </div>
+
+      <div class="control">
+        <label for="peelColor">Peeling Patch Color</label>
+        <input type="color" id="peelColor" value="#C8C0B4">
+      </div>
+
+      <div class="control">
+        <label for="accentColor">Accent Brick Color</label>
+        <input type="color" id="accentColor" value="#8C8A84">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Canvas</div>
+
+      <div class="control">
+        <label for="canvasWidth">Canvas Width</label>
+        <input type="number" id="canvasWidth" value="1400" min="600" max="3000" step="50">
+      </div>
+
+      <div class="control">
+        <label for="canvasHeight">Canvas Height</label>
+        <input type="number" id="canvasHeight" value="900" min="400" max="2400" step="50">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Fixed Layout</div>
+
+      <div class="fixed-box">
+        <div class="fixed-row"><span>Tile System</span><span>Irregular Mosaic Grid</span></div>
+        <div class="fixed-row"><span>Line Style</span><span>Black-white single line</span></div>
+        <div class="fixed-row"><span>Humidity Mapping</span><span>Tile density</span></div>
+        <div class="fixed-row"><span>Temperature Mapping</span><span>Fine fracture lines</span></div>
+        <div class="fixed-row"><span>Wind Mapping</span><span>Grid drift and offset</span></div>
+        <div class="fixed-row"><span>Weather Mapping</span><span>Tile scale variation</span></div>
+        <div class="fixed-row"><span>Direction Mapping</span><span>Directional bias</span></div>
+        <div class="fixed-row"><span>Time Mapping</span><span>Row rhythm shift</span></div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="primary" id="generateBtn">Generate</button>
+      <button class="secondary" id="shuffleBtn">Shuffle</button>
+      <button class="secondary" id="exportBtn">Export PNG</button>
+    </div>
+  </aside>
+
+  <main class="preview">
+    <div class="canvas-card">
+      <canvas id="canvas" width="1400" height="900"></canvas>
+      <svg id="chairLayer" viewBox="0 0 1200 848" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+    </div>
+  </main>
+
+</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const chairLayer = document.getElementById("chairLayer");
+
+const FIXED = {
+  rows: 10,
+  cols: 6,
+  brickW: 260,
+  brickH: 78,
+  joint: 14,
+  edgeJitter: 1.4,
+  edgeStep: 26,
+  randomness: 1
+};
+
+const TRANSITION = {
+  brickDuration: 150,
+  brickDelay: 14,
+  rowPause: 22,
+  riseDistance: 70,
+  slideX: 18,
+  morphDuration: 240
+};
+
+const HUMIDITY_BUILD_TRANSITION = {
+  brickDuration: 135,
+  brickDelay: 16,
+  rowPause: 28,
+  riseDistance: 80
+};
+
+const CHAIR_VIEW_W = 1200;
+const CHAIR_VIEW_H = 848;
+const CHAIR_SAFE_MARGIN = 64;
+const CHAIR_DRAW_MIN_X = CHAIR_SAFE_MARGIN;
+const CHAIR_DRAW_MAX_X = CHAIR_VIEW_W - CHAIR_SAFE_MARGIN;
+const CHAIR_DRAW_MIN_Y = CHAIR_SAFE_MARGIN;
+const CHAIR_DRAW_MAX_Y = CHAIR_VIEW_H - CHAIR_SAFE_MARGIN;
+const CHAIR_STROKE = 6.2;
+
+const chairModel3D = [
+  [-60, -68, 45], [60, -68, 45],
+  [-60, 42, 45], [60, 42, 45],
+  [-74, 42, -55], [74, 42, -55],
+  [-74, 152, -55], [74, 152, -55],
+  [-60, 152, 45], [60, 152, 45]
+];
+
+const chairEdges = [
+  [0, 1], [1, 3], [3, 2], [2, 0],
+  [2, 4], [4, 5], [5, 3],
+  [4, 6], [5, 7],
+  [2, 8], [3, 9],
+  [6, 8], [7, 9]
+];
+
+const chairWindStates = [
+  { yaw: 0, pitch: 10, lineDir: [0, -1] },
+  { yaw: -45, pitch: 2, lineDir: [1, -0.58] },
+  { yaw: -90, pitch: 0, lineDir: [1, 0] },
+  { yaw: -135, pitch: 0.5, lineDir: [1, 0.58] },
+  { yaw: 180, pitch: 6, lineDir: [0, 1] },
+  { yaw: 135, pitch: 0.5, lineDir: [1, -0.58] },
+  { yaw: 90, pitch: 0, lineDir: [-1, 0] },
+  { yaw: 45, pitch: 2, lineDir: [-1, -0.58] }
+];
+
+const chairTempPresets = [
+  { count: 2, scale: 1.50, fill: 0.74, zoom: 1.05 },
+  { count: 4, scale: 1.24, fill: 0.79, zoom: 1.04 },
+  { count: 5, scale: 1.06, fill: 0.84, zoom: 1.03 },
+  { count: 6, scale: 0.94, fill: 0.88, zoom: 1.02 },
+  { count: 7, scale: 0.84, fill: 0.92, zoom: 1.01 }
+];
+
+const chairForceLevels = [
+  { offsetCount: 0, minOffset: 0, maxOffset: 0 },
+  { offsetCount: 1, minOffset: 54, maxOffset: 96 },
+  { offsetCount: 2, minOffset: 82, maxOffset: 150 },
+  { offsetCount: 2, minOffset: 118, maxOffset: 218 },
+  { offsetCount: 3, minOffset: 150, maxOffset: 276 }
+];
+
+const chairScenes = [
+  { wind: 0, temp: 0, force: 0, mode: "none" },
+  { wind: 2, temp: 1, force: 0, mode: "none" },
+  { wind: 6, temp: 2, force: 0, mode: "none" },
+  { wind: 1, temp: 1, force: 1, mode: "mild" },
+  { wind: 3, temp: 2, force: 1, mode: "mild" },
+  { wind: 5, temp: 0, force: 1, mode: "mild" },
+  { wind: 7, temp: 3, force: 1, mode: "mild" },
+  { wind: 2, temp: 2, force: 2, mode: "mixed" },
+  { wind: 1, temp: 3, force: 2, mode: "mixed" },
+  { wind: 4, temp: 1, force: 2, mode: "mixed" },
+  { wind: 6, temp: 3, force: 2, mode: "mixed" },
+  { wind: 5, temp: 2, force: 2, mode: "mixed" },
+  { wind: 3, temp: 3, force: 3, mode: "heavy" },
+  { wind: 7, temp: 2, force: 3, mode: "heavy" },
+  { wind: 0, temp: 3, force: 3, mode: "heavy" },
+  { wind: 5, temp: 4, force: 3, mode: "heavy" },
+  { wind: 2, temp: 4, force: 3, mode: "heavy" },
+  { wind: 4, temp: 4, force: 4, mode: "allInterior" },
+  { wind: 1, temp: 4, force: 4, mode: "allInterior" },
+  { wind: 6, temp: 4, force: 4, mode: "allInterior" },
+  { wind: 3, temp: 4, force: 4, mode: "allInterior" },
+  { wind: 0, temp: 0, force: 1, mode: "mild" },
+  { wind: 2, temp: 0, force: 2, mode: "mixed" },
+  { wind: 7, temp: 1, force: 1, mode: "mild" },
+  { wind: 4, temp: 0, force: 2, mode: "mixed" }
+];
+
+const CHAIR_TIMING_SCALE = 2;
+const CHAIR_ALIGN_HOLD_FRAMES = Math.round(28 * CHAIR_TIMING_SCALE);
+const CHAIR_PUSH_FRAMES = Math.round(18 * CHAIR_TIMING_SCALE);
+const CHAIR_OFFSET_HOLD_FRAMES = Math.round(24 * CHAIR_TIMING_SCALE);
+const CHAIR_TRANSITION_FRAMES = Math.round(40 * CHAIR_TIMING_SCALE);
+const CHAIR_RELEASE_FRAMES = Math.round(CHAIR_TRANSITION_FRAMES * 0.42);
+const CHAIR_MORPH_FRAMES = CHAIR_TRANSITION_FRAMES - CHAIR_RELEASE_FRAMES;
+const CHAIR_SCENE_FRAMES = CHAIR_ALIGN_HOLD_FRAMES + CHAIR_PUSH_FRAMES + CHAIR_OFFSET_HOLD_FRAMES + CHAIR_TRANSITION_FRAMES;
+let chairFrameCount = 0;
+let chairAnimationId = null;
+let lastChairSceneIndexForTile = -1;
+
+const WIND_SEQUENCE = ["≤3", "4", "4", "5", "6", "4", "4", "≤3"];
+const HUMIDITY_SEQUENCE = [12, 38, 88, 18, 62, 96, 30, 78];
+const TEMPERATURE_SEQUENCE = [4, 10, 16, 23, 30, 36, 40, 18];
+const WEATHER_SEQUENCE = ["晴", "多云", "阴", "小雨", "阴", "晴", "阵雨", "多云"];
+const TIME_SEQUENCE = ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "23:00"];
+const WIND_DIRECTION_SEQUENCE = ["北", "东北", "东", "东南", "南", "西南", "西", "西北"];
+const PEEL_POSITION_SEQUENCE = ["Top", "Top Left", "Left", "Bottom Left", "Bottom", "Bottom Right", "Right", "Top Right", "Center"];
+const HUMIDITY_BASE_ARRANGEMENT = "running";
+const TEMPERATURE_BASE_ARRANGEMENT = "running";
+const WEATHER_BASE_ARRANGEMENT = "running";
+const TIME_BASE_ARRANGEMENT = "running";
+
+const MIXED_SHORT_SCALE = 0.45;
+
+const palettePresets = {
+  lineMono: {
+    brick: "#FFFFFF",
+    mortar: "#000000",
+    peel: "#FFFFFF",
+    accent: "#000000"
+  },
+  hotBlueOrange: {
+    brick: "#FF6A00",
+    mortar: "#0057FF"
+  },
+  lemonPurple: {
+    brick: "#FFD400",
+    mortar: "#6A2CFF"
+  },
+  aquaCoral: {
+    brick: "#FF7A59",
+    mortar: "#00AEEF"
+  },
+  neonPinkTeal: {
+    brick: "#FF4FAE",
+    mortar: "#00C2A8"
+  },
+  acidGreenNavy: {
+    brick: "#B8FF1F",
+    mortar: "#1D2BFF"
+  },
+  magentaYellow: {
+    brick: "#FF2DAA",
+    mortar: "#FFE600"
+  },
+  blackLime: {
+    brick: "#C7FF2E",
+    mortar: "#121212"
+  },
+  mintViolet: {
+    brick: "#00F5D4",
+    mortar: "#7B2CFF"
+  }
+};
+
+const els = {
+  wallFamily: document.getElementById("wallFamily"),
+  stuccoMode: document.getElementById("stuccoMode"),
+  stuccoModeControl: document.getElementById("stuccoModeControl"),
+  palette: document.getElementById("palette"),
+  brickColor: document.getElementById("brickColor"),
+  mortarColor: document.getElementById("mortarColor"),
+  peelColor: document.getElementById("peelColor"),
+  canvasWidth: document.getElementById("canvasWidth"),
+  canvasHeight: document.getElementById("canvasHeight"),
+  swatchBrick: document.getElementById("swatchBrick"),
+  swatchMortar: document.getElementById("swatchMortar"),
+  accentColor: document.getElementById("accentColor"),
+
+  connectionMode: document.getElementById("connectionMode"),
+  autoDemo: document.getElementById("autoDemo"),
+  amapKey: document.getElementById("amapKey"),
+  cityInput: document.getElementById("cityInput"),
+  dataSource: document.getElementById("dataSource"),
+  demoFrames: document.getElementById("demoFrames"),
+  demoFramesVal: document.getElementById("demoFramesVal"),
+
+  locateBtn: document.getElementById("locateBtn"),
+  fetchWeatherBtn: document.getElementById("fetchWeatherBtn"),
+  apiStatus: document.getElementById("apiStatus"),
+  connectionDot: document.getElementById("connectionDot"),
+  connectionLine: document.getElementById("connectionLine"),
+  dataConnection: document.getElementById("dataConnection"),
+  dataLocation: document.getElementById("dataLocation"),
+  selectedValue: document.getElementById("selectedValue"),
+  dataUpdated: document.getElementById("dataUpdated"),
+  linkedPill: document.getElementById("linkedPill"),
+  arrangementValue: document.getElementById("arrangementValue")
+};
+
+let bricks = [];
+let previousBricks = [];
+let targetBricks = [];
+let morphPairs = [];
+
+let animationId = null;
+let transitionStart = 0;
+let isAnimating = false;
+
+let frameCount = 0;
+let windIndex = 0;
+let currentArrangement = "grid";
+let currentWindPower = "≤3";
+let humidityIndex = 0;
+let temperatureIndex = 0;
+let currentHumidity = 52;
+let currentTemperature = 22;
+let weatherIndex = 0;
+let currentWeather = "晴";
+let timeIndex = 0;
+let currentReportTime = TIME_SEQUENCE[0];
+let userIsInteracting = false;
+let pendingRenderTimer = null;
+
+function cancelRunningAnimation() {
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+  isAnimating = false;
+}
+
+function scheduleSafeRender(delay = 80) {
+  if (pendingRenderTimer) clearTimeout(pendingRenderTimer);
+  pendingRenderTimer = setTimeout(() => {
+    pendingRenderTimer = null;
+    startBuildTransition();
+  }, delay);
+}
+let directionIndex = 0;
+let currentWindDirection = "北";
+
+let amapData = {
+  location: null,
+  live: null,
+  forecast: null,
+  lastUpdated: null,
+  selectedSource: "live.windpower",
+  selectedValue: "≤3"
+};
+
+function rand(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function easeOutBack(t) {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+
+function easeInOutCubic(t) {
+  return t < 0.5
+    ? 4 * t * t * t
+    : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function updateSwatches() {
+  els.swatchBrick.style.background = els.brickColor.value;
+  els.swatchMortar.style.background = els.mortarColor.value;
+}
+
+let surfaceSeed = Math.floor(Math.random() * 1000000000);
+let surfaceRefreshCount = 0;
+let tileSceneIndex = 0;
+let canvasPixelRatio = 1;
+let tileTransitionAnimationId = null;
+
+const TILE_TRANSITION_MS = Math.round(720 * CHAIR_TIMING_SCALE);
+// 地砖切换与椅子场景周期对齐：每 CHAIR_SCENE_FRAMES 帧切换一次
+const TILE_REFRESH_MS = Math.round((CHAIR_SCENE_FRAMES / 60) * 1000);
+const tileScenes = [
+  { windPower: "≤3", humidity: 18, temperature: 6,  weather: "晴",   direction: "Top",          time: "05:30" },
+  { windPower: "4",  humidity: 34, temperature: 12, weather: "多云", direction: "Top Right",    time: "08:10" },
+  { windPower: "5",  humidity: 48, temperature: 20, weather: "阴",   direction: "Right",        time: "11:40" },
+  { windPower: "6",  humidity: 72, temperature: 29, weather: "小雨", direction: "Bottom Right", time: "14:20" },
+  { windPower: "4",  humidity: 86, temperature: 34, weather: "阵雨", direction: "Bottom",       time: "17:50" },
+  { windPower: "≤3", humidity: 62, temperature: 26, weather: "阴",   direction: "Bottom Left",  time: "20:15" },
+  { windPower: "5",  humidity: 40, temperature: 18, weather: "多云", direction: "Left",         time: "22:30" },
+  { windPower: "6",  humidity: 24, temperature: 10, weather: "晴",   direction: "Top Left",     time: "02:05" }
+];
+
+function refreshSurfaceSeed() {
+  surfaceSeed = Math.floor(Math.random() * 1000000000);
+  surfaceRefreshCount++;
+}
+
+function applyTileScene(scene) {
+  currentWindPower = scene.windPower;
+  currentHumidity = scene.humidity;
+  currentTemperature = scene.temperature;
+  currentWeather = scene.weather;
+  currentWindDirection = scene.direction;
+  currentReportTime = scene.time;
+  window.__tileSceneState = {
+    index: tileSceneIndex,
+    refreshCount: surfaceRefreshCount,
+    ...scene
+  };
+  document.documentElement.dataset.tileScene = String(tileSceneIndex);
+  document.documentElement.dataset.tileRefresh = String(surfaceRefreshCount);
+  document.documentElement.dataset.tileWeather = scene.weather;
+  document.documentElement.dataset.tileHumidity = String(scene.humidity);
+
+  if (els.selectedValue) els.selectedValue.textContent = scene.weather + " · " + scene.humidity + "%";
+  if (els.arrangementValue) els.arrangementValue.textContent = "Voronoi Tile · Data Scene " + String(tileSceneIndex + 1).padStart(2, "0");
+  if (els.dataUpdated) els.dataUpdated.textContent = new Date().toLocaleTimeString();
+}
+
+function getChairSceneIndex() {
+  return Math.floor(chairFrameCount / CHAIR_SCENE_FRAMES) % chairScenes.length;
+}
+
+function advanceTileScene() {
+  const previousTileBitmap = captureTileCanvas();
+  tileSceneIndex = (tileSceneIndex + 1) % tileScenes.length;
+  refreshSurfaceSeed();
+  applyTileScene(tileScenes[tileSceneIndex]);
+  forceRenderNow();
+  const nextTileBitmap = captureTileCanvas();
+  animateTileTransition(previousTileBitmap, nextTileBitmap);
+}
+
+function makeRNG(seed) {
+  let s = seed % 2147483647;
+  if (s <= 0) s += 2147483646;
+  return function() {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+function randSeeded(rng, min, max) {
+  return rng() * (max - min) + min;
+}
+
+function pickSeeded(rng, arr) {
+  return arr[Math.floor(rng() * arr.length)];
+}
+
+function isBrickFamily() {
+  return els.wallFamily.value === "brick";
+}
+
+function renderSelectedWallFamily() {
+  if (isBrickFamily()) {
+    if (!bricks.length) bricks = buildBrickDataForArrangement(currentArrangement || "running");
+    drawBricks(bricks);
+  } else {
+    drawNonBrickSurface();
+  }
+}
+
+function drawNonBrickSurface() {
+  const s = getSettings();
+  const rng = makeRNG(surfaceSeed);
+  ctx.clearRect(0, 0, s.W, s.H);
+
+  if (els.wallFamily.value === "stucco") {
+    drawStuccoSurface(s, rng);
+  } else if (els.wallFamily.value === "pebble") {
+    drawPebbleSurface(s, rng);
+  } else if (els.wallFamily.value === "mosaic") {
+    drawMosaicSurface(s, rng);
+  }
+}
+
+function lerpPoint(a, b, t) {
+  return {
+    x: a.x + (b.x - a.x) * t,
+    y: a.y + (b.y - a.y) * t
+  };
+}
+
+function moveToward(p, center, amount) {
+  const dx = center.x - p.x;
+  const dy = center.y - p.y;
+  const len = Math.hypot(dx, dy) || 1;
+  return {
+    x: p.x + (dx / len) * amount,
+    y: p.y + (dy / len) * amount
+  };
+}
+
+function jitter2D(rng, amount) {
+  return {
+    x: randSeeded(rng, -amount, amount),
+    y: randSeeded(rng, -amount, amount)
+  };
+}
+
+function addPointJitter(p, j) {
+  return { x: p.x + j.x, y: p.y + j.y };
+}
+
+function drawStuccoCell(ctx, rng, quad, fillColor, grooveColor, groove) {
+  const [p00, p10, p11, p01] = quad;
+  const center = {
+    x: (p00.x + p10.x + p11.x + p01.x) / 4,
+    y: (p00.y + p10.y + p11.y + p01.y) / 4
+  };
+
+  const insetA = groove * randSeeded(rng, 0.7, 1.6);
+  const insetB = groove * randSeeded(rng, 0.7, 1.6);
+  const insetC = groove * randSeeded(rng, 0.7, 1.6);
+  const insetD = groove * randSeeded(rng, 0.7, 1.6);
+
+  const jitter = groove * 0.28;
+
+  const pts = [
+    addPointJitter(moveToward(lerpPoint(p00, p10, randSeeded(rng, 0.18, 0.34)), center, insetA), jitter2D(rng, jitter)),
+    addPointJitter(moveToward(lerpPoint(p00, p10, randSeeded(rng, 0.42, 0.58)), center, groove * randSeeded(rng, 0.45, 1.2)), jitter2D(rng, jitter)),
+    addPointJitter(moveToward(lerpPoint(p00, p10, randSeeded(rng, 0.68, 0.84)), center, insetB), jitter2D(rng, jitter)),
+
+    addPointJitter(moveToward(lerpPoint(p10, p11, randSeeded(rng, 0.18, 0.34)), center, insetB), jitter2D(rng, jitter)),
+    addPointJitter(moveToward(lerpPoint(p10, p11, randSeeded(rng, 0.42, 0.58)), center, groove * randSeeded(rng, 0.45, 1.2)), jitter2D(rng, jitter)),
+    addPointJitter(moveToward(lerpPoint(p10, p11, randSeeded(rng, 0.68, 0.84)), center, insetC), jitter2D(rng, jitter)),
+
+    addPointJitter(moveToward(lerpPoint(p11, p01, randSeeded(rng, 0.18, 0.34)), center, insetC), jitter2D(rng, jitter)),
+    addPointJitter(moveToward(lerpPoint(p11, p01, randSeeded(rng, 0.42, 0.58)), center, groove * randSeeded(rng, 0.45, 1.2)), jitter2D(rng, jitter)),
+    addPointJitter(moveToward(lerpPoint(p11, p01, randSeeded(rng, 0.68, 0.84)), center, insetD), jitter2D(rng, jitter)),
+
+    addPointJitter(moveToward(lerpPoint(p01, p00, randSeeded(rng, 0.18, 0.34)), center, insetD), jitter2D(rng, jitter)),
+    addPointJitter(moveToward(lerpPoint(p01, p00, randSeeded(rng, 0.42, 0.58)), center, groove * randSeeded(rng, 0.45, 1.2)), jitter2D(rng, jitter)),
+    addPointJitter(moveToward(lerpPoint(p01, p00, randSeeded(rng, 0.68, 0.84)), center, insetA), jitter2D(rng, jitter))
+  ];
+
+  ctx.beginPath();
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i];
+    const n = pts[(i + 1) % pts.length];
+    const mx = (p.x + n.x) * 0.5;
+    const my = (p.y + n.y) * 0.5;
+    if (i === 0) ctx.moveTo(mx, my);
+    ctx.quadraticCurveTo(p.x, p.y, mx, my);
+  }
+  ctx.closePath();
+  ctx.fillStyle = fillColor;
+  ctx.fill();
+
+  ctx.lineWidth = Math.max(1, groove * 0.22);
+  ctx.strokeStyle = grooveColor;
+  ctx.stroke();
+}
+
+
+
+function drawStuccoSurface(s, rng) {
+  // Two-color stucco only:
+  // 1) the recessed / flat field uses brickColor
+  // 2) the raised connected web uses mortarColor
+  // No extra overlay is drawn inside the blue/base areas.
+
+  ctx.fillStyle = s.brickColor;
+  ctx.fillRect(0, 0, s.W, s.H);
+
+  const mode = els.stuccoMode ? els.stuccoMode.value : 'auto';
+  const cycle = surfaceRefreshCount % 6;
+
+  let variant;
+  let heroZoom = false;
+
+  if (mode === 'fine') {
+    variant = 'fine';
+    heroZoom = cycle === 2 || cycle === 5;
+  } else if (mode === 'broad') {
+    variant = 'broad';
+    heroZoom = cycle === 1 || cycle === 4;
+  } else {
+    // Auto mode intentionally injects a few stronger close-up frames
+    // so some refreshed frames feel nearer to the large-flake reference.
+    if (cycle === 1 || cycle === 4) {
+      variant = 'broad';
+      heroZoom = true;
+    } else if (cycle === 3) {
+      variant = 'fine';
+      heroZoom = true;
+    } else if (cycle === 2) {
+      variant = 'broad';
+      heroZoom = false;
+    } else {
+      variant = 'fine';
+      heroZoom = false;
+    }
+  }
+
+  const zoom = heroZoom
+    ? (variant === 'fine'
+        ? randSeeded(rng, 1.22, 1.42)
+        : randSeeded(rng, 1.72, 2.08))
+    : (variant === 'fine'
+        ? randSeeded(rng, 0.98, 1.10)
+        : randSeeded(rng, 1.02, 1.22));
+
+  const cell = (variant === 'fine' ? 2.1 : 2.8) * zoom;
+  const gw = Math.ceil(s.W / cell);
+  const gh = Math.ceil(s.H / cell);
+  const total = gw * gh;
+
+  const labels = Array.from({ length: gh }, () => {
+    const row = new Int32Array(gw);
+    row.fill(-1);
+    return row;
+  });
+
+  const seedCount = variant === 'fine'
+    ? Math.max(170, Math.floor(total / 64))
+    : Math.max(80, Math.floor(total / 150));
+
+  const frontier = [];
+  for (let id = 0; id < seedCount; id++) {
+    let sx, sy, guard = 0;
+    do {
+      sx = Math.floor(randSeeded(rng, 0, gw));
+      sy = Math.floor(randSeeded(rng, 0, gh));
+      guard++;
+    } while (labels[sy][sx] !== -1 && guard < 50);
+    labels[sy][sx] = id;
+    frontier.push({ x: sx, y: sy, id });
+  }
+
+  const dirs = [
+    [1, 0], [-1, 0], [0, 1], [0, -1],
+    [1, 1], [-1, 1], [1, -1], [-1, -1]
+  ];
+
+  let current = frontier;
+  let safety = 0;
+  while (current.length && safety < total) {
+    for (let i = current.length - 1; i > 0; i--) {
+      const j = Math.floor(randSeeded(rng, 0, i + 1));
+      const t = current[i];
+      current[i] = current[j];
+      current[j] = t;
+    }
+
+    const next = [];
+    for (let i = 0; i < current.length; i++) {
+      const item = current[i];
+      const start = Math.floor(randSeeded(rng, 0, dirs.length));
+      for (let d = 0; d < dirs.length; d++) {
+        const dir = dirs[(start + d) % dirs.length];
+        const nx = item.x + dir[0];
+        const ny = item.y + dir[1];
+        if (nx < 0 || ny < 0 || nx >= gw || ny >= gh) continue;
+        if (labels[ny][nx] !== -1) continue;
+
+        const orth = Math.abs(dir[0]) + Math.abs(dir[1]) === 1;
+        const chance = variant === 'fine'
+          ? (orth ? 0.972 : 0.33)
+          : (orth ? 0.947 : 0.23);
+
+        if (randSeeded(rng, 0, 1) < chance) {
+          labels[ny][nx] = item.id;
+          next.push({ x: nx, y: ny, id: item.id });
+        }
+      }
+    }
+    current = next;
+    safety++;
+  }
+
+  for (let iter = 0; iter < 7; iter++) {
+    let changed = false;
+    for (let y = 0; y < gh; y++) {
+      for (let x = 0; x < gw; x++) {
+        if (labels[y][x] !== -1) continue;
+        const counts = new Map();
+        for (let yy = y - 1; yy <= y + 1; yy++) {
+          if (yy < 0 || yy >= gh) continue;
+          for (let xx = x - 1; xx <= x + 1; xx++) {
+            if (xx < 0 || xx >= gw || (xx === x && yy === y)) continue;
+            const id = labels[yy][xx];
+            if (id === -1) continue;
+            counts.set(id, (counts.get(id) || 0) + 1);
+          }
+        }
+        let bestId = -1, bestCount = -1;
+        counts.forEach((count, id) => {
+          if (count > bestCount) {
+            bestCount = count;
+            bestId = id;
+          }
+        });
+        if (bestId !== -1) {
+          labels[y][x] = bestId;
+          changed = true;
+        }
+      }
+    }
+    if (!changed) break;
+  }
+
+  for (let iter = 0; iter < 2; iter++) {
+    const nextLabels = Array.from({ length: gh }, () => new Int32Array(gw));
+    for (let y = 0; y < gh; y++) {
+      for (let x = 0; x < gw; x++) {
+        const counts = new Map();
+        for (let yy = y - 1; yy <= y + 1; yy++) {
+          if (yy < 0 || yy >= gh) continue;
+          for (let xx = x - 1; xx <= x + 1; xx++) {
+            if (xx < 0 || xx >= gw) continue;
+            const id = labels[yy][xx];
+            counts.set(id, (counts.get(id) || 0) + 1);
+          }
+        }
+        let bestId = labels[y][x], bestCount = -1;
+        counts.forEach((count, id) => {
+          if (count > bestCount) {
+            bestCount = count;
+            bestId = id;
+          }
+        });
+        nextLabels[y][x] = bestId;
+      }
+    }
+    for (let y = 0; y < gh; y++) labels[y] = nextLabels[y];
+  }
+
+  const seam = Array.from({ length: gh }, () => new Uint8Array(gw));
+  const neighborData = Array.from({ length: gh }, () => Array(gw));
+
+  for (let y = 0; y < gh; y++) {
+    for (let x = 0; x < gw; x++) {
+      const id = labels[y][x];
+      const left = x > 0 && labels[y][x - 1] !== id ? 1 : 0;
+      const right = x < gw - 1 && labels[y][x + 1] !== id ? 1 : 0;
+      const up = y > 0 && labels[y - 1][x] !== id ? 1 : 0;
+      const down = y < gh - 1 && labels[y + 1][x] !== id ? 1 : 0;
+      const ul = x > 0 && y > 0 && labels[y - 1][x - 1] !== id ? 1 : 0;
+      const ur = x < gw - 1 && y > 0 && labels[y - 1][x + 1] !== id ? 1 : 0;
+      const dl = x > 0 && y < gh - 1 && labels[y + 1][x - 1] !== id ? 1 : 0;
+      const dr = x < gw - 1 && y < gh - 1 && labels[y + 1][x + 1] !== id ? 1 : 0;
+      const edge = left || right || up || down || ul || ur || dl || dr;
+      seam[y][x] = edge ? 1 : 0;
+      neighborData[y][x] = { left, right, up, down, ul, ur, dl, dr };
+    }
+  }
+
+  // connect small gaps so the network feels continuous
+  for (let y = 1; y < gh - 1; y++) {
+    for (let x = 1; x < gw - 1; x++) {
+      if (seam[y][x]) continue;
+      const left = seam[y][x - 1], right = seam[y][x + 1];
+      const up = seam[y - 1][x], down = seam[y + 1][x];
+      const ul = seam[y - 1][x - 1], ur = seam[y - 1][x + 1];
+      const dl = seam[y + 1][x - 1], dr = seam[y + 1][x + 1];
+      const near = left + right + up + down + ul + ur + dl + dr;
+      if ((left && right) || (up && down) || (ul && dr) || (ur && dl) || near >= 5) seam[y][x] = 1;
+    }
+  }
+
+  const seamCenters = Array.from({ length: gh }, () => Array(gw).fill(null));
+  const seamWidth = Array.from({ length: gh }, () => new Float32Array(gw));
+
+  for (let y = 0; y < gh; y++) {
+    for (let x = 0; x < gw; x++) {
+      if (!seam[y][x]) continue;
+      const n = neighborData[y][x];
+      const orthCount = n.left + n.right + n.up + n.down;
+      const diagCount = n.ul + n.ur + n.dl + n.dr;
+      const junction = orthCount + diagCount;
+
+      const px = x * cell + cell * 0.5 + randSeeded(rng, -cell * 0.03, cell * 0.03);
+      const py = y * cell + cell * 0.5 + randSeeded(rng, -cell * 0.03, cell * 0.03);
+      seamCenters[y][x] = { x: px, y: py };
+
+      let baseW = variant === 'fine'
+        ? cell * randSeeded(rng, 0.15, 0.21)
+        : cell * randSeeded(rng, 0.18, 0.26);
+
+      if (junction >= 5) baseW *= randSeeded(rng, 1.35, 1.9);
+      else if (junction >= 3) baseW *= randSeeded(rng, 1.08, 1.35);
+      else if (randSeeded(rng, 0, 1) < 0.12) baseW *= randSeeded(rng, 1.15, 1.45);
+
+      seamWidth[y][x] = baseW;
+    }
+  }
+
+  ctx.save();
+  ctx.strokeStyle = s.mortarColor;
+  ctx.fillStyle = s.mortarColor;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  function drawSegment(a, b, width) {
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  }
+
+  for (let y = 0; y < gh; y++) {
+    for (let x = 0; x < gw; x++) {
+      if (!seam[y][x]) continue;
+      const a = seamCenters[y][x];
+      const w0 = seamWidth[y][x];
+
+      const links = [
+        [1, 0], [0, 1], [1, 1], [-1, 1]
+      ];
+
+      for (const [dx, dy] of links) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= gw || ny >= gh) continue;
+        if (!seam[ny][nx]) continue;
+        const b = seamCenters[ny][nx];
+        const w = (w0 + seamWidth[ny][nx]) * 0.5;
+        drawSegment(a, b, w);
+      }
+    }
+  }
+
+  // fill nodes so the seam reads as one flat connected network,
+  // with slight width variation but no extra mesh layered on top.
+  for (let y = 0; y < gh; y++) {
+    for (let x = 0; x < gw; x++) {
+      if (!seam[y][x]) continue;
+      const c = seamCenters[y][x];
+      const r = seamWidth[y][x] * 0.55;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+
+function smoothProfile(profile, passes = 2) {
+  let arr = profile.slice();
+  for (let p = 0; p < passes; p++) {
+    const next = arr.slice();
+    for (let i = 0; i < arr.length; i++) {
+      const a = arr[(i - 1 + arr.length) % arr.length];
+      const b = arr[i];
+      const c = arr[(i + 1) % arr.length];
+      next[i] = a * 0.25 + b * 0.5 + c * 0.25;
+    }
+    arr = next;
+  }
+  return arr;
+}
+
+function createPebbleProfile(rng) {
+  const count = 8 + Math.floor(randSeeded(rng, 0, 5));
+  const profile = [];
+  for (let i = 0; i < count; i++) {
+    profile.push(randSeeded(rng, 0.86, 1.14));
+  }
+  return smoothProfile(profile, 2);
+}
+
+function drawPebbleBlob(ctx, cx, cy, rx, ry, rot, profile, fillColor, seamColor, seamWidth) {
+  const pts = [];
+  const n = profile.length;
+
+  for (let i = 0; i < n; i++) {
+    const a = (Math.PI * 2 * i) / n;
+    const scale = profile[i];
+    const lx = Math.cos(a) * rx * scale;
+    const ly = Math.sin(a) * ry * scale;
+    pts.push({
+      x: cx + lx * Math.cos(rot) - ly * Math.sin(rot),
+      y: cy + lx * Math.sin(rot) + ly * Math.cos(rot)
+    });
+  }
+
+  ctx.beginPath();
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i];
+    const q = pts[(i + 1) % pts.length];
+    const mx = (p.x + q.x) * 0.5;
+    const my = (p.y + q.y) * 0.5;
+    if (i === 0) ctx.moveTo(mx, my);
+    ctx.quadraticCurveTo(p.x, p.y, mx, my);
+  }
+  ctx.closePath();
+  ctx.fillStyle = fillColor;
+  ctx.fill();
+  ctx.lineWidth = seamWidth;
+  ctx.strokeStyle = seamColor;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.stroke();
+}
+
+function drawPebbleSurface(s, rng) {
+  ctx.fillStyle = s.mortarColor;
+  ctx.fillRect(0, 0, s.W, s.H);
+
+  const pebbles = [];
+  const voids = [];
+  const margin = 8;
+
+  function canPlace(cx, cy, rr, gap) {
+    if (cx - rr < margin || cy - rr < margin || cx + rr > s.W - margin || cy + rr > s.H - margin) {
+      return false;
+    }
+
+    for (const v of voids) {
+      const d = Math.hypot(cx - v.cx, cy - v.cy);
+      if (d < rr + v.rr + gap) return false;
+    }
+
+    for (const p of pebbles) {
+      const d = Math.hypot(cx - p.cx, cy - p.cy);
+      if (d < rr + p.rr + gap) return false;
+    }
+
+    return true;
+  }
+
+  function placeVoids(count, rMin, rMax, gap, attemptsFactor) {
+    let placed = 0;
+    let attempts = 0;
+    const maxAttempts = count * attemptsFactor;
+
+    while (placed < count && attempts < maxAttempts) {
+      attempts++;
+      const rr = randSeeded(rng, rMin, rMax);
+      const cx = randSeeded(rng, margin + rr, s.W - margin - rr);
+      const cy = randSeeded(rng, margin + rr, s.H - margin - rr);
+
+      let ok = true;
+      for (const v of voids) {
+        const d = Math.hypot(cx - v.cx, cy - v.cy);
+        if (d < rr + v.rr + gap) { ok = false; break; }
+      }
+      if (!ok) continue;
+
+      voids.push({ cx, cy, rr: rr * randSeeded(rng, 0.95, 1.15) });
+      placed++;
+    }
+  }
+
+  // Reserve some open mortar pits first, so the texture reads closer to the references.
+  placeVoids(3, 10, 18, 3.0, 70);
+  placeVoids(6, 6, 11, 2.2, 80);
+
+  const groups = [
+    { count: 72, rMin: 10.5, rMax: 21, gap: 1.1, aspectMin: 0.68, aspectMax: 1.25 },
+    { count: 155, rMin: 6.8, rMax: 14.5, gap: 0.88, aspectMin: 0.72, aspectMax: 1.32 },
+    { count: 250, rMin: 4.6, rMax: 9.0, gap: 0.64, aspectMin: 0.75, aspectMax: 1.35 },
+    { count: 220, rMin: 3.0, rMax: 6.0, gap: 0.52, aspectMin: 0.78, aspectMax: 1.4 },
+    { count: 190, rMin: 2.1, rMax: 4.2, gap: 0.38, aspectMin: 0.82, aspectMax: 1.45 }
+  ];
+
+  for (const group of groups) {
+    let placed = 0;
+    let attempts = 0;
+    const maxAttempts = group.count * 180;
+
+    while (placed < group.count && attempts < maxAttempts) {
+      attempts++;
+      const rr = randSeeded(rng, group.rMin, group.rMax);
+      const aspect = randSeeded(rng, group.aspectMin, group.aspectMax);
+      const rx = rr * aspect;
+      const ry = rr / aspect;
+      const effective = Math.max(rx, ry);
+      const cx = randSeeded(rng, margin + effective, s.W - margin - effective);
+      const cy = randSeeded(rng, margin + effective, s.H - margin - effective);
+
+      if (!canPlace(cx, cy, effective, group.gap)) continue;
+
+      pebbles.push({
+        cx,
+        cy,
+        rx,
+        ry,
+        rr: effective,
+        rot: randSeeded(rng, -Math.PI, Math.PI),
+        profile: createPebbleProfile(rng)
+      });
+      placed++;
+    }
+  }
+
+  // A few elongated accent stones help the field feel less samey, but still flat and graphic.
+  let longAttempts = 0;
+  while (longAttempts < 260) {
+    longAttempts++;
+    const rr = randSeeded(rng, 10, 18);
+    const aspect = randSeeded(rng, 1.32, 1.9);
+    const rx = rr * aspect;
+    const ry = rr / aspect;
+    const effective = Math.max(rx, ry);
+    const cx = randSeeded(rng, margin + effective, s.W - margin - effective);
+    const cy = randSeeded(rng, margin + effective, s.H - margin - effective);
+    if (!canPlace(cx, cy, effective, 0.9)) continue;
+    pebbles.push({
+      cx,
+      cy,
+      rx,
+      ry,
+      rr: effective,
+      rot: randSeeded(rng, -Math.PI, Math.PI),
+      profile: createPebbleProfile(rng)
+    });
+    if (pebbles.length > 620) break;
+  }
+
+  pebbles.sort((a, b) => b.rr - a.rr);
+
+  for (const pebble of pebbles) {
+    const seamWidth = clamp(pebble.rr * 0.082, 0.78, 2.3);
+    drawPebbleBlob(
+      ctx,
+      pebble.cx,
+      pebble.cy,
+      pebble.rx,
+      pebble.ry,
+      pebble.rot,
+      pebble.profile,
+      s.brickColor,
+      s.mortarColor,
+      seamWidth
+    );
+  }
+}
+
+function getMosaicDataProfile() {
+  const wind = parseWindPower(currentWindPower);
+  const humidity = clamp(parseFloat(currentHumidity) || 0, 0, 100) / 100;
+  const temperature = clamp(parseFloat(currentTemperature) || 0, 0, 40) / 40;
+  const hour = parseReportHour(currentReportTime);
+  const weather = String(currentWeather || "");
+  const direction = normalizePeelingPosition(currentWindDirection);
+
+  const weatherDensity = weather.includes("雨")
+    ? 1.18
+    : weather.includes("阴")
+      ? 1.08
+      : weather.includes("云")
+        ? 1.0
+        : 0.92;
+
+  return {
+    spacing: Math.round(clamp(78 - humidity * 22 - weatherDensity * 8, 38, 72)),
+    jitter: clamp(0.18 + wind * 0.045 + temperature * 0.22, 0.18, 0.76),
+    lineWidth: 0.75,
+    fracture: clamp(0.05 + temperature * 0.28 + wind * 0.012, 0.05, 0.42),
+    calmness: clamp(1 - humidity * 0.35, 0.62, 1),
+    neighborRadius: wind >= 5 ? 3 : 2,
+    direction,
+    hour
+  };
+}
+
+function directionVector(position) {
+  const map = {
+    "top": { x: 0, y: -1 },
+    "bottom": { x: 0, y: 1 },
+    "left": { x: -1, y: 0 },
+    "right": { x: 1, y: 0 },
+    "top-left": { x: -0.7, y: -0.7 },
+    "top-right": { x: 0.7, y: -0.7 },
+    "bottom-left": { x: -0.7, y: 0.7 },
+    "bottom-right": { x: 0.7, y: 0.7 },
+    "center": { x: 0, y: 0 }
+  };
+  return map[position] || map.center;
+}
+
+function drawLineBetween(a, b) {
+  ctx.beginPath();
+  ctx.moveTo(a.x, a.y);
+  ctx.lineTo(b.x, b.y);
+  ctx.stroke();
+}
+
+function captureTileCanvas() {
+  const copy = document.createElement("canvas");
+  copy.width = canvas.width;
+  copy.height = canvas.height;
+  copy.getContext("2d").drawImage(canvas, 0, 0);
+  return copy;
+}
+
+function drawTileTransitionFrame(previousTile, nextTile, progress) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const eased = easeInOutCubic(progress);
+  const revealW = Math.ceil(w * eased);
+
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  ctx.drawImage(previousTile, 0, 0);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, revealW, h);
+  ctx.clip();
+  ctx.drawImage(nextTile, 0, 0);
+  ctx.restore();
+
+  if (revealW > 0 && revealW < w) {
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(revealW, 0, Math.max(1, Math.round(canvasPixelRatio)), h);
+  }
+  ctx.restore();
+  ctx.setTransform(canvasPixelRatio, 0, 0, canvasPixelRatio, 0, 0);
+}
+
+function animateTileTransition(previousTile, nextTile) {
+  if (!previousTile || !nextTile) return;
+  if (tileTransitionAnimationId) {
+    cancelAnimationFrame(tileTransitionAnimationId);
+    tileTransitionAnimationId = null;
+  }
+
+  const start = performance.now();
+  function step(now) {
+    const progress = clamp((now - start) / TILE_TRANSITION_MS, 0, 1);
+    drawTileTransitionFrame(previousTile, nextTile, progress);
+    document.documentElement.dataset.tileTransition = progress.toFixed(3);
+    if (progress < 1) {
+      tileTransitionAnimationId = requestAnimationFrame(step);
+    } else {
+      tileTransitionAnimationId = null;
+      ctx.setTransform(canvasPixelRatio, 0, 0, canvasPixelRatio, 0, 0);
+      document.documentElement.dataset.tileTransition = "1.000";
+    }
+  }
+
+  tileTransitionAnimationId = requestAnimationFrame(step);
+}
+
+function getChairTempScale(scene) {
+  const temp = chairTempPresets[scene.temp] || chairTempPresets[0];
+  return temp.scale * temp.zoom;
+}
+
+function getChairScaleForTileArea() {
+  const data = chairGetSceneData();
+  const sceneA = chairScenes[data.sceneIndex] || chairScenes[0];
+  const sceneB = chairScenes[(data.sceneIndex + 1) % chairScenes.length] || chairScenes[0];
+  const scaleA = getChairTempScale(sceneA);
+  if (data.phase === "transition" && data.transT > 0) {
+    return lerp(scaleA, getChairTempScale(sceneB), data.transT);
+  }
+  return scaleA;
+}
+
+function getTileDisplayArea(s) {
+  const minChairScale = Math.min(...chairTempPresets.map(p => p.scale * p.zoom));
+  const maxChairScale = Math.max(...chairTempPresets.map(p => p.scale * p.zoom));
+  const chairScale = getChairScaleForTileArea();
+  const normalized = (chairScale - minChairScale) / (maxChairScale - minChairScale || 1);
+  const areaScale = lerp(0.58, 0.88, normalized) * 0.75;
+  const aspect = s.W / Math.max(1, s.H);
+
+  let w = s.W * areaScale;
+  let h = w / aspect;
+  if (h > s.H * areaScale) {
+    h = s.H * areaScale;
+    w = h * aspect;
+  }
+
+  const area = {
+    x: (s.W - w) * 0.5,
+    y: (s.H - h) * 0.5,
+    w,
+    h,
+    chairScale,
+    areaScale
+  };
+  document.documentElement.dataset.chairScale = chairScale.toFixed(3);
+  document.documentElement.dataset.tileAreaScale = areaScale.toFixed(3);
+  return area;
+}
+
+function drawMosaicSurface(s, rng) {
+  const profile = getMosaicDataProfile();
+  const tileArea = getTileDisplayArea(s);
+  const spacing = profile.spacing;
+  const margin = spacing * 2.2;
+  const cols = Math.ceil((tileArea.w + margin * 2) / spacing);
+  const rows = Math.ceil((tileArea.h + margin * 2) / spacing);
+  const dir = directionVector(profile.direction);
+  const phaseX = Math.round(dir.x * spacing * 0.35 + Math.sin(profile.hour / 24 * Math.PI * 2) * spacing * 0.25);
+  const phaseY = Math.round(dir.y * spacing * 0.35);
+  const originX = tileArea.x - margin + phaseX;
+  const originY = tileArea.y - margin + phaseY;
+
+  ctx.fillStyle = s.brickColor;
+  ctx.fillRect(0, 0, s.W, s.H);
+
+  const sites = [];
+  const grid = Array.from({ length: rows }, () => Array(cols));
+
+  for (let gy = 0; gy < rows; gy++) {
+    for (let gx = 0; gx < cols; gx++) {
+      const drift = Math.sin((gy * 0.7 + profile.hour / 24) * Math.PI * 2) * spacing * 0.08;
+      const fracturePulse = randSeeded(rng, 0, 1) < profile.fracture
+        ? randSeeded(rng, -spacing * 0.24, spacing * 0.24)
+        : 0;
+      const site = {
+        x: originX + gx * spacing + spacing * 0.5 + drift + fracturePulse + randSeeded(rng, -spacing * profile.jitter, spacing * profile.jitter) * profile.calmness,
+        y: originY + gy * spacing + spacing * 0.5 - fracturePulse * 0.35 + randSeeded(rng, -spacing * profile.jitter, spacing * profile.jitter) * profile.calmness,
+        gx,
+        gy
+      };
+      sites.push(site);
+      grid[gy][gx] = site;
+    }
+  }
+
+  function clipPolygonToSite(poly, site, other) {
+    if (!poly.length) return poly;
+    const mx = (site.x + other.x) * 0.5;
+    const my = (site.y + other.y) * 0.5;
+    const nx = other.x - site.x;
+    const ny = other.y - site.y;
+    const input = poly;
+    const output = [];
+
+    function inside(p) {
+      return (p.x - mx) * nx + (p.y - my) * ny <= 0.0001;
+    }
+
+    function intersect(a, b) {
+      const da = (a.x - mx) * nx + (a.y - my) * ny;
+      const db = (b.x - mx) * nx + (b.y - my) * ny;
+      const t = da / (da - db || 1);
+      return {
+        x: a.x + (b.x - a.x) * t,
+        y: a.y + (b.y - a.y) * t
+      };
+    }
+
+    for (let i = 0; i < input.length; i++) {
+      const current = input[i];
+      const previous = input[(i + input.length - 1) % input.length];
+      const currentInside = inside(current);
+      const previousInside = inside(previous);
+
+      if (currentInside) {
+        if (!previousInside) output.push(intersect(previous, current));
+        output.push(current);
+      } else if (previousInside) {
+        output.push(intersect(previous, current));
+      }
+    }
+
+    return output;
+  }
+
+  function drawPolygon(poly) {
+    if (poly.length < 3) return;
+    ctx.beginPath();
+    ctx.moveTo(poly[0].x, poly[0].y);
+    for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i].x, poly[i].y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  ctx.save();
+  ctx.fillStyle = s.brickColor;
+  ctx.strokeStyle = s.mortarColor;
+  ctx.lineWidth = profile.lineWidth;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+
+  const bounds = [
+    { x: tileArea.x, y: tileArea.y },
+    { x: tileArea.x + tileArea.w, y: tileArea.y },
+    { x: tileArea.x + tileArea.w, y: tileArea.y + tileArea.h },
+    { x: tileArea.x, y: tileArea.y + tileArea.h }
+  ];
+
+  for (const site of sites) {
+    if (
+      site.x < tileArea.x - margin || site.y < tileArea.y - margin ||
+      site.x > tileArea.x + tileArea.w + margin || site.y > tileArea.y + tileArea.h + margin
+    ) continue;
+
+    let poly = bounds.map(p => ({ ...p }));
+    for (let yy = Math.max(0, site.gy - profile.neighborRadius); yy <= Math.min(rows - 1, site.gy + profile.neighborRadius); yy++) {
+      for (let xx = Math.max(0, site.gx - profile.neighborRadius); xx <= Math.min(cols - 1, site.gx + profile.neighborRadius); xx++) {
+        const other = grid[yy][xx];
+        if (!other || other === site) continue;
+        poly = clipPolygonToSite(poly, site, other);
+        if (poly.length < 3) break;
+      }
+      if (poly.length < 3) break;
+    }
+    drawPolygon(poly);
+  }
+
+  ctx.restore();
+}
+
+function chairDegToRad(deg) {
+  return deg * Math.PI / 180;
+}
+
+function chairNormalize(vx, vy) {
+  const len = Math.hypot(vx, vy) || 1;
+  return [vx / len, vy / len];
+}
+
+function chairShortestAngleDelta(from, to) {
+  return ((to - from + 540) % 360) - 180;
+}
+
+function chairMulberry32(a) {
+  return function() {
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function chairProjectLocalPoint(p, yawDeg, pitchDeg) {
+  const [x, y, z] = p;
+  const yaw = chairDegToRad(yawDeg);
+  const pitch = chairDegToRad(pitchDeg);
+  const xr = x * Math.cos(yaw) - z * Math.sin(yaw);
+  const zr = x * Math.sin(yaw) + z * Math.cos(yaw);
+  const depthShiftY = -zr * Math.sin(pitch);
+  const backAngleDist = Math.abs((((yawDeg - 180) + 540) % 360) - 180);
+  const backBlend = Math.max(0, 1 - backAngleDist / 70);
+  const backPerspective = 1 / (1 + zr * 0.0045);
+  const perspectiveScale = 1 * (1 - backBlend) + backPerspective * backBlend;
+  return [xr * perspectiveScale, y + depthShiftY, zr];
+}
+
+function chairGetMetrics(yaw, pitch, scale, lineDir) {
+  const pts = chairModel3D.map(p => chairProjectLocalPoint(p, yaw, pitch));
+  const dx = lineDir[0], dy = lineDir[1];
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  let minU = Infinity, maxU = -Infinity;
+  pts.forEach(pt => {
+    const x = pt[0] * scale;
+    const y = pt[1] * scale;
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
+    const u = x * dx + y * dy;
+    minU = Math.min(minU, u);
+    maxU = Math.max(maxU, u);
+  });
+  return { minX, maxX, minY, maxY, spanAlongLine: maxU - minU };
+}
+
+function chairCreateLine(x1, y1, x2, y2, opacity) {
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("x1", x1);
+  line.setAttribute("y1", y1);
+  line.setAttribute("x2", x2);
+  line.setAttribute("y2", y2);
+  line.setAttribute("stroke", "#000000");
+  line.setAttribute("stroke-width", CHAIR_STROKE);
+  line.setAttribute("stroke-linecap", "round");
+  line.setAttribute("opacity", opacity);
+  return line;
+}
+
+function chairCreateFilledPolygon(points, opacity) {
+  const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+  polygon.setAttribute("points", points.map(p => `${p[0]},${p[1]}`).join(" "));
+  polygon.setAttribute("fill", "#000000");
+  polygon.setAttribute("stroke", "none");
+  polygon.setAttribute("opacity", opacity);
+  return polygon;
+}
+
+function chairDraw(group, cx, cy, yaw, pitch, scale, opacity) {
+  const projected = chairModel3D.map(p => chairProjectLocalPoint(p, yaw, pitch));
+  const toScreen = idx => [
+    cx + projected[idx][0] * scale,
+    cy + projected[idx][1] * scale
+  ];
+  group.appendChild(chairCreateFilledPolygon([toScreen(0), toScreen(1), toScreen(3), toScreen(2)], opacity));
+  group.appendChild(chairCreateFilledPolygon([toScreen(2), toScreen(3), toScreen(5), toScreen(4)], opacity));
+  chairEdges.forEach(edge => {
+    const a = projected[edge[0]];
+    const b = projected[edge[1]];
+    const avgDepth = (a[2] + b[2]) / 2;
+    const lineOpacity = (avgDepth > 20 ? 0.92 : 1) * opacity;
+    group.appendChild(chairCreateLine(
+      cx + a[0] * scale,
+      cy + a[1] * scale,
+      cx + b[0] * scale,
+      cy + b[1] * scale,
+      lineOpacity
+    ));
+  });
+}
+
+function chairConstrainCenter(cx, cy, yaw, pitch, scale) {
+  const metrics = chairGetMetrics(yaw, pitch, scale, [1, 0]);
+  const strokePad = CHAIR_STROKE * 0.75 + 8;
+  return {
+    x: clamp(cx, CHAIR_SAFE_MARGIN + strokePad - metrics.minX, CHAIR_VIEW_W - CHAIR_SAFE_MARGIN - strokePad - metrics.maxX),
+    y: clamp(cy, CHAIR_SAFE_MARGIN + strokePad - metrics.minY, CHAIR_VIEW_H - CHAIR_SAFE_MARGIN - strokePad - metrics.maxY)
+  };
+}
+
+function chairMaxExtent(cx, cy, dx, dy, minX, maxX, minY, maxY) {
+  let t = Infinity;
+  if (dx > 0) t = Math.min(t, (maxX - cx) / dx);
+  if (dx < 0) t = Math.min(t, (minX - cx) / dx);
+  if (dy > 0) t = Math.min(t, (maxY - cy) / dy);
+  if (dy < 0) t = Math.min(t, (minY - cy) / dy);
+  return Math.max(0, t);
+}
+
+function chairGetLineCenters(count, yaw, pitch, scale, zoom, lineDir, fill) {
+  const [dx, dy] = chairNormalize(lineDir[0], lineDir[1]);
+  let finalScale = scale * zoom;
+  const gap = 76;
+
+  for (let iter = 0; iter < 10; iter++) {
+    const metrics = chairGetMetrics(yaw, pitch, finalScale, [dx, dy]);
+    const minCenterX = CHAIR_DRAW_MIN_X - metrics.minX;
+    const maxCenterX = CHAIR_DRAW_MAX_X - metrics.maxX;
+    const minCenterY = CHAIR_DRAW_MIN_Y - metrics.minY;
+    const maxCenterY = CHAIR_DRAW_MAX_Y - metrics.maxY;
+    const centerX = (minCenterX + maxCenterX) / 2;
+    const centerY = (minCenterY + maxCenterY) / 2;
+    const posExtent = chairMaxExtent(centerX, centerY, dx, dy, minCenterX, maxCenterX, minCenterY, maxCenterY);
+    const negExtent = chairMaxExtent(centerX, centerY, -dx, -dy, minCenterX, maxCenterX, minCenterY, maxCenterY);
+    const maxHalfSpan = Math.min(posExtent, negExtent);
+    if (count <= 1) break;
+    const maxPossibleStep = (maxHalfSpan * 2) / (count - 1);
+    const neededStep = metrics.spanAlongLine + gap;
+    if (maxPossibleStep < neededStep) finalScale *= Math.max(0.76, (maxPossibleStep / neededStep) * 0.98);
+    else break;
+  }
+
+  const metrics = chairGetMetrics(yaw, pitch, finalScale, [dx, dy]);
+  const minCenterX = CHAIR_DRAW_MIN_X - metrics.minX;
+  const maxCenterX = CHAIR_DRAW_MAX_X - metrics.maxX;
+  const minCenterY = CHAIR_DRAW_MIN_Y - metrics.minY;
+  const maxCenterY = CHAIR_DRAW_MAX_Y - metrics.maxY;
+  const centerX = (minCenterX + maxCenterX) / 2;
+  const centerY = (minCenterY + maxCenterY) / 2;
+  const posExtent = chairMaxExtent(centerX, centerY, dx, dy, minCenterX, maxCenterX, minCenterY, maxCenterY);
+  const negExtent = chairMaxExtent(centerX, centerY, -dx, -dy, minCenterX, maxCenterX, minCenterY, maxCenterY);
+  const maxHalfSpan = Math.min(posExtent, negExtent);
+  const centers = [];
+
+  if (count <= 1) {
+    centers.push({ x: centerX, y: centerY });
+    return { centers, finalScale };
+  }
+
+  const minStep = metrics.spanAlongLine + gap;
+  const maxStep = (maxHalfSpan * 2) / (count - 1);
+  const step = Math.min(maxStep, Math.max(minStep, maxStep * fill));
+  const halfSpan = step * (count - 1) / 2;
+  for (let i = 0; i < count; i++) {
+    const t = -halfSpan + (i / (count - 1)) * halfSpan * 2;
+    centers.push({ x: centerX + dx * t, y: centerY + dy * t });
+  }
+  return { centers, finalScale };
+}
+
+function chairGetOffsetTargets(sceneIndex, count, forcePreset, mode) {
+  const offsets = new Array(count).fill(0);
+  if (count <= 2 || forcePreset.offsetCount <= 0 || mode === "none") return offsets;
+
+  const interiorCandidates = Array.from({ length: Math.max(0, count - 2) }, (_, i) => i + 1);
+  if (!interiorCandidates.length) return offsets;
+
+  const rng = chairMulberry32(202600 + sceneIndex * 97 + count * 13 + forcePreset.offsetCount * 11);
+
+  let targetCount = forcePreset.offsetCount;
+  if (mode === "mild") {
+    targetCount = Math.min(forcePreset.offsetCount, interiorCandidates.length);
+  } else if (mode === "mixed") {
+    targetCount = Math.min(forcePreset.offsetCount + 1, interiorCandidates.length);
+  } else if (mode === "heavy") {
+    targetCount = Math.min(forcePreset.offsetCount + 1, interiorCandidates.length);
+  } else if (mode === "allInterior") {
+    targetCount = interiorCandidates.length;
+  }
+
+  targetCount = Math.max(0, Math.min(targetCount, interiorCandidates.length));
+  if (targetCount <= 0) return offsets;
+
+  const chosen = [];
+  if (targetCount >= interiorCandidates.length) {
+    chosen.push(...interiorCandidates);
+  } else {
+    for (let k = 0; k < targetCount; k++) {
+      const pos = Math.round(k * (interiorCandidates.length - 1) / Math.max(1, targetCount - 1));
+      const idx = interiorCandidates[pos];
+      if (!chosen.includes(idx)) chosen.push(idx);
+    }
+    for (const idx of interiorCandidates) {
+      if (chosen.length >= targetCount) break;
+      if (!chosen.includes(idx)) chosen.push(idx);
+    }
+  }
+  chosen.sort((a, b) => a - b);
+
+  const startSign = rng() < 0.5 ? -1 : 1;
+  chosen.forEach((idx, k) => {
+    const sign = startSign * (k % 2 === 0 ? 1 : -1);
+    const near = lerp(forcePreset.minOffset, forcePreset.minOffset * 1.25, rng());
+    const far = lerp(forcePreset.maxOffset * 0.78, forcePreset.maxOffset, rng());
+    let dist = k % 2 === 0 ? far : near;
+    if (mode === "heavy" || mode === "allInterior") dist *= lerp(1.02, 1.14, rng());
+    offsets[idx] = sign * dist;
+  });
+
+  return offsets;
+}
+
+function chairGetSceneData() {
+  const sceneIndex = Math.floor(chairFrameCount / CHAIR_SCENE_FRAMES) % chairScenes.length;
+  const sceneFrame = chairFrameCount % CHAIR_SCENE_FRAMES;
+  const sceneA = chairScenes[sceneIndex];
+  const sceneB = chairScenes[(sceneIndex + 1) % chairScenes.length];
+  const windA = chairWindStates[sceneA.wind];
+  const windB = chairWindStates[sceneB.wind];
+
+  let phase = "align";
+  let pushProgress = 0;
+  let releaseProgress = 0;
+  let transT = 0;
+  const transFrame = sceneFrame - CHAIR_ALIGN_HOLD_FRAMES - CHAIR_PUSH_FRAMES - CHAIR_OFFSET_HOLD_FRAMES;
+
+  if (sceneFrame < CHAIR_ALIGN_HOLD_FRAMES) {
+    phase = "align";
+  } else if (sceneFrame < CHAIR_ALIGN_HOLD_FRAMES + CHAIR_PUSH_FRAMES) {
+    phase = "push";
+    pushProgress = clamp(easeOutBack((sceneFrame - CHAIR_ALIGN_HOLD_FRAMES) / CHAIR_PUSH_FRAMES), 0, 1);
+  } else if (sceneFrame < CHAIR_ALIGN_HOLD_FRAMES + CHAIR_PUSH_FRAMES + CHAIR_OFFSET_HOLD_FRAMES) {
+    phase = "offsetHold";
+    pushProgress = 1;
+  } else if (transFrame < CHAIR_RELEASE_FRAMES) {
+    phase = "release";
+    releaseProgress = 1 - easeOutCubic(transFrame / CHAIR_RELEASE_FRAMES);
+  } else {
+    phase = "transition";
+    transT = easeInOutCubic((transFrame - CHAIR_RELEASE_FRAMES) / CHAIR_MORPH_FRAMES);
+  }
+
+  const yawDelta = chairShortestAngleDelta(windA.yaw, windB.yaw);
+  const transLineDX = lerp(windA.lineDir[0], windB.lineDir[0], transT);
+  const transLineDY = lerp(windA.lineDir[1], windB.lineDir[1], transT);
+  return {
+    sceneIndex,
+    phase,
+    transT,
+    pushProgress,
+    releaseProgress,
+    current: {
+      temp: chairTempPresets[sceneA.temp],
+      force: chairForceLevels[sceneA.force],
+      mode: sceneA.mode,
+      pose: { yaw: windA.yaw, pitch: windA.pitch, lineDir: chairNormalize(windA.lineDir[0], windA.lineDir[1]) }
+    },
+    next: {
+      temp: chairTempPresets[sceneB.temp],
+      force: chairForceLevels[sceneB.force],
+      mode: sceneB.mode,
+      pose: {
+        yaw: windA.yaw + yawDelta * transT,
+        pitch: lerp(windA.pitch, windB.pitch, transT),
+        lineDir: chairNormalize(transLineDX, transLineDY)
+      }
+    }
+  };
+}
+
+function chairVisualTempPreset(tempPreset, pose) {
+  const verticalAmount = Math.abs(pose.lineDir[1]);
+  if (verticalAmount < 0.92) return tempPreset;
+
+  const cappedCount = Math.min(tempPreset.count, 4);
+  if (cappedCount === tempPreset.count) return tempPreset;
+
+  return {
+    ...tempPreset,
+    count: cappedCount,
+    fill: Math.min(tempPreset.fill, 0.76)
+  };
+}
+
+function chairLerpAngle(from, to, t) {
+  return from + chairShortestAngleDelta(from, to) * t;
+}
+
+function chairCollectStates(sceneIndex, tempPreset, forcePreset, mode, pose, offsetProgress, zoomBias) {
+  const visualTemp = chairVisualTempPreset(tempPreset, pose);
+  const line = chairGetLineCenters(
+    visualTemp.count,
+    pose.yaw,
+    pose.pitch,
+    visualTemp.scale,
+    visualTemp.zoom * zoomBias,
+    pose.lineDir,
+    visualTemp.fill
+  );
+  const baseOffsets = chairGetOffsetTargets(sceneIndex, visualTemp.count, forcePreset, mode);
+  const [dx, dy] = chairNormalize(pose.lineDir[0], pose.lineDir[1]);
+  const nx = -dy;
+  const ny = dx;
+  const count = line.centers.length;
+
+  return line.centers.map((center, i) => {
+    const pushed = baseOffsets[i] * offsetProgress;
+    const safe = chairConstrainCenter(
+      center.x + nx * pushed,
+      center.y + ny * pushed,
+      pose.yaw,
+      pose.pitch,
+      line.finalScale
+    );
+    return {
+      u: count <= 1 ? 0.5 : i / (count - 1),
+      x: safe.x,
+      y: safe.y,
+      yaw: pose.yaw,
+      pitch: pose.pitch,
+      scale: line.finalScale
+    };
+  });
+}
+
+function chairInterpolateStates(fromStates, toStates, t) {
+  const eased = easeInOutCubic(t);
+  const result = [];
+  const usedFrom = new Set();
+
+  toStates.forEach(target => {
+    let bestIdx = -1;
+    let bestDist = Infinity;
+    fromStates.forEach((from, idx) => {
+      const d = Math.abs(from.u - target.u);
+      if (d < bestDist) {
+        bestDist = d;
+        bestIdx = idx;
+      }
+    });
+
+    if (bestIdx >= 0) usedFrom.add(bestIdx);
+    const from = bestIdx >= 0 ? fromStates[bestIdx] : null;
+
+    result.push({
+      x: lerp(from ? from.x : target.x, target.x, eased),
+      y: lerp(from ? from.y : target.y, target.y, eased),
+      yaw: chairLerpAngle(from ? from.yaw : target.yaw, target.yaw, eased),
+      pitch: lerp(from ? from.pitch : target.pitch, target.pitch, eased),
+      scale: lerp(from ? from.scale : 0, target.scale, eased)
+    });
+  });
+
+  fromStates.forEach((from, idx) => {
+    if (usedFrom.has(idx)) return;
+
+    let nearest = toStates[0];
+    let bestDist = Infinity;
+    toStates.forEach(target => {
+      const d = Math.abs(target.u - from.u);
+      if (d < bestDist) {
+        bestDist = d;
+        nearest = target;
+      }
+    });
+
+    result.push({
+      x: lerp(from.x, nearest.x, eased),
+      y: lerp(from.y, nearest.y, eased),
+      yaw: chairLerpAngle(from.yaw, nearest.yaw, eased),
+      pitch: lerp(from.pitch, nearest.pitch, eased),
+      scale: lerp(from.scale, 0, eased)
+    });
+  });
+
+  return result;
+}
+
+function chairDrawStates(states, opacity) {
+  if (!chairLayer || opacity <= 0) return;
+
+  states.forEach(state => {
+    if (state.scale < 0.05) return;
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    chairLayer.appendChild(g);
+    chairDraw(g, state.x, state.y, state.yaw, state.pitch, state.scale, opacity);
+  });
+}
+
+function chairDrawLinePreset(sceneIndex, tempPreset, forcePreset, mode, pose, opacity, offsetProgress, zoomBias) {
+  if (!chairLayer || opacity <= 0) return;
+  chairDrawStates(
+    chairCollectStates(sceneIndex, tempPreset, forcePreset, mode, pose, offsetProgress, zoomBias),
+    opacity
+  );
+}
+
+function chairDrawScene() {
+  if (!chairLayer) return;
+  chairLayer.innerHTML = "";
+  const data = chairGetSceneData();
+  document.documentElement.dataset.chairScene = String(data.sceneIndex);
+  document.documentElement.dataset.chairFrame = String(chairFrameCount % CHAIR_SCENE_FRAMES);
+
+  if (data.phase === "align") {
+    chairDrawLinePreset(data.sceneIndex, data.current.temp, data.current.force, data.current.mode, data.current.pose, 1, 0, 1);
+    return;
+  }
+
+  if (data.phase === "push" || data.phase === "offsetHold") {
+    chairDrawLinePreset(data.sceneIndex, data.current.temp, data.current.force, data.current.mode, data.current.pose, 1, data.pushProgress, 1);
+    return;
+  }
+
+  if (data.phase === "release") {
+    chairDrawLinePreset(data.sceneIndex, data.current.temp, data.current.force, data.current.mode, data.current.pose, 1, data.releaseProgress, 1);
+    return;
+  }
+
+  const gettingDenser = data.next.temp.count > data.current.temp.count;
+  const zoomB = gettingDenser
+    ? lerp(1.06, 1.00, data.transT)
+    : lerp(0.94, 1.00, data.transT);
+
+  const statesA = chairCollectStates(
+    data.sceneIndex,
+    data.current.temp,
+    data.current.force,
+    data.current.mode,
+    data.current.pose,
+    0,
+    1
+  );
+  const statesB = chairCollectStates(
+    data.sceneIndex + 1,
+    data.next.temp,
+    data.next.force,
+    data.next.mode,
+    data.next.pose,
+    0,
+    zoomB
+  );
+
+  chairDrawStates(chairInterpolateStates(statesA, statesB, data.transT), 1);
+}
+
+function startChairAnimation() {
+  if (chairAnimationId) return;
+  lastChairSceneIndexForTile = getChairSceneIndex();
+
+  function tick() {
+    chairFrameCount++;
+    const chairSceneIndex = getChairSceneIndex();
+
+    if (chairSceneIndex !== lastChairSceneIndexForTile) {
+      lastChairSceneIndexForTile = chairSceneIndex;
+      advanceTileScene();
+    }
+
+    chairDrawScene();
+    chairAnimationId = requestAnimationFrame(tick);
+  }
+
+  chairDrawScene();
+  chairAnimationId = requestAnimationFrame(tick);
+}
+
+function forceRenderNow() {
+  cancelRunningAnimation();
+  userIsInteracting = false;
+
+  if (isBrickFamily()) {
+    const mapping = getActiveMapping();
+
+    if (mapping === "wind") {
+      currentArrangement = getArrangementFromWindPower(currentWindPower);
+    } else if (mapping === "humidity") {
+      currentArrangement = HUMIDITY_BASE_ARRANGEMENT;
+    } else if (mapping === "temperature") {
+      currentArrangement = TEMPERATURE_BASE_ARRANGEMENT;
+    } else if (mapping === "weather") {
+      currentArrangement = WEATHER_BASE_ARRANGEMENT;
+    } else {
+      currentArrangement = "running";
+    }
+
+    bricks = buildBrickDataForArrangement(currentArrangement);
+    drawBricks(bricks);
+  } else {
+    refreshSurfaceSeed();
+    drawNonBrickSurface();
+  }
+}
+
+function setCurrentValueFromSelectedData() {
+  const selected = els.dataSource.value;
+
+  if (selected === "live.windpower") {
+    currentWindPower = els.connectionMode.value === "offline"
+      ? WIND_SEQUENCE[windIndex]
+      : (getNestedData("live.windpower") || currentWindPower || "≤3");
+    els.selectedValue.textContent = String(currentWindPower);
+    els.arrangementValue.textContent = getArrangementLabel(getArrangementFromWindPower(currentWindPower));
+  } else if (selected === "live.humidity") {
+    currentHumidity = clamp(parseFloat(els.connectionMode.value === "offline"
+      ? HUMIDITY_SEQUENCE[humidityIndex]
+      : (getNestedData("live.humidity") || currentHumidity)) || 0, 0, 100);
+    els.selectedValue.textContent = Math.round(currentHumidity) + "%";
+    els.arrangementValue.textContent = "Humidity Dot Texture";
+  } else if (selected === "live.temperature") {
+    currentTemperature = clamp(parseFloat(els.connectionMode.value === "offline"
+      ? TEMPERATURE_SEQUENCE[temperatureIndex]
+      : (getNestedData("live.temperature") || currentTemperature)) || 0, 0, 40);
+    els.selectedValue.textContent = Math.round(currentTemperature) + "°C";
+    els.arrangementValue.textContent = "Temperature Strong Rough Texture";
+  } else if (selected === "live.weather") {
+    currentWeather = String(els.connectionMode.value === "offline"
+      ? WEATHER_SEQUENCE[weatherIndex]
+      : (getNestedData("live.weather") || currentWeather || "晴"));
+    els.selectedValue.textContent = currentWeather;
+    els.arrangementValue.textContent = "Weather Aggregate Grain Texture";
+  } else if (selected === "live.winddirection") {
+    currentWindDirection = String(els.connectionMode.value === "offline"
+      ? PEEL_POSITION_SEQUENCE[directionIndex]
+      : (getNestedData("live.winddirection") || currentWindDirection || "Top"));
+    els.selectedValue.textContent = currentWindDirection;
+    els.arrangementValue.textContent = "Running Bond + Peeling Patch Area";
+  } else if (selected === "live.reporttime") {
+    currentReportTime = String(els.connectionMode.value === "offline"
+      ? TIME_SEQUENCE[timeIndex]
+      : (getNestedData("live.reporttime") || currentReportTime || "12:00"));
+    els.selectedValue.textContent = currentReportTime;
+    els.arrangementValue.textContent = "Running Bond + Accent Brick Color";
+  }
+
+  if (!isBrickFamily()) {
+    if (els.wallFamily.value === "mosaic") {
+      els.arrangementValue.textContent = "Data-driven Black White Mosaic Floor";
+    } else if (els.wallFamily.value === "stucco") {
+      els.arrangementValue.textContent = "Relief Plaster Surface";
+    } else if (els.wallFamily.value === "pebble") {
+      els.arrangementValue.textContent = "Pebble Aggregate Surface";
+    }
+  }
+
+  els.dataUpdated.textContent = new Date().toLocaleTimeString();
+}
+
+function updateWallFamilyUI() {
+  const fam = els.wallFamily.value;
+  if (els.stuccoModeControl) {
+    els.stuccoModeControl.style.display = fam === "stucco" ? "block" : "none";
+  }
+
+  const peelControl = els.peelColor ? els.peelColor.closest(".control") : null;
+  const accentControl = els.accentColor ? els.accentColor.closest(".control") : null;
+
+  // Two-color surfaces only show the two active color controls.
+  if (fam === "stucco" || fam === "pebble" || fam === "mosaic") {
+    if (peelControl) peelControl.style.display = "none";
+    if (accentControl) accentControl.style.display = "none";
+  } else {
+    if (peelControl) peelControl.style.display = "block";
+    if (accentControl) accentControl.style.display = "block";
+  }
+
+  if (fam === "brick") {
+    els.arrangementValue.textContent = getArrangementLabel(currentArrangement || "running");
+    setStatus("Brick surface system selected.", "ok");
+  } else if (fam === "stucco") {
+    const mode = els.stuccoMode ? els.stuccoMode.value : "auto";
+    const label = mode === "fine"
+      ? "Relief Plaster · Fine Dense Web"
+      : mode === "broad"
+        ? "Relief Plaster · Large Flake Web"
+        : "Relief Plaster · Auto Mix";
+    els.arrangementValue.textContent = label;
+    setStatus("Relief plaster wall selected. Two-color mode only: base field + raised web.", "ok");
+  } else if (fam === "pebble") {
+    els.arrangementValue.textContent = "Pebble Aggregate Generator";
+    setStatus("Pebble aggregate wall selected. Two-color mode only.", "ok");
+  } else if (fam === "mosaic") {
+    els.arrangementValue.textContent = "Black White Mosaic Floor";
+    setStatus("Black-white mosaic floor selected. Fake data drives density, offset, cracks, and line rhythm.", "ok");
+  }
+}
+
+function getActiveMapping() {
+  if (!els || !els.dataSource) return "wind";
+  if (els.dataSource.value === "live.humidity") return "humidity";
+  if (els.dataSource.value === "live.temperature") return "temperature";
+  if (els.dataSource.value === "live.weather") return "weather";
+  if (els.dataSource.value === "live.winddirection") return "peeling";
+  if (els.dataSource.value === "live.reporttime") return "time";
+  if (els.dataSource.value === "live.windpower") return "wind";
+  return "none";
+}
+
+function createDotPattern(w, h, humidity) {
+  const value = clamp(parseFloat(humidity) || 0, 0, 100);
+  const normalized = value / 100;
+  const areaFactor = Math.max(1, (w * h) / 6200);
+
+  // Humidity texture rule:
+  // low humidity = sparse, small, light dots;
+  // high humidity = denser field of small/medium dots.
+  // Large dots exist, but they stay limited, separated, and edge-biased.
+  const totalCount = Math.floor(areaFactor * (2.2 + normalized * 11.8));
+  const largeCount = Math.max(0, Math.round(areaFactor * (normalized > 0.55 ? 0.12 + normalized * 0.32 : normalized * 0.08)));
+  const minDist = 5.2 + normalized * 3.6;
+  const largeMinDist = 34 + normalized * 16;
+  const dots = [];
+
+  function edgeBiasedPoint() {
+    const edgeBand = 0.20 + normalized * 0.08;
+    const side = Math.floor(rand(0, 4));
+
+    if (side === 0) return { rx: rand(0.055, 0.945), ry: rand(0.075, edgeBand) };
+    if (side === 1) return { rx: rand(0.055, 0.945), ry: rand(1 - edgeBand, 0.925) };
+    if (side === 2) return { rx: rand(0.055, edgeBand), ry: rand(0.095, 0.905) };
+    return { rx: rand(1 - edgeBand, 0.945), ry: rand(0.095, 0.905) };
+  }
+
+  function randomInnerPoint() {
+    return {
+      rx: rand(0.075, 0.925),
+      ry: rand(0.115, 0.885)
+    };
+  }
+
+  function canPlace(candidate, radius, requiredDist) {
+    const px = candidate.rx * w;
+    const py = candidate.ry * h;
+
+    for (const existing of dots) {
+      const ex = existing.rx * w;
+      const ey = existing.ry * h;
+      const d = Math.hypot(px - ex, py - ey);
+      if (d < requiredDist + existing.r + radius * 0.35) return false;
+    }
+
+    return true;
+  }
+
+  // Large dots are few and better spread, with a bias toward edges.
+  let attempts = 0;
+  while (dots.filter(d => d.kind === "large").length < largeCount && attempts < largeCount * 120 + 120) {
+    attempts++;
+    const p = edgeBiasedPoint();
+    const radius = rand(4.2 + normalized * 0.6, 6.0 + normalized * 1.1);
+
+    if (!canPlace(p, radius, largeMinDist)) continue;
+
+    dots.push({
+      rx: p.rx,
+      ry: p.ry,
+      r: radius,
+      a: rand(0.22 + normalized * 0.14, 0.42 + normalized * 0.18),
+      kind: "large"
+    });
+  }
+
+  // Fill the remaining texture with more small and medium dots.
+  attempts = 0;
+  const maxAttempts = totalCount * 52 + 140;
+
+  while (dots.length < totalCount && attempts < maxAttempts) {
+    attempts++;
+
+    const p = Math.random() < 0.30 + normalized * 0.20
+      ? edgeBiasedPoint()
+      : randomInnerPoint();
+
+    const mediumChance = 0.34 + normalized * 0.34;
+    const radius = Math.random() < mediumChance
+      ? rand(1.65, 2.9 + normalized * 0.9)
+      : rand(0.7, 1.55 + normalized * 0.35);
+
+    if (!canPlace(p, radius, minDist)) continue;
+
+    dots.push({
+      rx: p.rx,
+      ry: p.ry,
+      r: radius,
+      a: rand(0.10 + normalized * 0.12, 0.26 + normalized * 0.28),
+      kind: "small"
+    });
+  }
+
+  return dots;
+}
+function drawDotTexture(brick, x, y, w, h, alpha = 1) {
+  const dots = brick.dots || [];
+  if (!dots.length) return;
+
+  ctx.clip();
+  ctx.fillStyle = els.mortarColor.value;
+
+  for (const dot of dots) {
+    ctx.globalAlpha = dot.a * alpha;
+    ctx.beginPath();
+    ctx.arc(
+      x + dot.rx * w,
+      y + dot.ry * h,
+      dot.r,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+  }
+
+  ctx.globalAlpha = alpha;
+}
+
+function createRoughPattern(w, h, temperature) {
+  const value = clamp(parseFloat(temperature) || 0, 0, 40);
+  const normalized = value / 40;
+  const areaFactor = Math.max(1, (w * h) / 5200);
+
+  // Stronger temperature contrast:
+  // low temperature = relatively clean and sparse;
+  // high temperature = much denser, darker, rougher, and more obviously gritty.
+  const fineCount = Math.min(320, Math.floor(areaFactor * (26 + normalized * 90)));
+  const mediumCount = Math.min(90, Math.floor(areaFactor * (4 + normalized * 28)));
+  const marks = [];
+
+  const zones = [];
+  const zoneCount = 3 + Math.floor(normalized * 5);
+  for (let i = 0; i < zoneCount; i++) {
+    zones.push({
+      rx: rand(0.10, 0.90),
+      ry: rand(0.14, 0.86),
+      sx: rand(0.10, 0.24 + normalized * 0.05),
+      sy: rand(0.09, 0.18 + normalized * 0.05)
+    });
+  }
+
+  function roughPoint() {
+    if (Math.random() < 0.58 + normalized * 0.20) {
+      const z = zones[Math.floor(rand(0, zones.length))];
+      return {
+        rx: clamp(z.rx + rand(-z.sx, z.sx), 0.055, 0.945),
+        ry: clamp(z.ry + rand(-z.sy, z.sy), 0.095, 0.905)
+      };
+    }
+    return {
+      rx: rand(0.055, 0.945),
+      ry: rand(0.095, 0.905)
+    };
+  }
+
+  // Fine grains: tiny flat capsules, main roughness layer.
+  for (let i = 0; i < fineCount; i++) {
+    const p = roughPoint();
+    marks.push({
+      type: "fine",
+      rx: p.rx,
+      ry: p.ry,
+      sx: rand(1.4, 3.4 + normalized * 2.8),
+      sy: rand(0.55, 1.00 + normalized * 0.55),
+      rot: rand(-0.22, 0.22),
+      wobble: [
+        rand(0.82, 1.16),
+        rand(0.82, 1.16),
+        rand(0.82, 1.16),
+        rand(0.82, 1.16),
+        rand(0.82, 1.16),
+        rand(0.82, 1.16)
+      ],
+      alpha: rand(0.06 + normalized * 0.03, 0.13 + normalized * 0.20)
+    });
+  }
+
+  // Medium grains: fewer at low temp, more visible at high temp.
+  for (let i = 0; i < mediumCount; i++) {
+    const p = roughPoint();
+    marks.push({
+      type: "medium",
+      rx: p.rx,
+      ry: p.ry,
+      sx: rand(2.8, 5.2 + normalized * 5.0),
+      sy: rand(0.8, 1.5 + normalized * 0.95),
+      rot: rand(-0.20, 0.20),
+      wobble: [
+        rand(0.76, 1.22),
+        rand(0.76, 1.22),
+        rand(0.76, 1.22),
+        rand(0.76, 1.22),
+        rand(0.76, 1.22),
+        rand(0.76, 1.22),
+        rand(0.76, 1.22)
+      ],
+      alpha: rand(0.08 + normalized * 0.04, 0.16 + normalized * 0.22)
+    });
+  }
+
+  return marks;
+}
+
+function drawIrregularCapsule(cx, cy, sx, sy, rot, profile) {
+  const n = profile.length;
+  const pts = [];
+
+  for (let i = 0; i < n; i++) {
+    const ang = (Math.PI * 2 * i) / n;
+    const scale = profile[i];
+    const lx = Math.cos(ang) * sx * scale;
+    const ly = Math.sin(ang) * sy * scale;
+    pts.push({
+      x: cx + lx * Math.cos(rot) - ly * Math.sin(rot),
+      y: cy + lx * Math.sin(rot) + ly * Math.cos(rot)
+    });
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 0; i < n; i++) {
+    const p = pts[i];
+    const q = pts[(i + 1) % n];
+    ctx.quadraticCurveTo(p.x, p.y, (p.x + q.x) * 0.5, (p.y + q.y) * 0.5);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawRoughTexture(brick, x, y, w, h, alpha = 1) {
+  const marks = brick.roughMarks || [];
+  if (!marks.length) return;
+
+  ctx.clip();
+  ctx.fillStyle = els.mortarColor.value;
+
+  for (const mark of marks) {
+    ctx.globalAlpha = mark.alpha * alpha;
+    drawIrregularCapsule(
+      x + mark.rx * w,
+      y + mark.ry * h,
+      mark.sx,
+      mark.sy,
+      mark.rot,
+      mark.wobble
+    );
+  }
+
+  ctx.globalAlpha = alpha;
+}
+
+
+function hexToRgb(hex) {
+  if (!hex || typeof hex !== "string") return null;
+  const clean = hex.replace("#", "").trim();
+  if (clean.length !== 6) return null;
+  return {
+    r: parseInt(clean.slice(0, 2), 16),
+    g: parseInt(clean.slice(2, 4), 16),
+    b: parseInt(clean.slice(4, 6), 16)
+  };
+}
+
+function rgbToCss(rgb, alpha = 1) {
+  return `rgba(${clamp(Math.round(rgb.r), 0, 255)}, ${clamp(Math.round(rgb.g), 0, 255)}, ${clamp(Math.round(rgb.b), 0, 255)}, ${alpha})`;
+}
+
+function shiftRgb(rgb, delta) {
+  return {
+    r: clamp(rgb.r + delta, 0, 255),
+    g: clamp(rgb.g + delta, 0, 255),
+    b: clamp(rgb.b + delta, 0, 255)
+  };
+}
+
+function getWeatherAggregatePreset(weather) {
+  const str = String(weather || "").trim();
+
+  // Denser and more obvious aggregate texture:
+  // less exposed background, stronger pebble presence.
+  if (str.includes("雨")) {
+    return { density: 115, fillerDensity: 35, minS: 3.0, maxS: 7.2, gap: 0.85, fillerGap: 0.5, palette: [-26, -12, 10], alpha: [0.90, 1.0] };
+  }
+  if (str.includes("阴")) {
+    return { density: 100, fillerDensity: 30, minS: 3.0, maxS: 7.0, gap: 0.9, fillerGap: 0.55, palette: [-22, -10, 12], alpha: [0.88, 1.0] };
+  }
+  if (str.includes("云")) {
+    return { density: 88, fillerDensity: 25, minS: 3.2, maxS: 6.8, gap: 0.95, fillerGap: 0.6, palette: [-18, -8, 14], alpha: [0.86, 0.98] };
+  }
+  return { density: 76, fillerDensity: 20, minS: 3.4, maxS: 6.6, gap: 1.0, fillerGap: 0.65, palette: [-16, -6, 16], alpha: [0.84, 0.96] };
+}
+
+function createAggregatePattern(w, h, weather) {
+  const preset = getWeatherAggregatePreset(weather);
+  const areaFactor = Math.max(1, (w * h) / 6200);
+  const targetCount = Math.min(220, Math.floor(areaFactor * preset.density));
+  const fillerCount = Math.min(90, Math.floor(areaFactor * preset.fillerDensity));
+  const cells = [];
+
+  function canPlace(rx, ry, sx, sy, extraGap) {
+    const cx = rx * w;
+    const cy = ry * h;
+    const rr = Math.max(sx, sy) * 0.92;
+
+    for (const cell of cells) {
+      const ex = cell.rx * w;
+      const ey = cell.ry * h;
+      const er = Math.max(cell.sx, cell.sy) * 0.92;
+      const d = Math.hypot(cx - ex, cy - ey);
+      if (d < rr + er + extraGap) return false;
+    }
+    return true;
+  }
+
+  function randomProfile() {
+    const profile = [];
+    const n = 6 + Math.floor(rand(0, 3));
+    for (let i = 0; i < n; i++) profile.push(rand(0.82, 1.16));
+    return profile;
+  }
+
+  let attempts = 0;
+  const maxAttempts = targetCount * 60;
+
+  while (cells.length < targetCount && attempts < maxAttempts) {
+    attempts++;
+    const sx = rand(preset.minS, preset.maxS);
+    const sy = sx * rand(0.72, 1.18);
+    const rx = rand(0.035, 0.965);
+    const ry = rand(0.07, 0.93);
+
+    if (!canPlace(rx, ry, sx, sy, preset.gap)) continue;
+
+    cells.push({
+      rx,
+      ry,
+      sx,
+      sy,
+      rot: rand(-Math.PI, Math.PI),
+      profile: randomProfile(),
+      tone: preset.palette[Math.floor(rand(0, preset.palette.length))],
+      alpha: rand(preset.alpha[0], preset.alpha[1])
+    });
+  }
+
+  // A second pass of tiny filler grains helps reduce the visible mortar background.
+  attempts = 0;
+  const fillerMaxAttempts = fillerCount * 80;
+  let fillerPlaced = 0;
+
+  while (fillerPlaced < fillerCount && attempts < fillerMaxAttempts) {
+    attempts++;
+    const sx = rand(1.0, preset.minS * 0.82);
+    const sy = sx * rand(0.70, 1.16);
+    const rx = rand(0.03, 0.97);
+    const ry = rand(0.06, 0.94);
+
+    if (!canPlace(rx, ry, sx, sy, preset.fillerGap)) continue;
+
+    cells.push({
+      rx,
+      ry,
+      sx,
+      sy,
+      rot: rand(-Math.PI, Math.PI),
+      profile: randomProfile(),
+      tone: preset.palette[Math.floor(rand(0, preset.palette.length))],
+      alpha: rand(Math.max(0.82, preset.alpha[0] - 0.02), preset.alpha[1])
+    });
+    fillerPlaced++;
+  }
+
+  return cells;
+}
+
+function drawAggregateCell(cx, cy, sx, sy, rot, profile) {
+  const pts = [];
+  const n = profile.length;
+  for (let i = 0; i < n; i++) {
+    const ang = (Math.PI * 2 * i) / n;
+    const r = profile[i];
+    const lx = Math.cos(ang) * sx * r;
+    const ly = Math.sin(ang) * sy * r;
+    pts.push({
+      x: cx + lx * Math.cos(rot) - ly * Math.sin(rot),
+      y: cy + lx * Math.sin(rot) + ly * Math.cos(rot)
+    });
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 0; i < n; i++) {
+    const p = pts[i];
+    const q = pts[(i + 1) % n];
+    ctx.quadraticCurveTo(p.x, p.y, (p.x + q.x) * 0.5, (p.y + q.y) * 0.5);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawAggregateTexture(brick, x, y, w, h, alpha = 1) {
+  const cells = brick.aggregateCells || [];
+  if (!cells.length) return;
+
+  ctx.clip();
+  const baseRgb = hexToRgb(brick.color) || { r: 220, g: 120, b: 90 };
+
+  for (const cell of cells) {
+    ctx.globalAlpha = cell.alpha * alpha;
+    ctx.fillStyle = rgbToCss(shiftRgb(baseRgb, cell.tone));
+    drawAggregateCell(
+      x + cell.rx * w,
+      y + cell.ry * h,
+      cell.sx,
+      cell.sy,
+      cell.rot,
+      cell.profile
+    );
+  }
+
+  ctx.globalAlpha = alpha;
+}
+
+
+function getPeelingDirectionBias(direction) {
+  const d = String(direction || "").trim();
+  const map = {
+    "北": { x: 0.50, y: 0.22, sx: 0.30, sy: 0.16 },
+    "东北": { x: 0.76, y: 0.24, sx: 0.22, sy: 0.16 },
+    "东": { x: 0.78, y: 0.50, sx: 0.18, sy: 0.26 },
+    "东南": { x: 0.76, y: 0.76, sx: 0.22, sy: 0.18 },
+    "南": { x: 0.50, y: 0.78, sx: 0.30, sy: 0.16 },
+    "西南": { x: 0.24, y: 0.76, sx: 0.22, sy: 0.18 },
+    "西": { x: 0.22, y: 0.50, sx: 0.18, sy: 0.26 },
+    "西北": { x: 0.24, y: 0.24, sx: 0.22, sy: 0.16 }
+  };
+  return map[d] || { x: 0.50, y: 0.50, sx: 0.26, sy: 0.22 };
+}
+
+function normalizePeelingPosition(value) {
+  const d = String(value || "").trim().toLowerCase();
+  if (d === "center" || d === "centre" || d === "middle") return "center";
+  if (d.includes("东北") || d.includes("top right") || d.includes("upper right")) return "top-right";
+  if (d.includes("西北") || d.includes("top left") || d.includes("upper left")) return "top-left";
+  if (d.includes("东南") || d.includes("bottom right") || d.includes("lower right")) return "bottom-right";
+  if (d.includes("西南") || d.includes("bottom left") || d.includes("lower left")) return "bottom-left";
+  if (d == "北" || d == "north" || d == "top") return "top";
+  if (d == "南" || d == "south" || d == "bottom") return "bottom";
+  if (d == "东" || d == "east" || d == "right") return "right";
+  if (d == "西" || d == "west" || d == "left") return "left";
+  return "center";
+}
+
+function getPeelingAreaLevel(position) {
+  const map = {
+    "top": 0.22,
+    "top-right": 0.28,
+    "right": 0.34,
+    "bottom-right": 0.46,
+    "bottom": 0.56,
+    "bottom-left": 0.42,
+    "left": 0.32,
+    "top-left": 0.26,
+    "center": 0.38
+  };
+  return map[position] || 0.34;
+}
+
+function createPeelingPattern(w, h, positionValue) {
+  const position = normalizePeelingPosition(positionValue);
+  const cell = Math.max(12, Math.round(Math.min(w, h) / 6.8));
+  const cols = Math.max(5, Math.floor((w + cell * 0.35) / cell));
+  const rows = Math.max(4, Math.floor((h + cell * 0.30) / cell));
+  const totalCells = cols * rows;
+
+  // Smaller overall peeling area, but stronger per-brick variation.
+  const baseLevel = getPeelingAreaLevel(position);
+  const areaLevel = clamp(baseLevel * rand(0.28, 1.02), 0.08, 0.42);
+  const target = Math.max(3, Math.min(totalCells - 1, Math.round(totalCells * areaLevel)));
+  const shapeMode = ["sheet", "compact", "spread", "ragged"][Math.floor(rand(0, 4))];
+
+  const key = (x, y) => `${x},${y}`;
+  const occupied = new Set();
+  const cells = [];
+
+  function addCell(x, y) {
+    x = Math.round(x);
+    y = Math.round(y);
+    if (x < 0 || y < 0 || x >= cols || y >= rows) return false;
+    const k = key(x, y);
+    if (occupied.has(k)) return false;
+    occupied.add(k);
+    cells.push({ x, y });
+    return true;
+  }
+
+  function removeCell(x, y) {
+    const k = key(x, y);
+    if (!occupied.has(k)) return false;
+    occupied.delete(k);
+    const idx = cells.findIndex(c => c.x === x && c.y === y);
+    if (idx >= 0) cells.splice(idx, 1);
+    return true;
+  }
+
+  function hasCell(x, y) {
+    return occupied.has(key(x, y));
+  }
+
+  function addSpanRow(y, left, right) {
+    const a = Math.max(0, Math.min(left, right));
+    const b = Math.min(cols - 1, Math.max(left, right));
+    for (let x = a; x <= b; x++) addCell(x, y);
+  }
+
+  function addSpanCol(x, top, bottom) {
+    const a = Math.max(0, Math.min(top, bottom));
+    const b = Math.min(rows - 1, Math.max(top, bottom));
+    for (let y = a; y <= b; y++) addCell(x, y);
+  }
+
+  function isConnectedWithout(rx, ry) {
+    const remaining = cells.filter(c => !(c.x === rx && c.y === ry));
+    if (remaining.length <= 1) return true;
+    const visited = new Set();
+    const queue = [remaining[0]];
+    visited.add(key(remaining[0].x, remaining[0].y));
+    while (queue.length) {
+      const c = queue.shift();
+      const ns = [
+        { x: c.x + 1, y: c.y }, { x: c.x - 1, y: c.y },
+        { x: c.x, y: c.y + 1 }, { x: c.x, y: c.y - 1 }
+      ];
+      for (const n of ns) {
+        const k = key(n.x, n.y);
+        if (n.x === rx && n.y === ry) continue;
+        if (!hasCell(n.x, n.y) || visited.has(k)) continue;
+        visited.add(k);
+        queue.push(n);
+      }
+    }
+    return visited.size === remaining.length;
+  }
+
+  function fillPinholes() {
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          if (hasCell(x, y)) continue;
+          let n = 0;
+          if (hasCell(x + 1, y)) n++;
+          if (hasCell(x - 1, y)) n++;
+          if (hasCell(x, y + 1)) n++;
+          if (hasCell(x, y - 1)) n++;
+          if (n >= 3 && addCell(x, y)) changed = true;
+        }
+      }
+    }
+  }
+
+  function solidifyInterior() {
+    // Fill only enclosed row/column gaps so the patch interior stays solid.
+    for (let y = 0; y < rows; y++) {
+      const xs = cells.filter(c => c.y === y).map(c => c.x).sort((a, b) => a - b);
+      if (xs.length >= 2) {
+        for (let x = xs[0]; x <= xs[xs.length - 1]; x++) addCell(x, y);
+      }
+    }
+    for (let x = 0; x < cols; x++) {
+      const ys = cells.filter(c => c.x === x).map(c => c.y).sort((a, b) => a - b);
+      if (ys.length >= 2) {
+        for (let y = ys[0]; y <= ys[ys.length - 1]; y++) addCell(x, y);
+      }
+    }
+    fillPinholes();
+  }
+
+  function edgeJitter(passes = 2) {
+    for (let pass = 0; pass < passes; pass++) {
+      const rowMap = new Map();
+      const colMap = new Map();
+      for (const c of cells) {
+        if (!rowMap.has(c.y)) rowMap.set(c.y, []);
+        rowMap.get(c.y).push(c.x);
+        if (!colMap.has(c.x)) colMap.set(c.x, []);
+        colMap.get(c.x).push(c.y);
+      }
+
+      for (const [y, xs] of rowMap.entries()) {
+        xs.sort((a, b) => a - b);
+        const left = xs[0], right = xs[xs.length - 1];
+        const len = right - left + 1;
+        if (Math.random() < 0.40) addCell(left - 1, y);
+        if (Math.random() < 0.40) addCell(right + 1, y);
+        if (len > 2 && Math.random() < 0.24 && isConnectedWithout(left, y)) removeCell(left, y);
+        if (len > 2 && Math.random() < 0.24 && isConnectedWithout(right, y)) removeCell(right, y);
+        if (len > 3 && Math.random() < 0.28) {
+          const ex = Math.random() < 0.5 ? left : right;
+          addCell(ex + (ex === left ? -1 : 1), y + (Math.random() < 0.5 ? -1 : 1));
+        }
+      }
+
+      for (const [x, ys] of colMap.entries()) {
+        ys.sort((a, b) => a - b);
+        const top = ys[0], bottom = ys[ys.length - 1];
+        const len = bottom - top + 1;
+        if (Math.random() < 0.32) addCell(x, top - 1);
+        if (Math.random() < 0.32) addCell(x, bottom + 1);
+        if (len > 2 && Math.random() < 0.18 && isConnectedWithout(x, top)) removeCell(x, top);
+        if (len > 2 && Math.random() < 0.18 && isConnectedWithout(x, bottom)) removeCell(x, bottom);
+      }
+    }
+    solidifyInterior();
+  }
+
+  function buildHorizontal(fromTop = true) {
+    const bandRows = Math.max(2, Math.min(rows, Math.round(rand(1.6, rows * rand(0.28, 0.72)))));
+    let width = Math.max(2, Math.min(cols, Math.round(cols * rand(0.22, 0.78))));
+    let left = Math.round(rand(0, Math.max(0, cols - width)));
+    for (let i = 0; i < bandRows; i++) {
+      const y = fromTop ? i : rows - bandRows + i;
+      if (i > 0) {
+        left += Math.round(rand(-1.8, 1.8));
+        width += Math.round(rand(-2.0, 2.0));
+        if (shapeMode === 'compact') width += Math.round(rand(-1.5, 0.8));
+        if (shapeMode === 'spread') width += Math.round(rand(-0.8, 1.8));
+      }
+      width = Math.max(2, Math.min(cols, width));
+      left = Math.max(0, Math.min(cols - width, left));
+      const right = left + width - 1;
+      let l = left, r = right;
+      if (Math.random() < 0.30 && r - l > 2) l += 1;
+      if (Math.random() < 0.30 && r - l > 2) r -= 1;
+      addSpanRow(y, l, r);
+      if (Math.random() < 0.25) addCell(l - 1, y);
+      if (Math.random() < 0.25) addCell(r + 1, y);
+    }
+  }
+
+  function buildVertical(fromLeft = true) {
+    const bandCols = Math.max(2, Math.min(cols, Math.round(rand(1.6, cols * rand(0.24, 0.70)))));
+    let height = Math.max(2, Math.min(rows, Math.round(rows * rand(0.24, 0.82))));
+    let top = Math.round(rand(0, Math.max(0, rows - height)));
+    for (let i = 0; i < bandCols; i++) {
+      const x = fromLeft ? i : cols - bandCols + i;
+      if (i > 0) {
+        top += Math.round(rand(-1.8, 1.8));
+        height += Math.round(rand(-2.0, 2.0));
+        if (shapeMode === 'compact') height += Math.round(rand(-1.4, 0.8));
+        if (shapeMode === 'spread') height += Math.round(rand(-0.8, 1.8));
+      }
+      height = Math.max(2, Math.min(rows, height));
+      top = Math.max(0, Math.min(rows - height, top));
+      const bottom = top + height - 1;
+      let t = top, b = bottom;
+      if (Math.random() < 0.30 && b - t > 2) t += 1;
+      if (Math.random() < 0.30 && b - t > 2) b -= 1;
+      addSpanCol(x, t, b);
+      if (Math.random() < 0.22) addCell(x, t - 1);
+      if (Math.random() < 0.22) addCell(x, b + 1);
+    }
+  }
+
+  function buildCenter() {
+    const bandRows = Math.max(2, Math.min(rows, Math.round(rand(2, rows * rand(0.26, 0.72)))));
+    const centerY = Math.floor(rows / 2) + Math.round(rand(-1, 1));
+    const centerX = Math.floor(cols / 2) + Math.round(rand(-1, 1));
+    let width = Math.max(2, Math.min(cols, Math.round(cols * rand(0.22, 0.62))));
+    let drift = Math.round(rand(-1, 1));
+
+    for (let i = 0; i < bandRows; i++) {
+      const y = Math.max(0, Math.min(rows - 1, centerY - Math.floor(bandRows / 2) + i));
+      const t = bandRows <= 1 ? 0 : i / (bandRows - 1);
+      const bulge = 1 - Math.abs(t - 0.5) * rand(0.5, 1.0);
+      width = Math.max(2, Math.min(cols, Math.round(width * bulge + rand(-1.2, 1.2))));
+      drift += Math.round(rand(-1.2, 1.2));
+      drift = Math.max(-3, Math.min(3, drift));
+      const left = Math.max(0, Math.min(cols - width, centerX - Math.floor(width / 2) + drift));
+      const right = left + width - 1;
+      let l = left, r = right;
+      if (Math.random() < 0.35 && r - l > 2) l += 1;
+      if (Math.random() < 0.35 && r - l > 2) r -= 1;
+      addSpanRow(y, l, r);
+      if (Math.random() < 0.20) addCell(l - 1, y);
+      if (Math.random() < 0.20) addCell(r + 1, y);
+    }
+  }
+
+  if (position === 'top') buildHorizontal(true);
+  else if (position === 'bottom') buildHorizontal(false);
+  else if (position === 'left') buildVertical(true);
+  else if (position === 'right') buildVertical(false);
+  else if (position === 'top-left') { Math.random() < 0.5 ? buildHorizontal(true) : buildVertical(true); }
+  else if (position === 'top-right') { Math.random() < 0.5 ? buildHorizontal(true) : buildVertical(false); }
+  else if (position === 'bottom-left') { Math.random() < 0.5 ? buildHorizontal(false) : buildVertical(true); }
+  else if (position === 'bottom-right') { Math.random() < 0.5 ? buildHorizontal(false) : buildVertical(false); }
+  else buildCenter();
+
+  solidifyInterior();
+  edgeJitter(shapeMode === 'ragged' ? 3 : 2);
+
+  // Pull the total size down if it grows too much, only trimming from exposed edge cells.
+  while (cells.length > target * 1.12) {
+    const edgeCandidates = cells.filter(c => {
+      let n = 0;
+      if (hasCell(c.x + 1, c.y)) n++;
+      if (hasCell(c.x - 1, c.y)) n++;
+      if (hasCell(c.x, c.y + 1)) n++;
+      if (hasCell(c.x, c.y - 1)) n++;
+      return n <= 2;
+    });
+    if (!edgeCandidates.length) break;
+    const c = edgeCandidates[Math.floor(rand(0, edgeCandidates.length))];
+    if (isConnectedWithout(c.x, c.y)) removeCell(c.x, c.y);
+    else break;
+  }
+
+  solidifyInterior();
+  if (!cells.length) addCell(0, 0);
+
+  const minX = Math.min(...cells.map(c => c.x));
+  const minY = Math.min(...cells.map(c => c.y));
+  const normalizedCells = cells.map(c => ({ x: c.x - minX, y: c.y - minY }));
+  const maxX = Math.max(...normalizedCells.map(c => c.x));
+  const maxY = Math.max(...normalizedCells.map(c => c.y));
+
+  return {
+    cell,
+    cells: normalizedCells,
+    position,
+    areaLevel,
+    alpha: 1,
+    widthCells: maxX + 1,
+    heightCells: maxY + 1
+  };
+}
+
+function drawPeelingTexture(brick, x, y, w, h, alpha = 1) {
+  const peeling = brick.peelingPattern;
+  if (!peeling || !peeling.cells || !peeling.cells.length) return;
+
+  ctx.clip();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = els.peelColor.value;
+
+  const patchW = peeling.widthCells * peeling.cell;
+  const patchH = peeling.heightCells * peeling.cell;
+  let offsetX = x + (w - patchW) * 0.5;
+  let offsetY = y + (h - patchH) * 0.5;
+
+  if (peeling.position.includes("left")) offsetX = x - peeling.cell * 0.24;
+  if (peeling.position.includes("right")) offsetX = x + w - patchW + peeling.cell * 0.24;
+  if (peeling.position === "top") offsetY = y - peeling.cell * 0.24;
+  if (peeling.position === "bottom") offsetY = y + h - patchH + peeling.cell * 0.24;
+  if (peeling.position === "top-left") {
+    offsetX = x - peeling.cell * 0.24;
+    offsetY = y - peeling.cell * 0.24;
+  }
+  if (peeling.position === "top-right") {
+    offsetX = x + w - patchW + peeling.cell * 0.24;
+    offsetY = y - peeling.cell * 0.24;
+  }
+  if (peeling.position === "bottom-left") {
+    offsetX = x - peeling.cell * 0.24;
+    offsetY = y + h - patchH + peeling.cell * 0.24;
+  }
+  if (peeling.position === "bottom-right") {
+    offsetX = x + w - patchW + peeling.cell * 0.24;
+    offsetY = y + h - patchH + peeling.cell * 0.24;
+  }
+
+  for (const c of peeling.cells) {
+    const px = Math.round(offsetX + c.x * peeling.cell);
+    const py = Math.round(offsetY + c.y * peeling.cell);
+    const size = Math.ceil(peeling.cell) + 1;
+    ctx.fillRect(px, py, size, size);
+  }
+
+  ctx.globalAlpha = alpha;
+}
+
+function applyPalette(name) {
+  if (name !== "custom" && palettePresets[name]) {
+    const preset = palettePresets[name];
+    els.brickColor.value = preset.brick;
+    els.mortarColor.value = preset.mortar;
+    if (preset.peel && els.peelColor) els.peelColor.value = preset.peel;
+    if (preset.accent && els.accentColor) els.accentColor.value = preset.accent;
+  }
+
+  updateSwatches();
+  if (isBrickFamily()) {
+    startBuildTransition();
+  } else {
+    forceRenderNow();
+  }
+}
+
+function getSettings() {
+  return {
+    W: parseInt(els.canvasWidth.value),
+    H: parseInt(els.canvasHeight.value),
+
+    rows: FIXED.rows,
+    cols: FIXED.cols,
+    brickW: FIXED.brickW,
+    brickH: FIXED.brickH,
+    joint: FIXED.joint,
+    edgeJitter: FIXED.edgeJitter,
+    edgeStep: FIXED.edgeStep,
+    randomness: FIXED.randomness,
+
+    brickColor: els.brickColor.value,
+    mortarColor: els.mortarColor.value,
+    peelColor: els.peelColor.value,
+    accentColor: els.accentColor ? els.accentColor.value : "#8C8A84",
+    wallFamily: els.wallFamily.value
+  };
+}
+
+function syncCanvasToViewport() {
+  const width = Math.max(320, Math.round(window.innerWidth || document.documentElement.clientWidth || 1400));
+  const height = Math.max(320, Math.round(window.innerHeight || document.documentElement.clientHeight || 900));
+  const ratio = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  canvasPixelRatio = ratio;
+
+  els.canvasWidth.value = width;
+  els.canvasHeight.value = height;
+
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+  canvas.width = Math.round(width * ratio);
+  canvas.height = Math.round(height * ratio);
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+}
+
+function makeBrickPath(x, y, w, h, jitter, step) {
+  const points = [];
+
+  function addEdge(x1, y1, x2, y2, axis) {
+    const length = Math.hypot(x2 - x1, y2 - y1);
+    const count = Math.max(2, Math.floor(length / step));
+
+    for (let i = 0; i <= count; i++) {
+      const t = i / count;
+      let px = x1 + (x2 - x1) * t;
+      let py = y1 + (y2 - y1) * t;
+
+      if (i !== 0 && i !== count) {
+        if (axis === "horizontal") {
+          py += rand(-jitter, jitter);
+        } else {
+          px += rand(-jitter, jitter);
+        }
+      }
+
+      points.push({ x: px, y: py });
+    }
+  }
+
+  addEdge(x, y, x + w, y, "horizontal");
+  addEdge(x + w, y, x + w, y + h, "vertical");
+  addEdge(x + w, y + h, x, y + h, "horizontal");
+  addEdge(x, y + h, x, y, "vertical");
+
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+
+  for (let i = 1; i < points.length - 1; i++) {
+    const midX = (points[i].x + points[i + 1].x) / 2;
+    const midY = (points[i].y + points[i + 1].y) / 2;
+    ctx.quadraticCurveTo(points[i].x, points[i].y, midX, midY);
+  }
+
+  ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+  ctx.closePath();
+}
+
+function drawBrickShape(brick, x, y, w, h, alpha = 1) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  makeBrickPath(
+    x,
+    y,
+    w,
+    h,
+    brick.edgeJitter,
+    brick.edgeStep
+  );
+
+  if (getActiveMapping() === "weather") {
+    ctx.fillStyle = els.mortarColor.value;
+    ctx.fill();
+    if (!isAnimating) {
+      drawAggregateTexture(brick, x, y, w, h, alpha);
+    }
+    ctx.restore();
+    return;
+  }
+
+  ctx.fillStyle = brick.color;
+  ctx.fill();
+
+  // Performance guard:
+  // while bricks are quickly building upward, draw only the flat base blocks.
+  // Heavy textures are drawn once the transition finishes.
+  if (!isAnimating) {
+    if (getActiveMapping() === "humidity") {
+      drawDotTexture(brick, x, y, w, h, alpha);
+    }
+
+    if (getActiveMapping() === "temperature") {
+      drawRoughTexture(brick, x, y, w, h, alpha);
+    }
+
+    if (getActiveMapping() === "peeling") {
+      drawPeelingTexture(brick, x, y, w, h, alpha);
+    }
+  }
+
+  ctx.restore();
+}
+
+function parseReportHour(value) {
+  if (value === null || value === undefined || value === "") return 12;
+  const str = String(value);
+  const match = str.match(/(\d{1,2}):(\d{2})/);
+  if (match) {
+    const h = parseInt(match[1], 10);
+    if (!Number.isNaN(h)) return clamp(h, 0, 23);
+  }
+  const nums = str.match(/\d+/g);
+  if (nums && nums.length) {
+    const h = parseInt(nums[nums.length >= 2 ? nums.length - 2 : 0], 10);
+    if (!Number.isNaN(h)) return clamp(h, 0, 23);
+  }
+  return 12;
+}
+
+function applyTimeAccentPatternToBrickList(list, reportTimeValue) {
+  const hour = parseReportHour(reportTimeValue);
+  const totalBricks = list.length;
+  const activity = Math.pow(Math.sin((hour / 24) * Math.PI), 0.95);
+  const totalAccent = clamp(
+    Math.round(2 + activity * Math.max(4, totalBricks * 0.22)),
+    2,
+    Math.max(3, Math.floor(totalBricks * 0.26))
+  );
+
+  const posMap = new Map();
+  list.forEach((b, i) => {
+    b.color = els.brickColor.value;
+    b.isAccent = false;
+    posMap.set(`${b.row},${b.col}`, i);
+  });
+
+  const selected = new Set();
+
+  function addIndex(i) {
+    if (i === undefined || i === null) return false;
+    if (i < 0 || i >= list.length || selected.has(i)) return false;
+    selected.add(i);
+    return true;
+  }
+
+  function neighborsOf(index) {
+    const b = list[index];
+    const out = [];
+    const offsets = [
+      [1, 0], [-1, 0], [0, 1], [0, -1],
+      [1, 1], [1, -1], [-1, 1], [-1, -1]
+    ];
+    for (const [dr, dc] of offsets) {
+      const ni = posMap.get(`${b.row + dr},${b.col + dc}`);
+      if (ni !== undefined) out.push(ni);
+    }
+    return out;
+  }
+
+  const clusterBudget = Math.max(1, Math.round(totalAccent * rand(0.42, 0.68)));
+  const clusterCount = totalAccent <= 4 ? 1 : (Math.random() < 0.5 ? 2 : 3);
+  let clustered = 0;
+
+  for (let c = 0; c < clusterCount && clustered < clusterBudget; c++) {
+    const seed = Math.floor(rand(0, list.length));
+    addIndex(seed);
+    clustered = selected.size;
+    const clusterTarget = Math.min(clusterBudget - clustered + 1, Math.max(2, Math.round(rand(2, 5))));
+    const frontier = [seed];
+    while (frontier.length && selected.size < totalAccent && selected.size < clustered - 1 + clusterTarget) {
+      const base = frontier[Math.floor(rand(0, frontier.length))];
+      const near = neighborsOf(base).filter(i => !selected.has(i));
+      if (!near.length) {
+        frontier.splice(frontier.indexOf(base), 1);
+        continue;
+      }
+      const pick = near[Math.floor(rand(0, near.length))];
+      if (addIndex(pick)) frontier.push(pick);
+    }
+    clustered = selected.size;
+  }
+
+  let guard = 0;
+  while (selected.size < totalAccent && guard < list.length * 8) {
+    guard++;
+    if (Math.random() < 0.45 && selected.size > 0) {
+      const base = Array.from(selected)[Math.floor(rand(0, selected.size))];
+      const near = neighborsOf(base).filter(i => !selected.has(i));
+      if (near.length && Math.random() < 0.55) {
+        addIndex(near[Math.floor(rand(0, near.length))]);
+        continue;
+      }
+    }
+    addIndex(Math.floor(rand(0, list.length)));
+  }
+
+  selected.forEach(i => {
+    list[i].color = els.accentColor.value;
+    list[i].isAccent = true;
+  });
+}
+
+function parseWindPower(value) {
+  if (value === null || value === undefined) return 0;
+  const str = String(value);
+
+  if (str.includes("≤") || str.includes("<")) {
+    const n = parseInt(str.replace(/[^\d]/g, ""), 10);
+    return Number.isNaN(n) ? 3 : n;
+  }
+
+  const nums = str.match(/\d+/g);
+  if (!nums) return 0;
+
+  return parseInt(nums[0], 10);
+}
+
+function getArrangementFromWindPower(value) {
+  const wind = parseWindPower(value);
+
+  if (wind <= 3) return "grid";
+  if (wind <= 4) return "running";
+  return "mixed";
+}
+
+function getArrangementLabel(mode) {
+  if (mode === "grid") return "Aligned Bond";
+  if (mode === "running") return "Running Bond";
+  if (mode === "mixed") return "Mixed-Length Bond";
+  return "Unknown";
+}
+
+function pushBrick(list, x, y, w, h, row, col, s) {
+  list.push({
+    x,
+    y,
+    w,
+    h,
+    row,
+    col,
+    color: s.brickColor,
+    edgeJitter: s.edgeJitter,
+    edgeStep: s.edgeStep,
+    dots: createDotPattern(w, h, currentHumidity),
+    roughMarks: createRoughPattern(w, h, currentTemperature),
+    aggregateCells: createAggregatePattern(w, h, currentWeather),
+    peelingPattern: createPeelingPattern(w, h, currentWindDirection),
+    delay: 0
+  });
+}
+
+function buildBrickDataForArrangement(arrangement) {
+  const s = getSettings();
+
+  canvas.width = s.W;
+  canvas.height = s.H;
+
+  const list = [];
+
+  const moduleX = s.brickW + s.joint;
+  const moduleY = s.brickH + s.joint;
+
+  const wallHeight = s.rows * s.brickH + (s.rows - 1) * s.joint;
+  const wallWidth = s.cols * s.brickW + (s.cols - 1) * s.joint;
+
+  const offsetX = (s.W - wallWidth) / 2;
+  const offsetY = (s.H - wallHeight) / 2;
+
+  for (let r = 0; r < s.rows; r++) {
+    const y = offsetY + r * moduleY + rand(-s.randomness * 0.3, s.randomness * 0.3);
+
+    if (arrangement === "grid") {
+      for (let c = -1; c < s.cols + 2; c++) {
+        const x = offsetX + c * moduleX + rand(-s.randomness, s.randomness);
+        pushBrick(list, x, y, s.brickW, s.brickH, r, c, s);
+      }
+    }
+
+    if (arrangement === "running") {
+      const rowOffset = r % 2 === 0 ? 0 : -moduleX / 2;
+
+      for (let c = -1; c < s.cols + 2; c++) {
+        const x = offsetX + c * moduleX + rowOffset + rand(-s.randomness, s.randomness);
+        pushBrick(list, x, y, s.brickW, s.brickH, r, c, s);
+      }
+    }
+
+    if (arrangement === "mixed") {
+      const longW = s.brickW;
+      const baseShortW = s.brickW * MIXED_SHORT_SCALE;
+      const groupW = longW + s.joint + baseShortW + s.joint;
+
+      // Alternating long / short bricks, with adjacent rows shifted by half a group.
+      // This keeps the mixed-length bond staggered while avoiding row jumps during morphing.
+      const rowOffset = r % 2 === 0 ? 0 : -groupW / 2;
+      const firstIsLong = r % 2 === 0;
+
+      let x = offsetX - groupW * 1.5 + rowOffset;
+      let c = -4;
+
+      while (x < s.W + groupW) {
+        const shortW = s.brickW * MIXED_SHORT_SCALE;
+
+        if (firstIsLong) {
+          pushBrick(
+            list,
+            x + rand(-s.randomness, s.randomness),
+            y,
+            longW,
+            s.brickH,
+            r,
+            c,
+            s
+          );
+
+          pushBrick(
+            list,
+            x + longW + s.joint + rand(-s.randomness, s.randomness),
+            y,
+            shortW,
+            s.brickH,
+            r,
+            c + 0.5,
+            s
+          );
+        } else {
+          pushBrick(
+            list,
+            x + rand(-s.randomness, s.randomness),
+            y,
+            shortW,
+            s.brickH,
+            r,
+            c,
+            s
+          );
+
+          pushBrick(
+            list,
+            x + shortW + s.joint + rand(-s.randomness, s.randomness),
+            y,
+            longW,
+            s.brickH,
+            r,
+            c + 0.5,
+            s
+          );
+        }
+
+        x += groupW;
+        c += 2;
+      }
+    }
+  }
+
+  list.sort((a, b) => {
+    if (a.row !== b.row) return b.row - a.row;
+    return a.x - b.x;
+  });
+
+  list.forEach((brick, index) => {
+    const bottomIndex = FIXED.rows - 1 - brick.row;
+    brick.delay =
+      index * TRANSITION.brickDelay +
+      bottomIndex * TRANSITION.rowPause;
+  });
+
+  if (getActiveMapping() === "time") {
+    applyTimeAccentPatternToBrickList(list, currentReportTime);
+  }
+
+  return list;
+}
+
+function clearCanvas() {
+  const s = getSettings();
+
+  ctx.clearRect(0, 0, s.W, s.H);
+  ctx.fillStyle = s.mortarColor;
+  ctx.fillRect(0, 0, s.W, s.H);
+}
+
+function drawBricks(list) {
+  clearCanvas();
+
+  for (const brick of list) {
+    drawBrickShape(brick, brick.x, brick.y, brick.w, brick.h, 1);
+  }
+}
+
+function drawFinalStill() {
+  if (isBrickFamily()) drawBricks(bricks);
+  else drawNonBrickSurface();
+}
+
+function getBuildTiming() {
+  return getActiveMapping() === "humidity"
+    ? HUMIDITY_BUILD_TRANSITION
+    : TRANSITION;
+}
+
+function renderBuildTransition(timestamp) {
+  if (!transitionStart) transitionStart = timestamp;
+
+  const elapsed = timestamp - transitionStart;
+
+  clearCanvas();
+
+  let allDone = true;
+
+  const timing = getBuildTiming();
+
+  for (const brick of bricks) {
+    const delayScale = getActiveMapping() === "humidity"
+      ? timing.brickDelay / TRANSITION.brickDelay
+      : 1;
+    const localTime = elapsed - brick.delay * delayScale;
+    const t = clamp(localTime / timing.brickDuration, 0, 1);
+
+    if (t < 1) allDone = false;
+
+    if (t > 0) {
+      const eased = easeOutBack(t);
+
+      const rise = (1 - eased) * timing.riseDistance;
+      const direction = brick.col % 2 === 0 ? -1 : 1;
+      const slide = (1 - eased) * TRANSITION.slideX * direction;
+      const alpha = clamp(t * 1.8, 0, 1);
+
+      drawBrickShape(
+        brick,
+        brick.x + slide,
+        brick.y + rise,
+        brick.w,
+        brick.h,
+        alpha
+      );
+    }
+  }
+
+  if (!allDone) {
+    animationId = requestAnimationFrame(renderBuildTransition);
+  } else {
+    isAnimating = false;
+    transitionStart = 0;
+    drawFinalStill();
+  }
+}
+
+function startBuildTransition() {
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+
+  transitionStart = 0;
+  isAnimating = true;
+
+  bricks = buildBrickDataForArrangement(currentArrangement);
+  animationId = requestAnimationFrame(renderBuildTransition);
+}
+
+function makeRowSafeMorphPairs(fromList, toList) {
+  const rows = new Set([
+    ...fromList.map(b => b.row),
+    ...toList.map(b => b.row)
+  ]);
+
+  const pairs = [];
+
+  Array.from(rows).sort((a, b) => a - b).forEach(row => {
+    const fromRow = fromList.filter(b => b.row === row).sort((a, b) => a.x - b.x);
+    const toRow = toList.filter(b => b.row === row).sort((a, b) => a.x - b.x);
+    const maxLen = Math.max(fromRow.length, toRow.length);
+
+    for (let i = 0; i < maxLen; i++) {
+      const from = fromRow[i] || fromRow[fromRow.length - 1] || toRow[i];
+      const to = toRow[i] || toRow[toRow.length - 1] || fromRow[i];
+
+      if (!from || !to) continue;
+
+      pairs.push({ from, to, hasTarget: Boolean(toRow[i]) });
+    }
+  });
+
+  return pairs;
+}
+
+function renderMorphTransition(timestamp) {
+  if (!transitionStart) transitionStart = timestamp;
+
+  const elapsed = timestamp - transitionStart;
+  const t = clamp(elapsed / TRANSITION.morphDuration, 0, 1);
+  const eased = easeInOutCubic(t);
+
+  clearCanvas();
+
+  for (const pair of morphPairs) {
+    const from = pair.from;
+    const to = pair.to;
+
+    const x = lerp(from.x, to.x, eased);
+    // Keep the brick in its own row during wind morphing. No row-hopping.
+    const y = lerp(from.y, to.y, eased);
+    const w = lerp(from.w, to.w, eased);
+    const h = lerp(from.h, to.h, eased);
+
+    const alpha = pair.hasTarget ? 1 : 1 - eased;
+    const brick = {
+      ...to,
+      color: to.color,
+      edgeJitter: to.edgeJitter,
+      edgeStep: to.edgeStep
+    };
+
+    drawBrickShape(brick, x, y, w, h, alpha);
+  }
+
+  if (t < 1) {
+    animationId = requestAnimationFrame(renderMorphTransition);
+  } else {
+    transitionStart = 0;
+    bricks = targetBricks;
+    drawFinalStill();
+  }
+}
+
+function startWindMorphTransition(nextArrangement) {
+  if (nextArrangement === currentArrangement && bricks.length) {
+    return;
+  }
+
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+
+  previousBricks = bricks.length ? bricks.map(b => ({ ...b })) : buildBrickDataForArrangement(currentArrangement);
+  targetBricks = buildBrickDataForArrangement(nextArrangement);
+  morphPairs = makeRowSafeMorphPairs(previousBricks, targetBricks);
+
+  currentArrangement = nextArrangement;
+  transitionStart = 0;
+
+  animationId = requestAnimationFrame(renderMorphTransition);
+}
+
+function exportPNG() {
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+
+  transitionStart = 0;
+
+  if (!bricks.length) {
+    bricks = buildBrickDataForArrangement(currentArrangement);
+  }
+
+  drawFinalStill();
+
+  const link = document.createElement("a");
+  link.download = "black-white-mosaic-floor-tile.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+function shuffle() {
+  if (isBrickFamily()) {
+    startBuildTransition();
+  } else {
+    refreshSurfaceSeed();
+    drawFinalStill();
+  }
+}
+
+/* --------------------------
+   AMap API connection
+--------------------------- */
+
+function setStatus(text, type = "") {
+  els.apiStatus.textContent = text;
+  els.apiStatus.className = "status " + type;
+}
+
+function setConnected(isConnected) {
+  els.connectionDot.classList.toggle("active", isConnected);
+  els.connectionLine.classList.toggle("active", isConnected);
+}
+
+function getAmapKey() {
+  return els.amapKey.value.trim();
+}
+
+async function amapGet(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Network error: " + response.status);
+  }
+
+  const data = await response.json();
+
+  if (data.status !== "1") {
+    throw new Error(data.info || "AMap API returned an error.");
+  }
+
+  return data;
+}
+
+async function fetchIpLocation() {
+  const key = getAmapKey();
+
+  if (!key) {
+    setStatus("Missing AMap key.", "error");
+    return;
+  }
+
+  setStatus("Requesting IP location...");
+
+  try {
+    const url =
+      "https://restapi.amap.com/v3/ip" +
+      "?key=" + encodeURIComponent(key) +
+      "&output=json";
+
+    const data = await amapGet(url);
+
+    amapData.location = {
+      province: data.province || "",
+      city: data.city || "",
+      adcode: data.adcode || "",
+      rectangle: data.rectangle || ""
+    };
+
+    if (amapData.location.adcode) {
+      els.cityInput.value = amapData.location.adcode;
+    } else if (amapData.location.city) {
+      els.cityInput.value = amapData.location.city;
+    }
+
+    amapData.lastUpdated = new Date();
+    setConnected(true);
+    setStatus("IP location connected.", "ok");
+    updateLinkedDataUI();
+
+    await fetchWeather();
+  } catch (err) {
+    setConnected(false);
+    setStatus("IP location failed: " + err.message, "error");
+  }
+}
+
+async function fetchWeather() {
+  const key = getAmapKey();
+  const city = els.cityInput.value.trim();
+
+  if (!key) {
+    setStatus("Missing AMap key.", "error");
+    return;
+  }
+
+  if (!city) {
+    setStatus("Missing city or adcode.", "error");
+    return;
+  }
+
+  setStatus("Requesting weather data...");
+
+  try {
+    const liveUrl =
+      "https://restapi.amap.com/v3/weather/weatherInfo" +
+      "?key=" + encodeURIComponent(key) +
+      "&city=" + encodeURIComponent(city) +
+      "&extensions=base" +
+      "&output=json";
+
+    const forecastUrl =
+      "https://restapi.amap.com/v3/weather/weatherInfo" +
+      "?key=" + encodeURIComponent(key) +
+      "&city=" + encodeURIComponent(city) +
+      "&extensions=all" +
+      "&output=json";
+
+    const [liveData, forecastData] = await Promise.all([
+      amapGet(liveUrl),
+      amapGet(forecastUrl)
+    ]);
+
+    amapData.live = liveData.lives && liveData.lives.length ? liveData.lives[0] : null;
+
+    const forecastRoot =
+      forecastData.forecasts && forecastData.forecasts.length
+        ? forecastData.forecasts[0]
+        : null;
+
+    amapData.forecast = forecastRoot && forecastRoot.casts && forecastRoot.casts.length
+      ? {
+          city: forecastRoot.city,
+          adcode: forecastRoot.adcode,
+          province: forecastRoot.province,
+          reporttime: forecastRoot.reporttime,
+          today: forecastRoot.casts[0],
+          casts: forecastRoot.casts
+        }
+      : null;
+
+    if (amapData.live) {
+      amapData.location = {
+        province: amapData.live.province || "",
+        city: amapData.live.city || "",
+        adcode: amapData.live.adcode || "",
+        rectangle: amapData.location ? amapData.location.rectangle : ""
+      };
+    }
+
+    amapData.lastUpdated = new Date();
+
+    setConnected(true);
+    setStatus("Weather data connected.", "ok");
+    updateLinkedDataUI();
+
+    if (getActiveMapping() === "humidity") {
+      const value = getNestedData("live.humidity");
+      applyHumidityValueToTexture(value || currentHumidity, true);
+    } else if (getActiveMapping() === "temperature") {
+      const value = getNestedData("live.temperature");
+      applyTemperatureValueToTexture(value || currentTemperature, true);
+    } else if (getActiveMapping() === "weather") {
+      const value = getNestedData("live.weather");
+      applyWeatherValueToTexture(value || currentWeather, true);
+    } else if (getActiveMapping() === "time") {
+      const value = getNestedData("live.reporttime");
+      applyReportTimeValueToTexture(value || currentReportTime, true);
+    } else if (getActiveMapping() === "peeling") {
+      const value = getNestedData("live.winddirection");
+      applyWindDirectionValueToTexture(value || currentWindDirection, true);
+    } else if (getActiveMapping() === "wind") {
+      const value = getNestedData("live.windpower");
+      applyWindValueToArrangement(value || "≤3", true);
+    }
+
+  } catch (err) {
+    setConnected(false);
+    setStatus("Weather request failed: " + err.message, "error");
+  }
+}
+
+function getNestedData(path) {
+  const [group, key] = path.split(".");
+
+  if (group === "live" && amapData.live) {
+    return amapData.live[key];
+  }
+
+  if (group === "forecast" && amapData.forecast && amapData.forecast.today) {
+    return amapData.forecast.today[key];
+  }
+
+  if (group === "location" && amapData.location) {
+    return amapData.location[key];
+  }
+
+  return null;
+}
+
+function formatDataValue(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  return String(value);
+}
+
+function updateLinkedDataUI() {
+  const selected = els.dataSource.value;
+  amapData.selectedSource = selected;
+
+  const value = getNestedData(selected);
+  amapData.selectedValue = value;
+
+  const label = els.dataSource.options[els.dataSource.selectedIndex].textContent;
+  const displayValue = formatDataValue(value);
+
+  els.linkedPill.textContent = "Linked: " + label;
+  els.selectedValue.textContent = displayValue;
+
+  if (amapData.location) {
+    const locParts = [
+      amapData.location.province,
+      amapData.location.city,
+      amapData.location.adcode
+    ].filter(Boolean);
+
+    els.dataLocation.textContent = locParts.length ? locParts.join(" · ") : "—";
+  }
+
+  els.dataUpdated.textContent = amapData.lastUpdated
+    ? amapData.lastUpdated.toLocaleString()
+    : "—";
+
+  if (value !== null && value !== undefined && value !== "") {
+    setConnected(true);
+  }
+}
+
+function applyWindValueToArrangement(value, instant = false) {
+  currentWindPower = value;
+  amapData.selectedValue = value;
+
+  const nextArrangement = getArrangementFromWindPower(value);
+
+  els.selectedValue.textContent = String(value);
+  els.arrangementValue.textContent = getArrangementLabel(nextArrangement);
+  els.dataUpdated.textContent = new Date().toLocaleTimeString();
+
+  if (instant) {
+    cancelRunningAnimation();
+    currentArrangement = nextArrangement;
+    bricks = buildBrickDataForArrangement(currentArrangement);
+    drawFinalStill();
+  } else {
+    startWindMorphTransition(nextArrangement);
+  }
+}
+
+function applyHumidityValueToTexture(value, instant = false) {
+  currentHumidity = clamp(parseFloat(value) || 0, 0, 100);
+  amapData.selectedValue = currentHumidity;
+  currentArrangement = HUMIDITY_BASE_ARRANGEMENT;
+
+  els.selectedValue.textContent = Math.round(currentHumidity) + "%";
+  els.arrangementValue.textContent = "Humidity Dot Texture";
+  els.dataUpdated.textContent = new Date().toLocaleTimeString();
+
+  if (instant) {
+    cancelRunningAnimation();
+    bricks = buildBrickDataForArrangement(currentArrangement);
+    drawFinalStill();
+  } else {
+    startBuildTransition();
+  }
+}
+
+function applyTemperatureValueToTexture(value, instant = false) {
+  currentTemperature = clamp(parseFloat(value) || 0, 0, 40);
+  amapData.selectedValue = currentTemperature;
+  currentArrangement = TEMPERATURE_BASE_ARRANGEMENT;
+
+  els.selectedValue.textContent = Math.round(currentTemperature) + "°C";
+  els.arrangementValue.textContent = "Temperature Strong Rough Texture";
+  els.dataUpdated.textContent = new Date().toLocaleTimeString();
+
+  if (instant) {
+    cancelRunningAnimation();
+    bricks = buildBrickDataForArrangement(currentArrangement);
+    drawFinalStill();
+  } else {
+    startBuildTransition();
+  }
+}
+
+function applyWeatherValueToTexture(value, instant = false) {
+  currentWeather = String(value || "晴");
+  amapData.selectedValue = currentWeather;
+  currentArrangement = WEATHER_BASE_ARRANGEMENT;
+
+  els.selectedValue.textContent = currentWeather;
+  els.arrangementValue.textContent = "Weather Aggregate Grain Texture";
+  els.dataUpdated.textContent = new Date().toLocaleTimeString();
+
+  if (instant) {
+    cancelRunningAnimation();
+    bricks = buildBrickDataForArrangement(currentArrangement);
+    drawFinalStill();
+  } else {
+    startBuildTransition();
+  }
+}
+
+function applyReportTimeValueToTexture(value, instant = false) {
+  currentReportTime = String(value || currentReportTime || "12:00");
+  amapData.selectedValue = currentReportTime;
+  currentArrangement = TIME_BASE_ARRANGEMENT;
+
+  els.selectedValue.textContent = currentReportTime;
+  els.arrangementValue.textContent = "Running Bond + Accent Brick Color";
+  els.dataUpdated.textContent = new Date().toLocaleTimeString();
+
+  if (instant) {
+    cancelRunningAnimation();
+    bricks = buildBrickDataForArrangement(currentArrangement);
+    drawFinalStill();
+  } else {
+    startBuildTransition();
+  }
+}
+
+function applyWindDirectionValueToTexture(value, instant = false) {
+  currentWindDirection = String(value || "Top");
+  amapData.selectedValue = currentWindDirection;
+  currentArrangement = "running";
+
+  els.selectedValue.textContent = currentWindDirection;
+  els.arrangementValue.textContent = "Running Bond + Peeling Patch Area";
+  els.dataUpdated.textContent = new Date().toLocaleTimeString();
+
+  if (instant) {
+    cancelRunningAnimation();
+    bricks = buildBrickDataForArrangement(currentArrangement);
+    drawFinalStill();
+  } else {
+    startBuildTransition();
+  }
+}
+
+function tickOfflineDemo() {
+  frameCount++;
+
+  const refreshFrames = parseInt(els.demoFrames.value) || 60;
+  const autoOn = !els.autoDemo || els.autoDemo.checked;
+
+  if (els.connectionMode.value === "offline" && autoOn && frameCount % refreshFrames === 0) {
+    setConnected(true);
+    els.dataConnection.textContent = "Offline Demo";
+    els.dataLocation.textContent = "Demo Area";
+
+    const mapping = getActiveMapping();
+
+    if (mapping === "wind") {
+      windIndex = (windIndex + 1) % WIND_SEQUENCE.length;
+    } else if (mapping === "humidity") {
+      humidityIndex = (humidityIndex + 1) % HUMIDITY_SEQUENCE.length;
+    } else if (mapping === "temperature") {
+      temperatureIndex = (temperatureIndex + 1) % TEMPERATURE_SEQUENCE.length;
+    } else if (mapping === "weather") {
+      weatherIndex = (weatherIndex + 1) % WEATHER_SEQUENCE.length;
+    } else if (mapping === "peeling") {
+      directionIndex = (directionIndex + 1) % PEEL_POSITION_SEQUENCE.length;
+    } else if (mapping === "time") {
+      timeIndex = (timeIndex + 1) % TIME_SEQUENCE.length;
+    }
+
+    setCurrentValueFromSelectedData();
+    forceRenderNow();
+    setStatus("Offline demo refreshed.", "ok");
+  }
+
+  requestAnimationFrame(tickOfflineDemo);
+}
+
+/* --------------------------
+   Events
+--------------------------- */
+
+els.wallFamily.addEventListener("change", () => {
+  userIsInteracting = false;
+  refreshSurfaceSeed();
+  updateWallFamilyUI();
+  forceRenderNow();
+});
+
+els.stuccoMode.addEventListener("change", () => {
+  if (els.wallFamily.value !== "stucco") return;
+  userIsInteracting = false;
+  refreshSurfaceSeed();
+  updateWallFamilyUI();
+  forceRenderNow();
+});
+
+els.palette.addEventListener("change", e => {
+  applyPalette(e.target.value);
+});
+
+els.brickColor.addEventListener("input", () => {
+  els.palette.value = "custom";
+  updateSwatches();
+  scheduleSafeRender(120);
+});
+
+els.mortarColor.addEventListener("input", () => {
+  els.palette.value = "custom";
+  updateSwatches();
+  scheduleSafeRender(120);
+});
+
+els.peelColor.addEventListener("input", () => {
+  els.palette.value = "custom";
+  scheduleSafeRender(120);
+});
+
+els.accentColor.addEventListener("input", () => {
+  els.palette.value = "custom";
+  scheduleSafeRender(120);
+});
+
+els.canvasWidth.addEventListener("input", () => {
+  bricks = buildBrickDataForArrangement(currentArrangement);
+  drawFinalStill();
+});
+
+els.canvasHeight.addEventListener("input", () => {
+  bricks = buildBrickDataForArrangement(currentArrangement);
+  drawFinalStill();
+});
+
+els.demoFrames.addEventListener("input", () => {
+  els.demoFramesVal.textContent = els.demoFrames.value;
+});
+
+els.connectionMode.addEventListener("change", () => {
+  if (els.connectionMode.value === "offline") {
+    setConnected(true);
+    els.dataConnection.textContent = "Offline Demo";
+    setStatus("Offline demo running.", "ok");
+
+    if (getActiveMapping() === "humidity") {
+      applyHumidityValueToTexture(HUMIDITY_SEQUENCE[humidityIndex]);
+    } else if (getActiveMapping() === "temperature") {
+      applyTemperatureValueToTexture(TEMPERATURE_SEQUENCE[temperatureIndex]);
+    } else if (getActiveMapping() === "weather") {
+      applyWeatherValueToTexture(WEATHER_SEQUENCE[weatherIndex]);
+    } else if (getActiveMapping() === "time") {
+      applyReportTimeValueToTexture(TIME_SEQUENCE[timeIndex]);
+    } else if (getActiveMapping() === "peeling") {
+      applyWindDirectionValueToTexture(PEEL_POSITION_SEQUENCE[directionIndex]);
+    } else if (getActiveMapping() === "wind") {
+      applyWindValueToArrangement(WIND_SEQUENCE[windIndex]);
+    }
+  } else {
+    els.dataConnection.textContent = "Online AMap";
+    setStatus("Online mode. Click Fetch Weather.", "");
+  }
+});
+
+els.locateBtn.addEventListener("click", fetchIpLocation);
+els.fetchWeatherBtn.addEventListener("click", fetchWeather);
+
+els.dataSource.addEventListener("change", () => {
+  userIsInteracting = false;
+  updateLinkedDataUI();
+  setCurrentValueFromSelectedData();
+  forceRenderNow();
+});
+
+document.getElementById("generateBtn").addEventListener("click", () => { setCurrentValueFromSelectedData(); forceRenderNow(); });
+document.getElementById("shuffleBtn").addEventListener("click", shuffle);
+document.getElementById("exportBtn").addEventListener("click", exportPNG);
+
+window.addEventListener("resize", () => {
+  syncCanvasToViewport();
+  forceRenderNow();
+});
+
+syncCanvasToViewport();
+applyPalette("lineMono");
+
+setConnected(true);
+els.demoFramesVal.textContent = els.demoFrames.value;
+updateWallFamilyUI();
+applyTileScene(tileScenes[tileSceneIndex]);
+forceRenderNow();
+startChairAnimation();
+</script>
+
+</body>
+</html>

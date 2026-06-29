@@ -137,6 +137,7 @@ function MobileAboutContent() {
   const p1Opacity = 1 - smoothRange(progress, 0.04, 0.2);
   const p21Opacity = fadeInOut(progress, 0.12, 0.26, 0.56, 0.7);
   const p22Opacity = smoothRange(progress, 0.64, 0.76);
+  const educationPhotoProgress = smoothRange(progress, 0.62, 0.76);
   const navOpacity = smoothRange(progress, 0.08, 0.22);
   const scrollPromptOpacity = 1 - smoothRange(progress, 0.82, 0.92);
 
@@ -148,10 +149,14 @@ function MobileAboutContent() {
   return (
     <section className="relative h-full overflow-hidden bg-white px-5">
       <div className="pointer-events-none absolute left-0 right-0 top-[92px] h-[42vh] min-h-[306px] overflow-visible">
-        <MobilePhotoStack firstExit={firstExit} secondExit={secondExit} />
+        <MobilePhotoStack
+          firstExit={firstExit}
+          secondExit={secondExit}
+          educationProgress={educationPhotoProgress}
+        />
       </div>
 
-      <div className="absolute bottom-[12vh] left-5 right-5 h-[244px]">
+      <div className="absolute bottom-[5vh] left-5 right-5 h-[244px]">
         <div
           className="absolute inset-x-0 top-0 text-center"
           style={{
@@ -218,9 +223,24 @@ function MobileAboutContent() {
   );
 }
 
-function MobilePhotoStack({ firstExit, secondExit }: { firstExit: number; secondExit: number }) {
+function MobilePhotoStack({
+  firstExit,
+  secondExit,
+  educationProgress,
+}: {
+  firstExit: number;
+  secondExit: number;
+  educationProgress: number;
+}) {
   return (
-    <div className="relative mx-auto h-full w-full max-w-[390px]">
+    <div
+      className="relative mx-auto h-full w-full max-w-[390px]"
+      style={{
+        transform: `translate(${mix(0, -24, educationProgress)}px, ${mix(0, -6, educationProgress)}px) scale(${mix(1, 0.5, educationProgress)})`,
+        transformOrigin: 'top left',
+        willChange: 'transform',
+      }}
+    >
       <MobilePhotoBox
         src="/images/figma-home/p3.jpg"
         left="22%"
@@ -269,7 +289,7 @@ function MobilePhotoBox({
 }) {
   return (
     <div
-      className="absolute aspect-[411/548] w-[56%] overflow-hidden rounded-[24px]"
+      className="absolute aspect-[411/548] w-[48%] overflow-hidden rounded-[24px]"
       style={{
         left,
         top,
@@ -756,6 +776,13 @@ const workProjects: WorkProject[] = [
     meta: 'Web Game / 实验',
     description: '浏览器中的俯视弹幕射击实验，聚焦节奏、反馈与生存压力。',
     href: projectById['axiom-breach'].href || '/works',
+  },
+  {
+    id: 'floor-tile-mosaic-line-generator',
+    title: projectById['floor-tile-mosaic-line-generator'].title,
+    meta: '生成艺术 / Web 实验',
+    description: '用模拟环境数据驱动黑白马赛克地砖图案的密度、偏移、方向与线条节奏。',
+    href: projectById['floor-tile-mosaic-line-generator'].href || '/works',
   },
   {
     id: stylingInspirationBookMeta.id,

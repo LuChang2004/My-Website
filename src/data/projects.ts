@@ -102,4 +102,12 @@ export const projects: Project[] = [
     tags: ['用户研究', '叙事', '2025 Fall'],
     href: '/works/user-research',
   },
+  {
+    id: 'tennis-training-visualization',
+    title: '网球训练可视化',
+    titleEn: 'Tennis Training Visualization',
+    description: '围绕网球训练数据展开的可视化设计，项目内容正在整理中。',
+    tags: ['数据可视化', '网球', '产品设计'],
+    comingSoon: true,
+  },
 ];

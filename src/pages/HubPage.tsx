@@ -1,51 +1,97 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router';
+import { Search } from 'lucide-react';
+import AboutResumePage from './AboutResumePage';
 import { projects } from '../data/projects';
 import { pdfProjects } from '../data/pdfProjects';
 import { solarSpecialMeta } from '../data/solarSpecialContent';
 import { userResearchMeta } from '../data/userResearchContent';
 import { stylingInspirationBookMeta } from '../data/stylingInspirationBookContent';
-import {
-  dispatchHubAboutProgress,
-  HUB_ABOUT_SCROLL_RANGE,
-  HUB_ABOUT_SCROLL_TO_EVENT,
-  resolveInitialAboutProgress,
-} from '../hub/aboutProgress';
-import { useHubNavOpacity } from '../hub/hubNavContext';
+import { internshipProjects } from '../data/internshipProjects';
 import { FigmaCanvas, useFigmaScale, DESIGN_H } from '../hub/hubUi';
 import { useIsMobile } from '../hooks/use-mobile';
 
 export function HubAboutPage() {
-  const location = useLocation();
-  const isMobile = useIsMobile();
-
   useEffect(() => {
     document.title = 'luchang.fun — 陆畅';
-
-    return () => {
-      delete document.documentElement.dataset.hubAboutProgress;
-    };
   }, []);
 
-  return isMobile ? (
-    <MobileAboutContent />
-  ) : (
-    <div className="h-full overflow-hidden">
-      <IntroScrollFlow key={location.key} />
-    </div>
-  );
+  return <AboutResumePage />;
 }
 
 export function HubWorksPage() {
   const isMobile = useIsMobile();
+  const scale = useFigmaScale();
+  const location = useLocation();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useState('');
+  const [activeCategories, setActiveCategories] = useState<WorkCategory[]>([]);
 
   useEffect(() => {
     document.title = 'Works — luchang.fun';
   }, []);
 
+  useEffect(() => {
+    const targetId = decodeURIComponent(location.hash.slice(1));
+    const scrollElement = scrollRef.current;
+    if (!targetId || !scrollElement) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const target = document.getElementById(targetId);
+      if (!target) return;
+
+      const offset = isMobile ? 220 : 248 * scale;
+      const targetTop = target.getBoundingClientRect().top;
+      const containerTop = scrollElement.getBoundingClientRect().top;
+      scrollElement.scrollTo({
+        top: scrollElement.scrollTop + targetTop - containerTop - offset,
+        behavior: 'smooth',
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [isMobile, location.hash, scale]);
+
+  const visibleProjects = filterWorkProjects(workProjects, query, activeCategories);
+  const toggleCategory = (category: WorkCategory) => {
+    setActiveCategories((current) => (
+      current.includes(category)
+        ? current.filter((item) => item !== category)
+        : [...current, category]
+    ));
+  };
+
   return (
-    <div className="hub-works-scrollbar h-full overflow-y-auto">
-      {isMobile ? <MobileWorksContent /> : <WorksContent />}
+    <div ref={scrollRef} className="hub-works-scrollbar h-full overflow-y-auto">
+      {!isMobile && (
+        <div className="pointer-events-none sticky top-0 z-20 h-0">
+          <FigmaCanvas scale={scale} height={DESIGN_H} verticalAlign="top">
+            <WorksToolbar
+              query={query}
+              activeCategories={activeCategories}
+              onQueryChange={setQuery}
+              onCategoryToggle={toggleCategory}
+            />
+          </FigmaCanvas>
+        </div>
+      )}
+      {isMobile ? (
+        <MobileWorksContent
+          projects={visibleProjects}
+          query={query}
+          activeCategories={activeCategories}
+          onQueryChange={setQuery}
+          onCategoryToggle={toggleCategory}
+        />
+      ) : (
+        <WorksContent
+          projects={visibleProjects}
+          query={query}
+          activeCategories={activeCategories}
+          onQueryChange={setQuery}
+          onCategoryToggle={toggleCategory}
+        />
+      )}
     </div>
   );
 }
@@ -66,267 +112,100 @@ export function HubContactPage() {
   );
 }
 
-function MobileAboutContent() {
-  const location = useLocation();
-  const { setOpacity: setNavOpacity } = useHubNavOpacity();
-  const initialProgress = resolveInitialAboutProgress(location.state);
-  const [progress, setProgress] = useState(initialProgress);
-  const progressRef = useRef(initialProgress);
-
-  useEffect(() => {
-    let touchY: number | null = null;
-
-    const setProgressValue = (value: number) => {
-      const next = clamp(value);
-      progressRef.current = next;
-      setProgress(next);
-      dispatchHubAboutProgress(next);
-    };
-
-    const startProgress = resolveInitialAboutProgress(location.state);
-    progressRef.current = startProgress;
-    setProgress(startProgress);
-    dispatchHubAboutProgress(startProgress);
-
-    const onWheel = (event: WheelEvent) => {
-      event.preventDefault();
-      setProgressValue(progressRef.current + event.deltaY / HUB_ABOUT_SCROLL_RANGE);
-    };
-
-    const onTouchStart = (event: TouchEvent) => {
-      touchY = event.touches[0]?.clientY ?? null;
-    };
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (touchY === null) return;
-      event.preventDefault();
-      const currentY = event.touches[0]?.clientY ?? touchY;
-      const delta = (touchY - currentY) / (HUB_ABOUT_SCROLL_RANGE * 0.45);
-      touchY = currentY;
-      setProgressValue(progressRef.current + delta);
-    };
-
-    const onTouchEnd = () => {
-      touchY = null;
-    };
-
-    const onScrollTo = (event: Event) => {
-      const target = (event as CustomEvent<number>).detail;
-      if (typeof target === 'number') {
-        setProgressValue(target);
-      }
-    };
-
-    window.addEventListener('wheel', onWheel, { passive: false });
-    window.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: false });
-    window.addEventListener('touchend', onTouchEnd);
-    window.addEventListener(HUB_ABOUT_SCROLL_TO_EVENT, onScrollTo);
-
-    return () => {
-      window.removeEventListener('wheel', onWheel);
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener(HUB_ABOUT_SCROLL_TO_EVENT, onScrollTo);
-    };
-  }, [location.key, location.state]);
-
-  const firstExit = smoothRange(progress, 0.04, 0.24);
-  const secondExit = smoothRange(progress, 0.5, 0.68);
-  const p1Opacity = 1 - smoothRange(progress, 0.04, 0.2);
-  const p21Opacity = fadeInOut(progress, 0.12, 0.26, 0.56, 0.7);
-  const p22Opacity = smoothRange(progress, 0.64, 0.76);
-  const educationPhotoProgress = smoothRange(progress, 0.62, 0.76);
-  const navOpacity = smoothRange(progress, 0.08, 0.22);
-  const scrollPromptOpacity = 1 - smoothRange(progress, 0.82, 0.92);
-
-  useEffect(() => {
-    setNavOpacity(navOpacity);
-    return () => setNavOpacity(1);
-  }, [navOpacity, setNavOpacity]);
-
+function MobileWorksContent({
+  projects,
+  query,
+  activeCategories,
+  onQueryChange,
+  onCategoryToggle,
+}: WorksContentProps) {
   return (
-    <section className="relative h-full overflow-hidden bg-white px-5">
-      <div className="pointer-events-none absolute left-0 right-0 top-[92px] h-[42vh] min-h-[306px] overflow-visible">
-        <MobilePhotoStack
-          firstExit={firstExit}
-          secondExit={secondExit}
-          educationProgress={educationPhotoProgress}
-        />
-      </div>
-
-      <div className="absolute bottom-[5vh] left-5 right-5 h-[244px]">
-        <div
-          className="absolute inset-x-0 top-0 text-center"
-          style={{
-            opacity: p1Opacity,
-            visibility: p1Opacity > 0.01 ? 'visible' : 'hidden',
-            transform: `translateY(${mix(0, 44, firstExit)}px)`,
-            pointerEvents: p1Opacity > 0.5 ? 'auto' : 'none',
-          }}
-        >
-          <h1 className="m-0 font-['Roboto',sans-serif] text-[42px] font-bold leading-none text-black">
-            Hi, I&rsquo;m Lucas
-          </h1>
-          <p className="m-0 mt-3 font-['Noto_Sans_SC',sans-serif] text-[22px] leading-8 text-[#767676]">
-            你好，我是陆畅
-          </p>
-        </div>
-
-        <div
-          className="absolute inset-x-0 top-0 text-center"
-          style={{
-            opacity: p21Opacity,
-            visibility: p21Opacity > 0.01 ? 'visible' : 'hidden',
-            transform: `translateY(${progress < 0.56 ? mix(-44, 0, smoothRange(progress, 0.12, 0.26)) : mix(0, 44, secondExit)}px)`,
-            pointerEvents: p21Opacity > 0.5 ? 'auto' : 'none',
-          }}
-        >
-          <p className="m-0 font-['Roboto',sans-serif] text-sm text-[#969696]">
-            I&rsquo;m committed to
-          </p>
-          <div className="mt-3 space-y-2 font-['Roboto',sans-serif] text-[30px] font-bold leading-none text-black">
-            <p className="m-0">UI/UX Design</p>
-            <p className="m-0">Visual Design</p>
-            <p className="m-0">Motion Design</p>
-          </div>
-          <p className="mx-auto mb-0 mt-6 max-w-[350px] font-['Noto_Sans_SC',sans-serif] text-base leading-7 text-[#767676]">
-            我希望成为一个具有产品思维，集合视觉、体验、动效设计能力为一体的专业设计师
-          </p>
-        </div>
-
-        <div
-          className="absolute inset-x-0 top-0 mx-auto max-w-[350px] text-left font-['Noto_Sans_SC',sans-serif] text-[18px] leading-8 text-black"
-          style={{
-            opacity: p22Opacity,
-            visibility: p22Opacity > 0.01 ? 'visible' : 'hidden',
-            transform: `translateY(${mix(44, 0, smoothRange(progress, 0.58, 0.72))}px)`,
-            pointerEvents: p22Opacity > 0.5 ? 'auto' : 'none',
-          }}
-        >
-          <p className="m-0 font-bold">教育经历</p>
-          <p className="m-0 mt-3 text-[#444444]">同济大学设计与创意学院</p>
-          <p className="m-0 text-[#444444]">视觉传达设计-人工智能双学位</p>
-          <p className="m-0 mt-7 font-bold">语言能力</p>
-          <p className="m-0 mt-3 text-[#444444]">CET-4：589；CET-6：638</p>
+    <section className="min-h-full bg-white px-5 pb-12 pt-[108px]">
+      <div className="sticky top-[88px] z-20 -mx-5 bg-white/90 px-5 py-3 backdrop-blur-md">
+        <div className="mx-auto w-full max-w-[460px]">
+          <WorksToolbar
+            query={query}
+            activeCategories={activeCategories}
+            onQueryChange={onQueryChange}
+            onCategoryToggle={onCategoryToggle}
+            mobile
+          />
         </div>
       </div>
 
-      <p
-        className="absolute bottom-6 left-1/2 m-0 -translate-x-1/2 font-['Roboto',sans-serif] text-sm text-[#969696]"
-        style={{ opacity: scrollPromptOpacity }}
-      >
-        Scroll to view
-      </p>
-    </section>
-  );
-}
-
-function MobilePhotoStack({
-  firstExit,
-  secondExit,
-  educationProgress,
-}: {
-  firstExit: number;
-  secondExit: number;
-  educationProgress: number;
-}) {
-  return (
-    <div
-      className="relative mx-auto h-full w-full max-w-[390px]"
-      style={{
-        transform: `translate(${mix(0, -24, educationProgress)}px, ${mix(0, -6, educationProgress)}px) scale(${mix(1, 0.5, educationProgress)})`,
-        transformOrigin: 'top left',
-        willChange: 'transform',
-      }}
-    >
-      <MobilePhotoBox
-        src="/images/figma-home/p3.jpg"
-        left="22%"
-        top="2%"
-        rotate={0}
-        shadow="none"
-      />
-      <MobilePhotoBox
-        src="/images/figma-home/p2.jpg"
-        left="25%"
-        top="2%"
-        rotate={mix(-13.8, 16, secondExit)}
-        translateX={mix(0, 360, secondExit)}
-        opacity={1 - smoothRange(secondExit, 0.72, 1)}
-        shadow="0px 4px 16px rgba(0,0,0,0.3)"
-      />
-      <MobilePhotoBox
-        src="/images/figma-home/p1.jpg"
-        left="22%"
-        top="5%"
-        rotate={mix(10.59, 26, firstExit)}
-        translateX={mix(0, 360, firstExit)}
-        opacity={1 - smoothRange(firstExit, 0.72, 1)}
-        shadow="0px 4px 32px rgba(0,0,0,0.3)"
-      />
-    </div>
-  );
-}
-
-function MobilePhotoBox({
-  src,
-  left,
-  top,
-  rotate,
-  translateX = 0,
-  opacity = 1,
-  shadow,
-}: {
-  src: string;
-  left: string;
-  top: string;
-  rotate: number;
-  translateX?: number;
-  opacity?: number;
-  shadow: string;
-}) {
-  return (
-    <div
-      className="absolute aspect-[411/548] w-[48%] overflow-hidden rounded-[24px]"
-      style={{
-        left,
-        top,
-        opacity,
-        boxShadow: shadow,
-        transform: `translateX(${translateX}px) rotate(${rotate}deg)`,
-        transformOrigin: '50% 50%',
-        willChange: 'transform, opacity',
-      }}
-    >
-      <img src={src} alt="" className="block h-full w-full object-cover" />
-    </div>
-  );
-}
-
-function MobileWorksContent() {
-  return (
-    <section className="bg-white px-5 pb-12 pt-24">
-      <div className="mx-auto grid w-full max-w-[460px] grid-cols-2 gap-x-4 gap-y-8">
-        {workProjects.map((project) => (
-          <Link key={project.id} to={project.href} className="block text-black no-underline">
-            <div className="aspect-square w-full border border-[#e8e8e8] bg-white" aria-hidden="true" />
-            <div className="mt-4">
-              <h2 className="m-0 font-['Noto_Sans_SC',sans-serif] text-[17px] font-bold leading-6">
-                {project.title}
-              </h2>
-              <p className="m-0 mt-2 font-['Noto_Sans_SC',sans-serif] text-[12px] leading-5 text-black">
-                {project.meta}
-              </p>
-              <p className="m-0 mt-2 font-['Noto_Sans_SC',sans-serif] text-[12px] leading-5 text-[#767676]">
-                {project.description}
-              </p>
-            </div>
-          </Link>
+      <div className="mx-auto mt-8 w-full max-w-[460px]">
+        {internshipProjects.map((project) => (
+          <a
+            key={project.id}
+            href={project.href}
+            target="_blank"
+            rel="noreferrer"
+            className="flex h-12 items-center border-b border-[#d9d9d9] font-['Noto_Sans_SC',sans-serif] text-[14px] font-bold leading-6 text-black no-underline"
+          >
+            {project.label}
+          </a>
         ))}
       </div>
+
+      <div className="mx-auto mt-8 grid w-full max-w-[460px] grid-cols-2 gap-x-4 gap-y-9">
+        {projects.map((project) => (
+          <MobileWorkCard key={project.id} project={project} />
+        ))}
+      </div>
+      {projects.length === 0 && <WorksEmptyState />}
     </section>
+  );
+}
+
+function MobileWorkCard({ project }: { project: WorkProject }) {
+  const content = (
+    <>
+      {project.image ? (
+        <img
+          src={project.image}
+          alt=""
+          className="aspect-square w-full bg-white object-cover"
+          style={project.imageBorder ? {
+            border: `1px solid ${project.imageBorder}`,
+            boxSizing: 'border-box',
+          } : undefined}
+        />
+      ) : (
+        <div
+          className="aspect-square w-full border border-[#e8e8e8] bg-white"
+          aria-hidden="true"
+        />
+      )}
+      <div className="mt-3">
+        <h2 className="m-0 font-['Noto_Sans_SC',sans-serif] text-[17px] font-bold leading-6">
+          {project.title}
+        </h2>
+        <p className="m-0 mt-2 font-['Noto_Sans_SC',sans-serif] text-[12px] leading-5 text-black">
+          {project.meta}
+        </p>
+        <p className="m-0 mt-2 truncate font-['Noto_Sans_SC',sans-serif] text-[12px] leading-5 text-[#808080]">
+          {project.description}
+        </p>
+      </div>
+    </>
+  );
+
+  return project.href ? (
+    <Link
+      id={`work-${project.id}`}
+      to={project.href}
+      className="block text-black no-underline"
+    >
+      {content}
+    </Link>
+  ) : (
+    <article
+      id={`work-${project.id}`}
+      aria-label={`${project.title}，即将上线`}
+      className="block text-black"
+    >
+      {content}
+    </article>
   );
 }
 
@@ -369,146 +248,9 @@ function MobileContactContent() {
   );
 }
 
-function IntroScrollFlow() {
-  const location = useLocation();
+function WorksContent({ projects }: WorksContentProps) {
   const scale = useFigmaScale();
-  const { setOpacity: setNavOpacity } = useHubNavOpacity();
-  const initialProgress = resolveInitialAboutProgress(location.state);
-  const [progress, setProgress] = useState(initialProgress);
-  const progressRef = useRef(initialProgress);
-
-  useEffect(() => {
-    let touchY: number | null = null;
-
-    const setProgressValue = (value: number) => {
-      const next = clamp(value);
-      progressRef.current = next;
-      setProgress(next);
-      dispatchHubAboutProgress(next);
-    };
-
-    const startProgress = resolveInitialAboutProgress(location.state);
-    progressRef.current = startProgress;
-    setProgress(startProgress);
-    dispatchHubAboutProgress(startProgress);
-
-    const onWheel = (event: WheelEvent) => {
-      event.preventDefault();
-      setProgressValue(progressRef.current + event.deltaY / HUB_ABOUT_SCROLL_RANGE);
-    };
-
-    const onTouchStart = (event: TouchEvent) => {
-      touchY = event.touches[0]?.clientY ?? null;
-    };
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (touchY === null) return;
-      event.preventDefault();
-      const currentY = event.touches[0]?.clientY ?? touchY;
-      const delta = (touchY - currentY) / (HUB_ABOUT_SCROLL_RANGE * 0.45);
-      touchY = currentY;
-      setProgressValue(progressRef.current + delta);
-    };
-
-    const onTouchEnd = () => {
-      touchY = null;
-    };
-
-    const onScrollTo = (event: Event) => {
-      const target = (event as CustomEvent<number>).detail;
-      if (typeof target === 'number') {
-        setProgressValue(target);
-      }
-    };
-
-    window.addEventListener('wheel', onWheel, { passive: false });
-    window.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: false });
-    window.addEventListener('touchend', onTouchEnd);
-    window.addEventListener(HUB_ABOUT_SCROLL_TO_EVENT, onScrollTo);
-
-    return () => {
-      window.removeEventListener('wheel', onWheel);
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener(HUB_ABOUT_SCROLL_TO_EVENT, onScrollTo);
-    };
-  }, [location.key, location.state]);
-
-  const firstExit = smoothRange(progress, 0.04, 0.24);
-  const secondExit = smoothRange(progress, 0.5, 0.68);
-  const p1Opacity = 1 - smoothRange(progress, 0.04, 0.2);
-  const p21Opacity = fadeInOut(progress, 0.12, 0.26, 0.56, 0.7);
-  const p22Opacity = smoothRange(progress, 0.64, 0.76);
-  const navOpacity = smoothRange(progress, 0.08, 0.22);
-  const scrollPromptOpacity = 1 - smoothRange(progress, 0.82, 0.92);
-
-  useEffect(() => {
-    setNavOpacity(navOpacity);
-    return () => setNavOpacity(1);
-  }, [navOpacity, setNavOpacity]);
-
-  return (
-    <section id="about" className="relative h-full overflow-hidden bg-white">
-      <div className="absolute inset-0 overflow-hidden bg-white">
-        <FigmaCanvas scale={scale}>
-          <TextBlock
-            nodeId="1:7"
-            opacity={p1Opacity}
-            x={333}
-            y={481}
-            translateY={mix(0, 120, firstExit)}
-          >
-            <h1 style={styles.heroTitle}>Hi, I&rsquo;m Lucas</h1>
-            <p style={styles.heroChinese}>你好，我是陆畅</p>
-          </TextBlock>
-
-          <TextBlock
-            nodeId="9:20"
-            opacity={p21Opacity}
-            x={310}
-            y={365}
-            translateY={progress < 0.56 ? mix(-120, 0, smoothRange(progress, 0.12, 0.26)) : mix(0, 120, secondExit)}
-          >
-            <p style={styles.commitmentIntro}>I&rsquo;m committed to</p>
-            <p style={{ ...styles.commitmentWord, left: 10, top: 49 }}>UI/UX Design</p>
-            <p style={{ ...styles.commitmentWord, left: 57, top: 114 }}>Visual Design</p>
-            <p style={{ ...styles.commitmentWord, left: 103, top: 180 }}>Motion Design</p>
-            <p style={styles.commitmentChinese}>我希望成为一个具有产品思维，集合视觉、体验、动效设计能力为一体的专业设计师</p>
-          </TextBlock>
-
-          <TextBlock
-            nodeId="9:53"
-            opacity={p22Opacity}
-            x={335}
-            y={281}
-            translateY={mix(76, 0, smoothRange(progress, 0.58, 0.72))}
-          >
-            <div style={styles.infoChinese}>
-              <p style={{ ...styles.infoLine, top: 0, fontWeight: 700 }}>教育经历</p>
-              <div style={{ ...styles.infoLine, top: 49, width: 362 }}>
-                <p style={styles.zeroMargin}>同济大学设计与创意学院</p>
-                <p style={styles.zeroMargin}>视觉传达设计-人工智能双学位</p>
-              </div>
-              <p style={{ ...styles.infoLine, top: 186, fontWeight: 700 }}>语言能力</p>
-              <p style={{ ...styles.infoLine, top: 227, width: 362 }}>CET-4：589；CET-6：638</p>
-            </div>
-          </TextBlock>
-
-          <p style={{ ...styles.scrollPrompt, opacity: scrollPromptOpacity }}>Scroll to view</p>
-        </FigmaCanvas>
-        <PhotoLayer scale={scale}>
-          <PhotoStack firstExit={firstExit} secondExit={secondExit} />
-        </PhotoLayer>
-      </div>
-    </section>
-  );
-}
-
-function WorksContent() {
-  const scale = useFigmaScale();
-  const cards = workProjects.map((project, index) => {
+  const cards = projects.map((project, index) => {
     const { left, top } = getWorkCardPosition(index);
 
     return {
@@ -517,28 +259,151 @@ function WorksContent() {
       top,
     };
   });
-  const canvasHeight = getWorksCanvasHeight(workProjects.length);
+  const canvasHeight = getWorksCanvasHeight(projects.length);
   const scaledCanvasHeight = canvasHeight * scale;
 
   return (
-    <section id="works" className="relative bg-white" data-node-id="42:2">
+    <section id="works" className="relative bg-white" data-node-id="1:126">
       <div style={{ height: scaledCanvasHeight, position: 'relative' }}>
         <FigmaCanvas scale={scale} height={canvasHeight} verticalAlign="top">
-        {cards.map((card) => (
-          <Link key={card.id} to={card.href} className="work-card" style={{ ...styles.workCard, left: card.left, top: card.top }}>
-            <ProjectThumb />
-            <div className="work-card-text" style={styles.workTextStack}>
-              <div style={styles.workHeadingGroup}>
-                <h2 style={styles.workTitle}>{card.title}</h2>
-                <p style={styles.workSubtitle}>{card.meta}</p>
-              </div>
-              <p style={styles.workDescription}>{card.description}</p>
+          <WorksExperienceIndex />
+          {cards.map((card) => (
+            card.href ? (
+              <Link
+                id={`work-${card.id}`}
+                key={card.id}
+                to={card.href}
+                className="work-card"
+                style={{ ...styles.workCard, left: card.left, top: card.top }}
+              >
+                <ProjectThumb src={card.image} border={card.imageBorder} />
+                <div className="work-card-text" style={styles.workTextStack}>
+                  <div style={styles.workHeadingGroup}>
+                    <h2 style={styles.workTitle}>{card.title}</h2>
+                    <p style={styles.workSubtitle}>{card.meta}</p>
+                  </div>
+                  <p style={styles.workDescription}>{card.description}</p>
+                </div>
+              </Link>
+            ) : (
+              <article
+                id={`work-${card.id}`}
+                key={card.id}
+                aria-label={`${card.title}，即将上线`}
+                style={{ ...styles.workCard, left: card.left, top: card.top }}
+              >
+                <ProjectThumb src={card.image} border={card.imageBorder} />
+                <div className="work-card-text" style={styles.workTextStack}>
+                  <div style={styles.workHeadingGroup}>
+                    <h2 style={styles.workTitle}>{card.title}</h2>
+                    <p style={styles.workSubtitle}>{card.meta}</p>
+                  </div>
+                  <p style={styles.workDescription}>{card.description}</p>
+                </div>
+              </article>
+            )
+          ))}
+          {cards.length === 0 && (
+            <div style={styles.workEmpty}>
+              <WorksEmptyState />
             </div>
-          </Link>
-        ))}
+          )}
         </FigmaCanvas>
       </div>
     </section>
+  );
+}
+
+function WorksExperienceIndex() {
+  return (
+    <div style={styles.workExperienceIndex}>
+      {internshipProjects.map((project) => (
+        <a
+          key={project.id}
+          href={project.href}
+          target="_blank"
+          rel="noreferrer"
+          className="work-experience-link"
+          style={styles.workExperienceRow}
+        >
+          {project.label}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function WorksToolbar({
+  query,
+  activeCategories,
+  onQueryChange,
+  onCategoryToggle,
+  mobile = false,
+}: Omit<WorksContentProps, 'projects'> & { mobile?: boolean }) {
+  return (
+    <div
+      style={mobile ? undefined : styles.workToolbar}
+      className={mobile ? 'flex flex-col gap-4' : undefined}
+    >
+      <div
+        aria-label="作品分类"
+        className={mobile ? 'flex items-center gap-4' : undefined}
+        style={mobile ? undefined : styles.workFilters}
+      >
+        {WORK_CATEGORIES.map((category) => {
+          const isActive = activeCategories.includes(category);
+
+          return (
+            <button
+              key={category}
+              type="button"
+              aria-pressed={isActive}
+              onClick={() => onCategoryToggle(category)}
+              className="works-filter-button"
+              style={{
+                ...styles.workFilter,
+                ...(mobile ? {} : {
+                  position: 'absolute',
+                  left: [0, 78, 152][WORK_CATEGORIES.indexOf(category)],
+                  top: 0,
+                }),
+                ...(isActive ? styles.workFilterActive : {}),
+              }}
+            >
+              {category}
+            </button>
+          );
+        })}
+      </div>
+
+      <label
+        className={mobile ? 'relative block w-full' : undefined}
+        style={mobile ? undefined : styles.workSearch}
+      >
+        <span className="sr-only">搜索作品</span>
+        <input
+          type="search"
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+          className="works-search-input"
+          style={styles.workSearchInput}
+        />
+        <Search
+          aria-hidden="true"
+          size={24}
+          strokeWidth={1.8}
+          style={styles.workSearchIcon}
+        />
+      </label>
+    </div>
+  );
+}
+
+function WorksEmptyState() {
+  return (
+    <p className="m-0 text-center font-['Noto_Sans_SC',sans-serif] text-sm leading-6 text-[#969696]">
+      没有匹配的作品
+    </p>
   );
 }
 
@@ -580,162 +445,53 @@ function ContactContent() {
   );
 }
 
-function ProjectThumb() {
-  return <div className="work-cover work-cover-placeholder" style={styles.workImage} aria-hidden="true" />;
-}
-
-function PhotoLayer({ scale, children }: { scale: number; children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: '50%',
-        top: '50%',
-        width: 1728,
-        height: 1117,
-        transform: `translate(-50%, -50%) scale(${scale})`,
-        transformOrigin: 'center center',
-        pointerEvents: 'none',
-        zIndex: 10,
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function TextBlock({
-  x,
-  y,
-  opacity,
-  translateY,
-  nodeId,
-  children,
-}: {
-  x: number;
-  y: number;
-  opacity: number;
-  translateY: number;
-  nodeId: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      data-node-id={nodeId}
-      style={{
-        position: 'absolute',
-        left: x,
-        top: y,
-        opacity,
-        transform: `translateY(${translateY}px)`,
-        pointerEvents: opacity > 0.5 ? 'auto' : 'none',
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function PhotoStack({ firstExit, secondExit }: { firstExit: number; secondExit: number }) {
-  return (
-    <>
-      <PhotoBox
-        nodeId="9:47"
-        src="/images/figma-home/p3.jpg"
-        left={1004}
-        top={260.57}
-        width={411}
-        height={548}
-        rotate={0}
-        shadow="none"
+function ProjectThumb({ src, border }: { src?: string; border?: string }) {
+  if (!src) {
+    return (
+      <div
+        className="work-cover work-cover-placeholder"
+        style={{ ...styles.workImage, border: '1px solid #e8e8e8' }}
+        aria-hidden="true"
       />
-      <PhotoBox
-        nodeId="9:15"
-        src="/images/figma-home/p2.jpg"
-        left={1013.45}
-        top={260.13}
-        width={411.24}
-        height={548.32}
-        rotate={mix(-13.8, 16, secondExit)}
-        translateX={mix(0, 870, secondExit)}
-        translateY={0}
-        opacity={1 - smoothRange(secondExit, 0.72, 1)}
-        shadow="0px 4px 16px rgba(0,0,0,0.3)"
-      />
-      <PhotoBox
-        nodeId="9:17"
-        src="/images/figma-home/p1.jpg"
-        left={1000.84}
-        top={268.41}
-        width={411.01}
-        height={548.01}
-        rotate={mix(10.59, 26, firstExit)}
-        translateX={mix(0, 900, firstExit)}
-        translateY={0}
-        opacity={1 - smoothRange(firstExit, 0.72, 1)}
-        shadow="0px 4px 32px rgba(0,0,0,0.3)"
-      />
-    </>
-  );
-}
+    );
+  }
 
-function PhotoBox({
-  src,
-  left,
-  top,
-  width,
-  height,
-  rotate,
-  translateX = 0,
-  translateY = 0,
-  opacity = 1,
-  shadow,
-  nodeId,
-}: {
-  src: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  rotate: number;
-  translateX?: number;
-  translateY?: number;
-  opacity?: number;
-  shadow: string;
-  nodeId: string;
-}) {
   return (
-    <div
-      data-node-id={nodeId}
+    <img
+      src={src}
+      alt=""
+      className="work-cover"
       style={{
-        position: 'absolute',
-        left,
-        top,
-        width,
-        height,
-        opacity,
-        borderRadius: 32,
-        overflow: 'hidden',
-        boxShadow: shadow,
-        transform: `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg)`,
-        transformOrigin: '50% 50%',
-        willChange: 'transform, opacity',
+        ...styles.workImage,
+        ...(border ? { border: `1px solid ${border}` } : {}),
       }}
-    >
-      <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-    </div>
+    />
   );
 }
 
 const fontSpace = '"Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif';
 const fontChinese = '"Noto Sans SC", "Source Han Sans CN", "Source Han Sans SC", "PingFang SC", sans-serif';
 
+const WORK_CATEGORIES = ['产品', '设计', '工程'] as const;
+type WorkCategory = (typeof WORK_CATEGORIES)[number];
+
 type WorkProject = {
   id: string;
   title: string;
   meta: string;
   description: string;
-  href: string;
+  image?: string;
+  imageBorder?: string;
+  href?: string;
+  categories: WorkCategory[];
+};
+
+type WorksContentProps = {
+  projects: WorkProject[];
+  query: string;
+  activeCategories: WorkCategory[];
+  onQueryChange: (value: string) => void;
+  onCategoryToggle: (category: WorkCategory) => void;
 };
 
 const projectById = Object.fromEntries(projects.map((project) => [project.id, project]));
@@ -745,51 +501,94 @@ const workProjects: WorkProject[] = [
   {
     id: 'final-limb-fantasy',
     title: projectById['final-limb-fantasy'].title,
-    meta: '视觉设计 / 系列插画',
+    meta: '视觉设计 / 游戏设计',
     description: '围绕身体、感官与荒诞叙事展开的概念视觉系统。',
+    image: '/images/works/final-limb-fantasy.png',
     href: projectById['final-limb-fantasy'].href || '/works',
+    categories: ['设计'],
+  },
+  {
+    id: 'taylor-swift-data',
+    title: 'Taylor Swift',
+    meta: '数据可视化 / 交互叙事',
+    description: '以专辑、音乐特征与时间线组织 Taylor Swift 的职业数据故事。',
+    image: '/images/works/taylor-swift.png',
+    imageBorder: '#2300ae',
+    href: projectById['taylor-swift-data'].href || '/works',
+    categories: ['设计', '工程'],
   },
   {
     id: 'solar-special',
     title: solarSpecialMeta.worksTitle,
     meta: solarSpecialMeta.worksMeta,
     description: solarSpecialMeta.worksDescription,
+    image: '/images/works/solar-special.png',
     href: '/works/solar-special',
+    categories: ['设计', '工程'],
+  },
+  {
+    id: 'axiom-breach',
+    title: 'AXIOM BREACH',
+    meta: 'Web Game / 实验',
+    description: '浏览器中的俯视弹幕射击实验，聚焦节奏、反馈与生存压力。',
+    image: '/images/works/axiom-breach.png',
+    imageBorder: '#00dede',
+    href: projectById['axiom-breach'].href || '/works',
+    categories: ['设计', '工程'],
+  },
+  {
+    id: 'tennis-training-visualization',
+    title: projectById['tennis-training-visualization'].title,
+    meta: '数据可视化 / 产品设计',
+    description: projectById['tennis-training-visualization'].description,
+    image: '/images/works/tennis-training.png',
+    categories: ['产品', '设计'],
   },
   {
     id: 'music-robber',
     title: pdfById['music-robber'].title,
     meta: pdfById['music-robber'].meta,
     description: pdfById['music-robber'].description,
+    image: '/images/works/music-robber.png',
     href: pdfById['music-robber'].href,
-  },
-  {
-    id: 'taylor-swift-data',
-    title: 'Taylor Swift with Her Music',
-    meta: '数据可视化 / 叙事',
-    description: '以专辑、音乐特征与时间线组织 Taylor Swift 的职业数据故事。',
-    href: projectById['taylor-swift-data'].href || '/works',
-  },
-  {
-    id: 'axiom-breach',
-    title: 'Axiom Breach',
-    meta: 'Web Game / 实验',
-    description: '浏览器中的俯视弹幕射击实验，聚焦节奏、反馈与生存压力。',
-    href: projectById['axiom-breach'].href || '/works',
+    categories: ['产品', '设计'],
   },
   {
     id: 'floor-tile-mosaic-line-generator',
-    title: projectById['floor-tile-mosaic-line-generator'].title,
-    meta: '生成艺术 / Web 实验',
+    title: '巨富长品牌实验',
+    meta: '视觉设计 / 生成艺术',
     description: '用模拟环境数据驱动黑白马赛克地砖图案的密度、偏移、方向与线条节奏。',
+    image: '/images/works/giant-brand.png',
+    imageBorder: '#000000',
     href: projectById['floor-tile-mosaic-line-generator'].href || '/works',
+    categories: ['设计', '工程'],
+  },
+  {
+    id: 'keiji-ai',
+    title: 'Keiji AI 体验设计',
+    meta: pdfById['keiji-ai'].meta,
+    description: pdfById['keiji-ai'].description,
+    image: '/images/works/keiji-ai.png',
+    href: pdfById['keiji-ai'].href,
+    categories: ['产品', '设计'],
   },
   {
     id: stylingInspirationBookMeta.id,
     title: stylingInspirationBookMeta.worksTitle,
     meta: stylingInspirationBookMeta.worksMeta,
     description: stylingInspirationBookMeta.worksDescription,
+    image: '/images/works/styling-inspiration-book.png',
     href: stylingInspirationBookMeta.href,
+    categories: ['设计', '工程'],
+  },
+  {
+    id: userResearchMeta.id,
+    title: userResearchMeta.title,
+    meta: userResearchMeta.meta,
+    description: userResearchMeta.description,
+    image: '/images/works/user-research.png',
+    href: userResearchMeta.href,
+    categories: ['产品'],
   },
   {
     id: 'chord-diary',
@@ -797,13 +596,7 @@ const workProjects: WorkProject[] = [
     meta: 'UI/UX / 交互原型',
     description: '把日记、情绪与和弦生成串成一条可体验的音乐记录流程。',
     href: projectById['chord-diary'].href || '/works',
-  },
-  {
-    id: 'keiji-ai',
-    title: pdfById['keiji-ai'].title,
-    meta: pdfById['keiji-ai'].meta,
-    description: pdfById['keiji-ai'].description,
-    href: pdfById['keiji-ai'].href,
+    categories: ['产品', '设计', '工程'],
   },
   {
     id: 'narrative-mutation-lab',
@@ -811,50 +604,59 @@ const workProjects: WorkProject[] = [
     meta: pdfById['narrative-mutation-lab'].meta,
     description: pdfById['narrative-mutation-lab'].description,
     href: pdfById['narrative-mutation-lab'].href,
-  },
-  {
-    id: userResearchMeta.id,
-    title: userResearchMeta.title,
-    meta: userResearchMeta.meta,
-    description: userResearchMeta.description,
-    href: userResearchMeta.href,
+    categories: ['设计'],
   },
 ];
 
+function filterWorkProjects(
+  allProjects: WorkProject[],
+  query: string,
+  activeCategories: WorkCategory[],
+) {
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+
+  return allProjects.filter((project) => {
+    const matchesCategory = activeCategories.length === 0
+      || activeCategories.some((category) => project.categories.includes(category));
+    const searchableText = `${project.title} ${project.meta} ${project.description}`.toLocaleLowerCase();
+    const matchesQuery = normalizedQuery.length === 0 || searchableText.includes(normalizedQuery);
+
+    return matchesCategory && matchesQuery;
+  });
+}
+
 /** Works 卡片间距：8px 基准 */
 const WORK_LAYOUT = {
-  coverToText: 16,
+  coverToText: 12,
   titleToMeta: 8,
-  metaToDesc: 12,
+  metaToDesc: 8,
 } as const;
 
 /** Works 网格布局 */
 const WORK_GRID = {
-  cols: 4,
-  cardWidth: 233,
-  colGap: 61,
-  startLeft: 300,
-  startTop: 180,
-  rowGap: 32,
+  cols: 3,
+  cardWidth: 196,
+  columnLefts: [500, 782, 1053],
+  startTop: 437,
+  rowStride: 348,
 } as const;
 
 const WORK_CARD_HEIGHT =
-  233 +
+  WORK_GRID.cardWidth +
   WORK_LAYOUT.coverToText +
-  32 * 2 +
+  24 +
   WORK_LAYOUT.titleToMeta +
-  22 +
+  24 +
   WORK_LAYOUT.metaToDesc +
-  24 * 2;
+  48;
 
 function getWorkCardPosition(index: number) {
-  const { cols, cardWidth, colGap, startLeft, startTop, rowGap } = WORK_GRID;
+  const { cols, columnLefts, startTop, rowStride } = WORK_GRID;
   const row = Math.floor(index / cols);
   const col = index % cols;
-  const rowStride = WORK_CARD_HEIGHT + rowGap;
 
   return {
-    left: startLeft + col * (cardWidth + colGap),
+    left: index === 9 ? 491 : columnLefts[col],
     top: startTop + row * rowStride,
   };
 }
@@ -862,104 +664,13 @@ function getWorkCardPosition(index: number) {
 function getWorksCanvasHeight(cardCount: number) {
   const lastIndex = Math.max(0, cardCount - 1);
   const lastPos = getWorkCardPosition(lastIndex);
-  return Math.max(DESIGN_H, lastPos.top + WORK_CARD_HEIGHT + 80);
+  return Math.max(DESIGN_H, lastPos.top + WORK_CARD_HEIGHT + 96);
 }
 
 const styles = {
-  heroTitle: {
-    fontFamily: fontSpace,
-    fontSize: 64,
-    fontWeight: 700,
-    lineHeight: '64px',
-    letterSpacing: 0,
-    margin: 0,
-    color: '#000000',
-  },
-  heroChinese: {
-    fontFamily: fontChinese,
-    fontSize: 32,
-    fontWeight: 400,
-    lineHeight: '32px',
-    letterSpacing: 0,
-    margin: '10px 0 0',
-    color: '#767676',
-  },
-  commitmentIntro: {
-    position: 'absolute' as const,
-    left: 10,
-    top: 0,
-    width: 211,
-    fontFamily: fontSpace,
-    fontSize: 24,
-    fontWeight: 400,
-    lineHeight: '24px',
-    margin: 0,
-    color: '#969696',
-  },
-  commitmentWord: {
-    position: 'absolute' as const,
-    fontFamily: fontSpace,
-    fontSize: 48,
-    fontWeight: 700,
-    lineHeight: '48px',
-    letterSpacing: 0,
-    margin: 0,
-    color: '#000000',
-    whiteSpace: 'nowrap' as const,
-  },
-  commitmentChinese: {
-    position: 'absolute' as const,
-    left: 0,
-    top: 352,
-    width: 573,
-    fontFamily: fontChinese,
-    fontSize: 24,
-    fontWeight: 400,
-    lineHeight: '34px',
-    letterSpacing: 0,
-    margin: 0,
-    color: '#767676',
-  },
-  infoChinese: {
-    position: 'relative' as const,
-    width: 410,
-    height: 280,
-    fontFamily: fontChinese,
-    fontSize: 24,
-    fontWeight: 400,
-    lineHeight: 'normal',
-    letterSpacing: 0,
-    color: '#000000',
-  },
-  infoLine: {
-    position: 'absolute' as const,
-    left: 0,
-    margin: 0,
-    fontFamily: fontChinese,
-    fontSize: 24,
-    lineHeight: 'normal',
-    letterSpacing: 0,
-    color: '#000000',
-  },
-  zeroMargin: {
-    margin: 0,
-  },
-  scrollPrompt: {
-    position: 'absolute' as const,
-    left: 803,
-    top: 965,
-    width: 122,
-    fontFamily: fontSpace,
-    fontSize: 20,
-    fontWeight: 400,
-    lineHeight: '20px',
-    margin: 0,
-    color: '#767676',
-    whiteSpace: 'nowrap' as const,
-  },
   workCard: {
     position: 'absolute' as const,
-    width: 233,
+    width: WORK_GRID.cardWidth,
     fontFamily: fontChinese,
     color: '#000000',
     textDecoration: 'none',
@@ -978,19 +689,21 @@ const styles = {
     gap: WORK_LAYOUT.titleToMeta,
   },
   workImage: {
-    width: 233,
-    height: 233,
+    display: 'block',
+    width: WORK_GRID.cardWidth,
+    height: WORK_GRID.cardWidth,
     background: '#ffffff',
-    border: '1px solid #e8e8e8',
+    border: 0,
     boxSizing: 'border-box' as const,
     overflow: 'hidden',
+    objectFit: 'cover' as const,
   },
   workTitle: {
     margin: 0,
     fontFamily: fontChinese,
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 700,
-    lineHeight: '32px',
+    lineHeight: '24px',
     letterSpacing: 0,
   },
   workSubtitle: {
@@ -998,7 +711,7 @@ const styles = {
     fontFamily: fontChinese,
     fontSize: 16,
     fontWeight: 400,
-    lineHeight: '22px',
+    lineHeight: '24px',
     letterSpacing: 0,
     color: '#000000',
   },
@@ -1009,7 +722,103 @@ const styles = {
     fontWeight: 400,
     lineHeight: '24px',
     letterSpacing: 0,
-    color: '#767676',
+    color: '#808080',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap' as const,
+  },
+  workToolbar: {
+    position: 'absolute' as const,
+    left: 500,
+    top: 169,
+    width: 749,
+    height: 48,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    pointerEvents: 'auto' as const,
+  },
+  workFilters: {
+    position: 'relative' as const,
+    width: 216,
+    height: 48,
+  },
+  workFilter: {
+    height: 48,
+    padding: '0 16px',
+    border: 0,
+    borderRadius: 24,
+    background: '#f4f4f4',
+    color: '#444444',
+    fontFamily: fontChinese,
+    fontSize: 16,
+    fontWeight: 500,
+    lineHeight: '48px',
+    letterSpacing: 0,
+    cursor: 'pointer',
+    transition: 'background-color 160ms ease, color 160ms ease, transform 160ms ease',
+  },
+  workFilterActive: {
+    background: '#111111',
+    color: '#ffffff',
+  },
+  workSearch: {
+    position: 'relative' as const,
+    display: 'block',
+    width: 177,
+    height: 48,
+  },
+  workSearchInput: {
+    width: '100%',
+    height: 48,
+    boxSizing: 'border-box' as const,
+    border: 0,
+    borderRadius: 24,
+    outline: 'none',
+    background: '#f4f4f4',
+    color: '#111111',
+    padding: '0 48px 0 16px',
+    fontFamily: fontChinese,
+    fontSize: 16,
+    lineHeight: '48px',
+    letterSpacing: 0,
+  },
+  workSearchIcon: {
+    position: 'absolute' as const,
+    right: 16,
+    top: '50%',
+    color: '#444444',
+    pointerEvents: 'none' as const,
+    transform: 'translateY(-50%)',
+  },
+  workEmpty: {
+    position: 'absolute' as const,
+    left: 500,
+    top: WORK_GRID.startTop,
+    width: 749,
+  },
+  workExperienceIndex: {
+    position: 'absolute' as const,
+    left: 506,
+    top: 249,
+    width: 742,
+    fontFamily: fontChinese,
+  },
+  workExperienceRow: {
+    display: 'flex',
+    height: 48,
+    alignItems: 'center',
+    boxSizing: 'border-box' as const,
+    margin: 0,
+    borderBottom: '1px solid #d9d9d9',
+    color: '#000000',
+    fontFamily: fontChinese,
+    fontSize: 16,
+    fontWeight: 700,
+    lineHeight: '24px',
+    letterSpacing: 0,
+    textDecoration: 'none',
+    cursor: 'pointer',
   },
   contactBlock: {
     position: 'absolute' as const,
@@ -1081,22 +890,3 @@ const styles = {
     color: '#BBBBBB',
   },
 };
-
-function clamp(value: number) {
-  return Math.min(1, Math.max(0, value));
-}
-
-function smoothRange(value: number, start: number, end: number) {
-  const progress = clamp((value - start) / (end - start));
-  return progress * progress * (3 - 2 * progress);
-}
-
-function mix(from: number, to: number, amount: number) {
-  return from + (to - from) * amount;
-}
-
-function fadeInOut(value: number, inStart: number, inEnd: number, outStart: number, outEnd: number) {
-  if (value < inEnd) return smoothRange(value, inStart, inEnd);
-  if (value > outStart) return 1 - smoothRange(value, outStart, outEnd);
-  return 1;
-}

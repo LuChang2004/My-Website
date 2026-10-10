@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import * as pdfjs from 'pdfjs-dist';
+import type { PDFDocumentProxy } from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 type PdfCanvasPageProps = {
-  src: string;
+  src?: string;
+  document?: PDFDocumentProxy;
+  pageNumber?: number;
   width: number;
   className?: string;
   onRenderComplete?: (height: number) => void;
@@ -13,6 +16,8 @@ type PdfCanvasPageProps = {
 
 export default function PdfCanvasPage({
   src,
+  document: providedDocument,
+  pageNumber = 1,
   width,
   className = '',
   onRenderComplete,
@@ -48,16 +53,16 @@ export default function PdfCanvasPage({
 
     (async () => {
       try {
-        const task = pdfjs.getDocument(src);
-        const document = await task.promise;
+        const task = providedDocument ? null : pdfjs.getDocument(src);
+        const document = providedDocument ?? (await task!.promise);
         if (cancelled) {
-          document.destroy();
+          if (task) document.destroy();
           return;
         }
 
-        const page = await document.getPage(1);
+        const page = await document.getPage(pageNumber);
         if (cancelled) {
-          document.destroy();
+          if (task) document.destroy();
           return;
         }
 
@@ -94,7 +99,7 @@ export default function PdfCanvasPage({
           transform,
         }).promise;
 
-        document.destroy();
+        if (task) document.destroy();
 
         if (!cancelled) {
           onRenderComplete?.(displayHeight);
@@ -109,7 +114,7 @@ export default function PdfCanvasPage({
     return () => {
       cancelled = true;
     };
-  }, [shouldRender, src, width, onRenderComplete]);
+  }, [shouldRender, src, providedDocument, pageNumber, width, onRenderComplete]);
 
   return (
     <div

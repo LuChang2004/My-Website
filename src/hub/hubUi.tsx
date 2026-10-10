@@ -1,9 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
-import {
-  dispatchHubAboutScrollTo,
-  HUB_ABOUT_TAB_ENTRY_PROGRESS,
-} from './aboutProgress';
 import { navItems, navItemToPath, type NavItem } from './hubTabs';
 
 export const DESIGN_W = 1728;
@@ -13,11 +9,6 @@ export function useHubNavigate() {
   const navigate = useNavigate();
 
   return (item: NavItem) => {
-    if (item === 'About Me') {
-      navigate('/', { replace: true, state: { aboutEntry: 'about' } });
-      dispatchHubAboutScrollTo(HUB_ABOUT_TAB_ENTRY_PROGRESS);
-      return;
-    }
     navigate(navItemToPath(item));
   };
 }
@@ -86,7 +77,7 @@ const styles = {
     fontFamily: fontSpace,
     fontSize: 24,
     fontWeight: 700,
-    lineHeight: '24px',
+    lineHeight: '28px',
     textDecoration: 'none',
     letterSpacing: 0,
     transition: 'color 180ms ease, opacity 180ms ease',
@@ -103,9 +94,9 @@ export function HubTopNav({
   onNavigate: (item: NavItem) => void;
 }) {
   const positions: Record<NavItem, number> = {
-    'About Me': 527,
-    Works: 791,
-    Contact: 1018,
+    'About Me': 574,
+    Works: 838,
+    Contact: 1065,
   };
 
   return (
@@ -125,6 +116,20 @@ export function HubTopNav({
           }}
         >
           {item}
+          {item === active && (
+            <span
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: 36,
+                width: 48,
+                height: 2,
+                background: '#000000',
+                transform: 'translateX(-50%)',
+              }}
+            />
+          )}
         </a>
       ))}
     </nav>

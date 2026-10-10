@@ -1,0 +1,473 @@
+.resume-scroll {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: #fff;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.resume-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.resume-scaled-page {
+  position: relative;
+}
+
+.resume-canvas {
+  position: relative;
+  width: 1728px;
+  height: 2580px;
+  overflow: visible;
+  background: #fff;
+  color: #000;
+  font-family: "HarmonyOS Sans SC", "PingFang SC", "Noto Sans SC", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
+.resume-profile {
+  width: 350px;
+}
+
+.resume-profile-photo {
+  display: block;
+  width: 350px;
+  height: 467px;
+  object-fit: cover;
+}
+
+.resume-identity {
+  margin-top: 28px;
+}
+
+.resume-identity p {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 8px;
+  font-size: 16px;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+.resume-identity strong {
+  font-weight: 700;
+}
+
+.resume-identity span {
+  font-weight: 400;
+}
+
+.resume-identity .resume-name {
+  margin-bottom: 30px;
+}
+
+.resume-name strong {
+  font-size: 20px;
+  line-height: normal;
+}
+
+.resume-main {
+  position: absolute;
+  left: 534px;
+  top: 217px;
+  width: 1049px;
+}
+
+.resume-section {
+  scroll-margin-top: 120px;
+}
+
+.resume-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 24px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.resume-section h2 > span {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  background: #8dd164;
+}
+
+.resume-section-red h2 > span {
+  background: #e74a5a;
+}
+
+.resume-section-blue h2 > span {
+  background: #66acfa;
+}
+
+.resume-section-content {
+  padding-left: 26px;
+}
+
+.resume-section-content p {
+  margin: 0;
+}
+
+.resume-subsection + .resume-subsection {
+  margin-top: 24px;
+}
+
+.resume-kicker,
+.resume-job-title {
+  margin-bottom: 12px !important;
+  font-weight: 700;
+}
+
+.resume-education-row,
+.resume-course-row,
+.resume-job-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.resume-course-row strong {
+  flex: 0 0 auto;
+}
+
+.resume-course-row + .resume-course-row {
+  margin-top: 12px !important;
+}
+
+.resume-section strong {
+  font-weight: 700;
+}
+
+#resume-education {
+  width: 955px;
+  min-height: 228px;
+}
+
+#resume-experience {
+  width: 1049px;
+  min-height: 180px;
+  margin-top: 48px;
+}
+
+#resume-language {
+  width: 704px;
+  min-height: 72px;
+  margin-top: 48px;
+}
+
+#resume-skills {
+  width: 987px;
+  min-height: 168px;
+  margin-top: 48px;
+}
+
+#resume-projects {
+  width: 1053px;
+  margin-top: 84px;
+}
+
+.resume-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: resume-list-item;
+  line-height: 32px;
+}
+
+.resume-list li {
+  counter-increment: resume-list-item;
+}
+
+.resume-list li::before {
+  content: counter(resume-list-item) ". ";
+}
+
+.resume-language-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.resume-score {
+  display: flex;
+  gap: 16px;
+}
+
+.resume-skill-row {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 16px;
+  margin-bottom: 12px !important;
+  line-height: 32px;
+}
+
+.resume-skill-row strong {
+  padding-top: 4px;
+  line-height: 24px;
+}
+
+.resume-project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.resume-project h3 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.resume-project-meta {
+  color: #808080;
+  font-weight: 400;
+}
+
+.resume-project > p {
+  margin: 0;
+}
+
+.resume-detail-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #808080;
+  font-size: 16px;
+  line-height: 24px;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  transition:
+    color 180ms ease,
+    transform 180ms ease,
+    background-size 220ms ease;
+}
+
+a.resume-detail-link:hover,
+a.resume-detail-link:focus-visible {
+  color: #000;
+  background-size: 100% 1px;
+  transform: translateX(4px);
+}
+
+a.resume-detail-link:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-detail-link {
+    transition: none;
+  }
+
+  a.resume-detail-link:hover,
+  a.resume-detail-link:focus-visible {
+    transform: none;
+  }
+}
+
+.resume-project-images {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.resume-project-images img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid #f0f0f0;
+  object-fit: cover;
+}
+
+.resume-sticky-layer {
+  position: sticky;
+  top: 0;
+  z-index: 12;
+  width: 100%;
+  height: 0;
+  pointer-events: none;
+}
+
+.resume-desktop-profile {
+  position: absolute;
+  width: 350px;
+  transform-origin: top left;
+}
+
+.resume-toc {
+  position: absolute;
+  display: flex;
+  width: 134px;
+  height: 232px;
+  padding: 24px;
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: 16px;
+  border: 0;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transform-origin: top left;
+  pointer-events: auto;
+}
+
+.resume-toc button {
+  position: relative;
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #969696;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 180ms ease, font-weight 180ms ease;
+}
+
+.resume-toc-marker {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  fill: currentColor;
+  stroke: currentColor;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.resume-toc button:hover,
+.resume-toc button:focus-visible,
+.resume-toc button.is-active {
+  color: #000;
+}
+
+.resume-toc button.is-active {
+  font-weight: 700;
+}
+
+.resume-toc button.is-active .resume-toc-marker {
+  opacity: 1;
+}
+
+.resume-toc button:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 4px;
+}
+
+.resume-mobile {
+  min-height: 100%;
+  padding: 112px 20px 72px;
+  box-sizing: border-box;
+  background: #fff;
+  color: #000;
+  font-family: "HarmonyOS Sans SC", "PingFang SC", "Noto Sans SC", sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
+.resume-mobile .resume-profile,
+.resume-mobile .resume-main {
+  position: static;
+  width: 100%;
+}
+
+.resume-mobile .resume-profile-photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+.resume-mobile .resume-identity {
+  margin-top: 24px;
+}
+
+.resume-mobile .resume-identity p {
+  flex-wrap: wrap;
+  column-gap: 10px;
+  margin-bottom: 6px;
+  white-space: normal;
+}
+
+.resume-mobile .resume-identity .resume-name {
+  margin-bottom: 24px;
+}
+
+.resume-mobile .resume-main {
+  margin-top: 64px;
+}
+
+.resume-mobile .resume-section {
+  width: 100% !important;
+  min-height: 0 !important;
+  margin-top: 56px !important;
+}
+
+.resume-mobile .resume-section:first-child {
+  margin-top: 0 !important;
+}
+
+.resume-mobile .resume-section-content {
+  padding-left: 0;
+}
+
+.resume-mobile .resume-language-row {
+  flex-wrap: wrap;
+  gap: 8px 28px;
+}
+
+.resume-mobile .resume-education-row,
+.resume-mobile .resume-course-row,
+.resume-mobile .resume-job-title {
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.resume-mobile .resume-skill-row {
+  display: block;
+  margin-bottom: 20px !important;
+}
+
+.resume-mobile .resume-skill-row strong {
+  display: block;
+  width: auto;
+  margin-bottom: 4px;
+}
+
+.resume-mobile .resume-project-list {
+  gap: 48px;
+}
+
+.resume-mobile .resume-project h3 {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resume-mobile .resume-project-images {
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}

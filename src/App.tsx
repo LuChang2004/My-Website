@@ -3,6 +3,7 @@ import FinalLimbFantasyPage from './pages/FinalLimbFantasyPage';
 import AxiomBreachPage from './pages/AxiomBreachPage';
 import TaylorSwiftPage from './pages/TaylorSwiftPage';
 import ChordDiaryPage from './pages/ChordDiaryPage';
+import MusicRobberPage from './pages/MusicRobberPage';
 import PdfProjectPage from './pages/PdfProjectPage';
 import SolarSpecialPage from './pages/SolarSpecialPage';
 import UserResearchPage from './pages/UserResearchPage';
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/taylor-swift" element={<TaylorSwiftPage />} />
           <Route path="/axiom-breach" element={<AxiomBreachPage />} />
           <Route path="/chord-diary" element={<ChordDiaryPage />} />
+          <Route path="/works/music-robber" element={<MusicRobberPage />} />
           <Route path="/works/solar-special" element={<SolarSpecialPage />} />
           <Route path="/works/user-research" element={<UserResearchPage />} />
           <Route path="/works/styling-inspiration-book" element={<StylingInspirationBookPage />} />

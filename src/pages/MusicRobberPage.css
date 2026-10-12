@@ -1,0 +1,46 @@
+/* Figma 32:23175: the editorial canvas is 1920 × 20364.
+   Text, vector assets and device layers stay independent and selectable. */
+@font-face { font-family: 'Abril Fatface'; font-style: normal; font-weight: 400; font-display: swap; src: url('/projects/music-robber/figma/abril-fatface.ttf') format('truetype'); }
+.music-robber-page {
+  --music-red: #ff0038;
+  --music-ink: #121212;
+  color: var(--music-ink);
+  background: #fff;
+  width: 100%;
+  font-family: "Noto Sans SC", "PingFang SC", sans-serif;
+  line-height: normal;
+  overflow-x: clip;
+}
+.music-design-viewport { width: 100%; max-width: 1920px; position: relative; margin-inline: auto; overflow: clip; }
+.music-design-canvas { width: 1920px; height: 20364px; transform-origin: top left; display: flex; flex-direction: column; background: #fff; }
+.music-design-section { position: relative; width: 1920px; flex-shrink: 0; }
+.music-design-layer { position: absolute; }
+.music-design-gap { flex-shrink: 0; }
+.music-design-showcase { background: #fff; color: #121212; overflow: visible; }
+/* Preserve the native coordinate systems of scaled Figma instances. */
+.music-design-showcase [data-node-id="32:25251"] { width: 361px; height: 100px; transform: scale(1.79); transform-origin: top left; }
+.music-design-showcase [data-node-id="32:25490"] { width: 383px; height: 359px; transform: scale(1.090731); transform-origin: top left; }
+.music-wireframe-scroll { position: relative; margin-inline: 118px; width: 1684px; height: 1082px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: #c4c4c4 #f4f4f4; cursor: grab; user-select: none; }
+.music-wireframe-scroll:active { cursor: grabbing; }
+.music-wireframe-scroll:focus-visible { outline: 2px solid var(--music-red); outline-offset: 6px; }
+.music-wireframe-content { position: relative; height: 1066px; }
+.music-wireframe-controls { position: absolute; right: 118px; bottom: -84px; display: flex; align-items: center; gap: 16px; color: #777; font-size: 18px; }
+.music-wireframe-controls button { width: 44px; height: 44px; border: 1px solid #ddd; border-radius: 50%; background: #fff; color: #121212; font-size: 24px; cursor: pointer; }
+.music-wireframe-controls button:hover:not(:disabled) { border-color: var(--music-red); color: var(--music-red); }
+.music-wireframe-controls button:disabled { opacity: .3; cursor: default; }
+.music-wireframe-controls button:focus-visible { outline: 2px solid var(--music-red); outline-offset: 3px; }
+/* Figma's flipped vectors use their origin, not their bounding-box top. */
+.music-design-wireframes [data-figma-layer="11:6619"],
+.music-design-wireframes [data-figma-layer="11:6816"],
+.music-design-wireframes [data-figma-layer="11:6817"] { transform: scaleY(-1); transform-origin: top left; }
+.music-design-wireframes [data-node-id="11:6844"] > * { filter: blur(4px); }
+.music-robber-page p { margin: 0; }
+.music-robber-page img { user-select: none; }
+/* Figma generator's grid/rotation aliases, adapted to this site's Tailwind 3. */
+.music-robber-page .col-1 { grid-column: 1; }
+.music-robber-page .row-1 { grid-row: 1; }
+.music-robber-page .rotate-15 { --tw-rotate: 15deg; transform: rotate(15deg); }
+.music-robber-page .rotate-30 { --tw-rotate: 30deg; transform: rotate(30deg); }
+.music-robber-page [class*="font-['PingFang_SC']"] { font-family: "PingFang SC", "Noto Sans SC", sans-serif; }
+.music-robber-page [class*="font-['SF_Pro"] { font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.music-robber-page [class*="font-['Abril_Fatface']"] { font-family: "Abril Fatface", Georgia, serif; }

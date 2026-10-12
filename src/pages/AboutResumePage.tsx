@@ -56,19 +56,19 @@ const projectExperiences = [
     heading: '4/「Music Robber」声域博弈实验性 APP 设计',
     description:
       '探索了非传统音乐 APP 的叙事方式与用户激励机制，产出完整的设计系统与交互规范。',
-    href: '/works#work-music-robber',
+    href: '/works/music-robber',
   },
   {
     heading: '5/ Keji AI 海外医疗科研平台UX诊断',
     description:
       '系统性诊断了 Keiji AI 工具的交互痛点，输出成熟的交互设计方案以提升产品易用性，同时优化了产品视觉。',
-    href: '/works#work-keiji-ai',
+    href: '/works/keiji-ai',
   },
   {
     heading: '6/ Solar Special 科普向游戏设计',
     description:
       '负责项目构思、推进，部分程序及全部的美术设计工作，使用 City Pop 风格产出了一系列游戏视觉资产。',
-    href: '/works#work-solar-special',
+    href: '/works/solar-special',
   },
 ] as const;
 

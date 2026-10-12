@@ -1,0 +1,52 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="21.5178" height="43.0355" viewBox="0 0 21.5178 43.0355" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Map features" filter="url(#filter0_i_0_773)">
+<rect width="21.5178" height="43.0355" rx="10.7589" fill="white" fill-opacity="0.05"/>
+<g id="Icon-navi" clip-path="url(#clip0_0_773)">
+<path id="Vector" d="M10.759 15.2417C12.8634 15.2417 14.5694 13.5357 14.5694 11.4313C14.5694 9.32687 12.8634 7.62086 10.759 7.62086C8.65452 7.62086 6.94852 9.32687 6.94852 11.4313C6.94852 13.5357 8.65452 15.2417 10.759 15.2417Z" stroke="#CCCCCC" stroke-width="0.73356"/>
+<path id="Vector_2" d="M9.63824 6.276H11.8797" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M9.86223 11.4313L10.7588 9.86232L11.6554 11.4313L10.7588 13.0003L9.86223 11.4313Z" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M6.94852 11.4313H7.8451" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_5" d="M13.6728 11.4313H14.5694" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_6" d="M10.7589 7.62086V8.51744" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_7" d="M10.7589 14.3452V15.2417" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_8" d="M9.30203 14.9533C9.75086 15.1392 10.2429 15.2418 10.759 15.2418C11.275 15.2418 11.7671 15.1392 12.2159 14.9533" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_9" d="M7.23698 9.97437C7.0511 10.4232 6.94852 10.9153 6.94852 11.4313C6.94852 11.9473 7.0511 12.4394 7.23698 12.8882" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_10" d="M14.2808 9.97437C14.4667 10.4232 14.5692 10.9153 14.5692 11.4313C14.5692 11.9473 14.4667 12.4394 14.2808 12.8882" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_11" d="M9.19171 7.95708C9.66974 7.7411 10.2003 7.62086 10.759 7.62086C11.3176 7.62086 11.8482 7.7411 12.3263 7.95708" stroke="#CCCCCC" stroke-width="0.73356" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<line id="Line 16" x1="7.62088" y1="21.0695" x2="13.8969" y2="21.0695" stroke="#999999" stroke-width="0.896574" stroke-linecap="round"/>
+<g id="Icon-locate" clip-path="url(#clip1_0_773)">
+<path id="Vector_12" d="M10.7589 36.7595C13.2347 36.7595 15.2418 34.7525 15.2418 32.2766C15.2418 29.8008 13.2347 27.7938 10.7589 27.7938C8.28306 27.7938 6.27601 29.8008 6.27601 32.2766C6.27601 34.7525 8.28306 36.7595 10.7589 36.7595Z" stroke="#CCCCCC" stroke-width="0.896574" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="Vector_13">
+</g>
+<path id="Vector_14" d="M10.7589 35.1905V36.7595" stroke="#CCCCCC" stroke-width="0.896574" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="Vector_15">
+</g>
+<path id="Vector_16" d="M13.4486 32.2766H15.2418" stroke="#CCCCCC" stroke-width="0.896574" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="Vector_17">
+</g>
+<path id="Vector_18" d="M6.27601 32.2766H7.84502" stroke="#CCCCCC" stroke-width="0.896574" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="Vector_19">
+</g>
+<path id="Vector_20" d="M10.7589 29.3628V27.7938" stroke="#CCCCCC" stroke-width="0.896574" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_i_0_773" x="0" y="0" width="21.5178" height="43.0355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="1.79315"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.75 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_0_773"/>
+</filter>
+<clipPath id="clip0_0_773">
+<rect width="10.7589" height="10.7589" fill="white" transform="translate(5.37944 5.37944)"/>
+</clipPath>
+<clipPath id="clip1_0_773">
+<rect width="10.7589" height="10.7589" fill="white" transform="translate(5.37944 26.8972)"/>
+</clipPath>
+</defs>
+</svg>

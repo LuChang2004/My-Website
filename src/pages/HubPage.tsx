@@ -499,6 +499,15 @@ const pdfById = Object.fromEntries(pdfProjects.map((project) => [project.id, pro
 
 const workProjects: WorkProject[] = [
   {
+    id: 'graduation-trip',
+    title: projectById['graduation-trip'].title,
+    meta: '产品设计 / 移动端原型',
+    description: projectById['graduation-trip'].description,
+    image: '/images/works/graduation-trip.png',
+    href: projectById['graduation-trip'].href,
+    categories: ['产品', '设计', '工程'],
+  },
+  {
     id: 'lumi',
     title: 'Lumi',
     meta: 'AI 产品 / 毕业设计 · 概念阶段',

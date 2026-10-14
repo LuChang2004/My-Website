@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:chord-diary": "cd \"../Chord Diary\" && NEXT_PUBLIC_BASE_PATH=/projects/chord-diary npm run build && rm -rf ../app/public/projects/chord-diary && cp -R out ../app/public/projects/chord-diary",
+    "build:graduation-trip": "cd \"../Travel App/graduation-trip-app\" && npm run build -- --base=/projects/graduation-trip/ && rm -rf ../../my-website/public/projects/graduation-trip && cp -R dist ../../my-website/public/projects/graduation-trip",
     "lint": "eslint .",
     "preview": "vite preview"
   },

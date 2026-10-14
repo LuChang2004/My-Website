@@ -12,6 +12,14 @@ export type Project = {
 /** 首页项目列表 — 在此追加新项目 */
 export const projects: Project[] = [
   {
+    id: 'graduation-trip',
+    title: '毕业搭子',
+    titleEn: 'Graduation Trip',
+    description: '面向毕业生的旅行拼团与协作规划工具，串联队友匹配、共同行程和费用管理。',
+    tags: ['产品设计', '移动端', '旅行'],
+    href: '/works/graduation-trip',
+  },
+  {
     id: 'lumi',
     title: 'Lumi',
     titleEn: 'Lumi',

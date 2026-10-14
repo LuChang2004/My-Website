@@ -10,6 +10,7 @@ import SolarSpecialPage from './pages/SolarSpecialPage';
 import UserResearchPage from './pages/UserResearchPage';
 import StylingInspirationBookPage from './pages/StylingInspirationBookPage';
 import FloorTileMosaicLineGeneratorPage from './pages/FloorTileMosaicLineGeneratorPage';
+import GraduationTripPage from './pages/GraduationTripPage';
 import HubTabLayout from './hub/HubTabLayout';
 import { isHubTabPath } from './hub/hubTabs';
 
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/works/user-research" element={<UserResearchPage />} />
           <Route path="/works/styling-inspiration-book" element={<StylingInspirationBookPage />} />
           <Route path="/works/floor-tile-mosaic-line-generator" element={<FloorTileMosaicLineGeneratorPage />} />
+          <Route path="/works/graduation-trip" element={<GraduationTripPage />} />
           <Route path="/works/:projectId" element={<PdfProjectPage />} />
         </Routes>
       )}

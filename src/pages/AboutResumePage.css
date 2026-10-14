@@ -20,7 +20,7 @@
 .resume-canvas {
   position: relative;
   width: 1728px;
-  height: 2580px;
+  height: 2350px;
   overflow: visible;
   background: #fff;
   color: #000;
@@ -28,6 +28,10 @@
   font-size: 16px;
   line-height: 24px;
   letter-spacing: 0;
+}
+
+.resume-canvas.resume-version-product {
+  height: 2300px;
 }
 
 .resume-profile {
@@ -61,6 +65,25 @@
 
 .resume-identity span {
   font-weight: 400;
+}
+
+.resume-contact-details {
+  margin-top: 16px;
+}
+
+.resume-contact-details a {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.resume-contact-details a:hover {
+  text-decoration: underline;
+}
+
+.resume-contact-emails {
+  display: flex;
+  flex-direction: column;
 }
 
 .resume-identity .resume-name {
@@ -106,6 +129,10 @@
 
 .resume-section-blue h2 > span {
   background: #66acfa;
+}
+
+.resume-version-product .resume-section h2 > span {
+  background: #000;
 }
 
 .resume-section-content {
@@ -169,9 +196,32 @@
   margin-top: 48px;
 }
 
+#resume-technology {
+  width: 1005px;
+  min-height: 216px;
+  margin-top: 48px;
+}
+
 #resume-projects {
   width: 1053px;
   margin-top: 84px;
+}
+
+.resume-version-product :is(#resume-education, #resume-language, #resume-experience, #resume-skills, #resume-projects) {
+  min-height: 0;
+  margin-top: 48px;
+}
+
+.resume-version-product #resume-education {
+  margin-top: 0;
+}
+
+.resume-version-product #resume-language {
+  margin-top: 32px;
+}
+
+.resume-version-product .resume-project-list {
+  gap: 48px;
 }
 
 .resume-list {
@@ -203,7 +253,7 @@
 
 .resume-skill-row {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: 168px minmax(0, 1fr);
   column-gap: 16px;
   margin-bottom: 12px !important;
   line-height: 32px;
@@ -214,20 +264,51 @@
   line-height: 24px;
 }
 
+.resume-canvas .resume-skill-row span {
+  white-space: nowrap;
+}
+
+.resume-canvas.resume-version-product .resume-skill-row span {
+  font-size: 15px;
+}
+
 .resume-project-list {
   display: flex;
   flex-direction: column;
   gap: 56px;
 }
 
+.resume-project {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.resume-project-copy {
+  display: flex;
+  width: 893px;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.resume-project-summary {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .resume-project h3 {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
+  white-space: nowrap;
 }
 
 .resume-project-meta {
@@ -235,13 +316,36 @@
   font-weight: 400;
 }
 
-.resume-project > p {
+.resume-project-summary > p {
   margin: 0;
+  line-height: 24px;
+}
+
+.resume-canvas .resume-project-summary > p,
+.resume-canvas .resume-project-highlights {
+  white-space: nowrap;
+}
+
+.resume-project-highlights {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  list-style: none;
+  line-height: 32px;
+}
+
+.resume-project-highlights li {
+  padding: 0;
+}
+
+.resume-project-highlights li > span {
+  color: #808080;
 }
 
 .resume-detail-link {
   display: inline-block;
-  margin-top: 8px;
+  margin: 0;
   color: #808080;
   font-size: 16px;
   line-height: 24px;
@@ -283,14 +387,13 @@ a.resume-detail-link:focus-visible {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 18px;
+  width: 100%;
 }
 
 .resume-project-images img {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
-  border: 1px solid #f0f0f0;
   object-fit: cover;
 }
 
@@ -309,15 +412,17 @@ a.resume-detail-link:focus-visible {
   transform-origin: top left;
 }
 
+.resume-profile .resume-detail-link {
+  pointer-events: auto;
+}
+
 .resume-toc {
   position: absolute;
   display: flex;
-  width: 134px;
-  height: 232px;
-  padding: 24px;
+  width: 168px;
+  padding: 16px;
   box-sizing: border-box;
   flex-direction: column;
-  gap: 16px;
   border: 0;
   border-radius: 24px;
   background: rgba(0, 0, 0, 0.05);
@@ -327,7 +432,60 @@ a.resume-detail-link:focus-visible {
   pointer-events: auto;
 }
 
-.resume-toc button {
+.resume-version-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.resume-version-toggle button {
+  min-width: 0;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #8b8b8b;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.resume-version-toggle button:hover,
+.resume-version-toggle button:focus-visible {
+  color: #000;
+}
+
+.resume-version-toggle button.is-active {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.resume-version-toggle button:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.resume-toc-divider {
+  height: 1px;
+  margin: 14px 0;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.resume-toc-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resume-toc-sections button {
   position: relative;
   display: flex;
   min-height: 24px;
@@ -356,23 +514,50 @@ a.resume-detail-link:focus-visible {
   transition: opacity 180ms ease;
 }
 
-.resume-toc button:hover,
-.resume-toc button:focus-visible,
-.resume-toc button.is-active {
+.resume-toc-sections button:hover,
+.resume-toc-sections button:focus-visible,
+.resume-toc-sections button.is-active {
   color: #000;
 }
 
-.resume-toc button.is-active {
+.resume-toc-sections button.is-active {
   font-weight: 700;
 }
 
-.resume-toc button.is-active .resume-toc-marker {
+.resume-toc-sections button.is-active .resume-toc-marker {
   opacity: 1;
 }
 
-.resume-toc button:focus-visible {
+.resume-toc-sections button:focus-visible {
   outline: 2px solid #111;
   outline-offset: 4px;
+}
+
+.resume-mobile-version-bar {
+  position: sticky;
+  top: 88px;
+  z-index: 18;
+  display: flex;
+  justify-content: center;
+  height: 0;
+  pointer-events: none;
+}
+
+.resume-mobile-version-bar .resume-version-toggle {
+  width: min(280px, calc(100vw - 40px));
+  height: fit-content;
+  margin-top: 10px;
+  box-sizing: border-box;
+  background: rgba(242, 242, 242, 0.9);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  pointer-events: auto;
+}
+
+.resume-mobile-version-bar .resume-version-toggle button {
+  padding: 9px 8px;
+  font-size: 13px;
 }
 
 .resume-mobile {
@@ -464,6 +649,16 @@ a.resume-detail-link:focus-visible {
   align-items: flex-start;
   flex-direction: column;
   gap: 4px;
+  white-space: normal;
+}
+
+.resume-mobile .resume-project-highlights {
+  line-height: 24px;
+  white-space: normal;
+}
+
+.resume-mobile .resume-project-summary > p {
+  white-space: normal;
 }
 
 .resume-mobile .resume-project-images {

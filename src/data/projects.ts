@@ -12,6 +12,14 @@ export type Project = {
 /** 首页项目列表 — 在此追加新项目 */
 export const projects: Project[] = [
   {
+    id: 'lumi',
+    title: 'Lumi',
+    titleEn: 'Lumi',
+    description: '长期陪伴型 AI 猫咪：探索生活状态、事件与记忆如何延续人与角色的关系。',
+    tags: ['AI 产品', '交互设计', '毕业设计'],
+    href: '/works/lumi',
+  },
+  {
     id: 'final-limb-fantasy',
     title: '最终肢体幻想',
     titleEn: 'Final Limb Fantasy',

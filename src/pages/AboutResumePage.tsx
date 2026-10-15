@@ -6,7 +6,7 @@ import { useIsMobile } from '../hooks/use-mobile';
 import { internshipProjects } from '../data/internshipProjects';
 import './AboutResumePage.css';
 
-const DESIGNER_RESUME_HEIGHT = 2350;
+const DESIGNER_RESUME_HEIGHT = 2999;
 const PRODUCT_RESUME_HEIGHT = 2300;
 type ResumeVersion = 'designer' | 'product';
 
@@ -36,39 +36,62 @@ const designerProjectExperiences = [
     heading: internshipProjects[0].label,
     meta: '产品设计 / 核心设计者 / 团队协作 / 2026',
     description:
-      '负责对话成片 MVP 的 0→1 体验设计，通过竞品走查和商家实地访谈，提出界面框架、创作链路、编辑交互和 AI 过程反馈四类设计策略，并推动方案落地',
+      '面向抖店商家的定制化短视频生产需求，参与 AI 对话成片工具从需求研究到 MVP 方案定义，将商家创作任务与模型能力转化为可落地的产品流程。',
+    highlights: [
+      '需求洞察：结合 AI 视频竞品研究与商家实地访谈，识别需求表达困难、生成等待焦虑、结果修改成本高三类核心问题。',
+      '产品方案：定义“需求澄清—脚本确认—视频生成—剪辑发布”主流程，将脚本设为生成前的关键决策点，降低一次性生成的不确定性。',
+      '交互策略：以 GUI 承载高频、确定性操作，以对话处理复杂语义与批量修改，并补充生成进度、分镜数量和剩余时间反馈，提升用户可控感。',
+    ],
     href: internshipProjects[0].href,
     external: true,
     images: [
-      '/images/resume/dialogue-01.png',
-      '/images/resume/dialogue-02.png',
-      '/images/resume/dialogue-03.png',
+      '/images/resume/dialogue-01-figma.png',
+      '/images/resume/dialogue-02-figma.png',
+      '/images/resume/dialogue-03-figma.png',
     ],
   },
   {
-    heading: internshipProjects[1].label,
+    heading: '2/ Aurora Skill 建设与极光工作台',
     meta: '设计工程 / Skill 结构设计 / 团队协作 / 2026',
-    description:
-      '深度参与极光Skill建设，围绕Skill质量提升开展一系列工作，最终产出深刻影响B端工作流的设计Skill',
+    descriptionLines: [
+      'a. 主导极光Skill建设，围绕Skill质量提升开展一系列工作，最终产出深刻影响B端工作流的设计Skill',
+      'b. 深度参与极光工作台产品原型构想，主导界面与复杂动效设计，快速迭代出可用的产品原型',
+    ],
     href: internshipProjects[1].href,
     external: true,
     images: [
-      '/images/resume/skill-01.png',
-      '/images/resume/skill-02.png',
-      '/images/resume/skill-03.png',
+      '/images/resume/skill-01-figma.png',
+      '/images/resume/skill-02-figma.png',
+      '/images/resume/skill-03-figma.png',
     ],
   },
   {
-    heading: '3/「Music Robber」声域博弈实验性 APP 设计',
+    heading: internshipProjects[2].label,
+    meta: '设计标准化 / 设计系统 / 2026',
+    descriptionLines: [
+      '制定营销弹窗与开通页设计规范，分类制定弹窗模板，定义两类开通场景结构，统一信息层级、操作位置与插图风格并推动规范落地',
+      '搭建插图生成 AI 工作流，沉淀为可复用 Skill，助力插图生成',
+    ],
+    href: internshipProjects[2].href,
+    external: true,
+  },
+  {
+    heading: '4/「Music Robber」声域博弈实验性 APP 设计',
     description:
       '探索了非传统音乐 APP 的叙事方式与用户激励机制，产出完整的设计系统与交互规范。',
     href: '/works/music-robber',
   },
   {
-    heading: '4/ Keji AI 海外医疗科研平台UX诊断',
+    heading: '5/「最终肢体幻想」视觉设计',
     description:
-      '系统性诊断了 Keiji AI 工具的交互痛点，输出成熟的交互设计方案以提升产品易用性，同时优化了产品视觉。',
-    href: '/works/keiji-ai',
+      '围绕肢体解构与重组展开概念设计，通过系列插画、动态视觉与网页呈现，构建统一的视觉语言与叙事体验。',
+    href: '/final-limb-fantasy',
+  },
+  {
+    heading: '6/ Solar Special 科普向游戏设计',
+    description:
+      '负责项目构思、推进，部分程序及全部的美术设计工作，使用 City Pop 风格产出了一系列游戏视觉资产',
+    href: '/works/solar-special',
   },
 ] as const;
 
@@ -248,6 +271,16 @@ function ResumeContent({
       {mobile && <ProfileColumn version={version} />}
 
       <div className="resume-main">
+        {!isProductResume && (
+          <ResumeSection id="resume-about" title="关于我" tone="green">
+            <ol className="resume-list">
+              <li>设计 + AI 双学位，拥有工学和艺术学学科交叉背景；良好的审美品味 + 技术加持，能依托 Vibe Coding 快速打造产品原型</li>
+              <li>字节跳动产品设计实习经历（已转正），专注 AI For Design 设计提效，有 AI Agent / Skill 产品从 0 到 1 的落地经验</li>
+              <li>热爱 Z 世代文化，喜欢探索新鲜事物</li>
+            </ol>
+          </ResumeSection>
+        )}
+
         <ResumeSection id="resume-education" title="教育经历" tone="green">
           <div className="resume-subsection">
             <p className="resume-kicker">{isProductResume ? '本科 / 2023.09—2027.06（预计毕业）' : '本科'}</p>
@@ -310,7 +343,7 @@ function ResumeContent({
             <>
               <SkillRow
                 label="产品与体验设计"
-                text="具备需求拆解、用户研究、信息架构、交互流程与高保真原型设计能力，能够结合业务目标与用户痛点输出可落地方案"
+                text="具备需求拆解、用户研究、信息架构、交互流程与高保真原型设计能力，有商家访谈到 MVP 落地的完整经历"
               />
               <SkillRow
                 label="视觉与动效设计"
@@ -337,7 +370,10 @@ function ResumeContent({
         <ResumeSection id="resume-projects" title="项目经历" tone="blue">
           <div className="resume-project-list">
             {projectExperiences.map((project) => (
-              <article className="resume-project" key={project.heading}>
+              <article
+                className={`resume-project ${'highlights' in project ? 'resume-project-has-highlights' : ''}`}
+                key={project.heading}
+              >
                 <div className="resume-project-copy">
                   <div className="resume-project-summary">
                     <h3>
@@ -346,7 +382,10 @@ function ResumeContent({
                         <span className="resume-project-meta">{project.meta}</span>
                       )}
                     </h3>
-                    <p>{project.description}</p>
+                    {'description' in project && <p>{project.description}</p>}
+                    {'descriptionLines' in project && project.descriptionLines.map((line) => (
+                      <p key={line}>{line}</p>
+                    ))}
                   </div>
                   {'highlights' in project && (
                     <ul className="resume-project-highlights">
@@ -495,7 +534,7 @@ function ProfileColumn({ version }: { version: ResumeVersion }) {
     <aside className="resume-profile">
       <img
         className="resume-profile-photo"
-        src="/images/resume/profile.jpg"
+        src={isProductResume ? '/images/resume/profile.jpg' : '/images/resume/profile-designer.png'}
         alt="陆畅"
       />
       <div className="resume-identity">
@@ -525,11 +564,7 @@ function ProfileColumn({ version }: { version: ResumeVersion }) {
           <>
             <p>
               <strong>体验与视觉设计师</strong>
-              <span>UI/UX Designer &amp; Visual Design</span>
-            </p>
-            <p>
-              <strong>AI 产品经理</strong>
-              <span>AI Product Manager</span>
+              <span>UI/UX &amp; Visual Designer</span>
             </p>
           </>
         )}

@@ -1,0 +1,373 @@
+{
+  "overall": {
+    "users": 10000,
+    "uploaded": 6384,
+    "succeeded": 5931,
+    "activated": 4458,
+    "retained": 1867,
+    "paid": 944,
+    "revenue": 76872.0
+  },
+  "monthly": [
+    {
+      "month": "2026-01",
+      "users": 900,
+      "uploaded": 636,
+      "succeeded": 603,
+      "activated": 446,
+      "retained": 186,
+      "paid": 92,
+      "revenue": 7526.0
+    },
+    {
+      "month": "2026-02",
+      "users": 1200,
+      "uploaded": 890,
+      "succeeded": 854,
+      "activated": 651,
+      "retained": 283,
+      "paid": 158,
+      "revenue": 12962.0
+    },
+    {
+      "month": "2026-03",
+      "users": 1500,
+      "uploaded": 1109,
+      "succeeded": 1058,
+      "activated": 780,
+      "retained": 346,
+      "paid": 178,
+      "revenue": 15044.0
+    },
+    {
+      "month": "2026-04",
+      "users": 1800,
+      "uploaded": 1080,
+      "succeeded": 981,
+      "activated": 749,
+      "retained": 299,
+      "paid": 148,
+      "revenue": 12223.0
+    },
+    {
+      "month": "2026-05",
+      "users": 2100,
+      "uploaded": 1234,
+      "succeeded": 1128,
+      "activated": 831,
+      "retained": 359,
+      "paid": 169,
+      "revenue": 13146.0
+    },
+    {
+      "month": "2026-06",
+      "users": 2500,
+      "uploaded": 1435,
+      "succeeded": 1307,
+      "activated": 1001,
+      "retained": 394,
+      "paid": 199,
+      "revenue": 15971.0
+    }
+  ],
+  "channels": [
+    {
+      "channel": "Organic",
+      "users": 2327,
+      "uploaded": 1856,
+      "succeeded": 1742,
+      "activated": 1297,
+      "retained": 554,
+      "paid": 277,
+      "revenue": 22907.0,
+      "spend": 0,
+      "paid_ci": [
+        0.1065034872164442,
+        0.13282706188650645
+      ]
+    },
+    {
+      "channel": "Referral",
+      "users": 1302,
+      "uploaded": 1135,
+      "succeeded": 1047,
+      "activated": 817,
+      "retained": 372,
+      "paid": 241,
+      "revenue": 21592.0,
+      "spend": 0,
+      "paid_ci": [
+        0.16494065504930938,
+        0.20711182053425298
+      ]
+    },
+    {
+      "channel": "Search Ads",
+      "users": 2540,
+      "uploaded": 1817,
+      "succeeded": 1689,
+      "activated": 1245,
+      "retained": 489,
+      "paid": 287,
+      "revenue": 21901.0,
+      "spend": 46150.12,
+      "paid_ci": [
+        0.10126003874082112,
+        0.1258930984670931
+      ]
+    },
+    {
+      "channel": "Social Ads",
+      "users": 3715,
+      "uploaded": 1505,
+      "succeeded": 1389,
+      "activated": 1063,
+      "retained": 440,
+      "paid": 130,
+      "revenue": 9831.0,
+      "spend": 44828.89,
+      "paid_ci": [
+        0.029547904737296127,
+        0.041399349375382394
+      ]
+    },
+    {
+      "channel": "Unknown",
+      "users": 116,
+      "uploaded": 71,
+      "succeeded": 64,
+      "activated": 36,
+      "retained": 12,
+      "paid": 9,
+      "revenue": 641.0,
+      "spend": 0,
+      "paid_ci": [
+        0.04135281350922512,
+        0.14090109498331838
+      ]
+    }
+  ],
+  "period": [
+    {
+      "period": "Q1",
+      "channel": "Organic",
+      "users": 1265,
+      "uploaded": 1011,
+      "succeeded": 965,
+      "activated": 730,
+      "retained": 327,
+      "paid": 144,
+      "revenue": 11580.0
+    },
+    {
+      "period": "Q1",
+      "channel": "Referral",
+      "users": 675,
+      "uploaded": 589,
+      "succeeded": 560,
+      "activated": 431,
+      "retained": 194,
+      "paid": 129,
+      "revenue": 11190.0
+    },
+    {
+      "period": "Q1",
+      "channel": "Search Ads",
+      "users": 1093,
+      "uploaded": 795,
+      "succeeded": 761,
+      "activated": 550,
+      "retained": 225,
+      "paid": 132,
+      "revenue": 10784.0
+    },
+    {
+      "period": "Q1",
+      "channel": "Social Ads",
+      "users": 528,
+      "uploaded": 209,
+      "succeeded": 200,
+      "activated": 150,
+      "retained": 62,
+      "paid": 18,
+      "revenue": 1633.0
+    },
+    {
+      "period": "Q1",
+      "channel": "Unknown",
+      "users": 39,
+      "uploaded": 31,
+      "succeeded": 29,
+      "activated": 16,
+      "retained": 7,
+      "paid": 5,
+      "revenue": 345.0
+    },
+    {
+      "period": "Q2",
+      "channel": "Organic",
+      "users": 1062,
+      "uploaded": 845,
+      "succeeded": 777,
+      "activated": 567,
+      "retained": 227,
+      "paid": 133,
+      "revenue": 11327.0
+    },
+    {
+      "period": "Q2",
+      "channel": "Referral",
+      "users": 627,
+      "uploaded": 546,
+      "succeeded": 487,
+      "activated": 386,
+      "retained": 178,
+      "paid": 112,
+      "revenue": 10402.0
+    },
+    {
+      "period": "Q2",
+      "channel": "Search Ads",
+      "users": 1447,
+      "uploaded": 1022,
+      "succeeded": 928,
+      "activated": 695,
+      "retained": 264,
+      "paid": 155,
+      "revenue": 11117.0
+    },
+    {
+      "period": "Q2",
+      "channel": "Social Ads",
+      "users": 3187,
+      "uploaded": 1296,
+      "succeeded": 1189,
+      "activated": 913,
+      "retained": 378,
+      "paid": 112,
+      "revenue": 8198.0
+    },
+    {
+      "period": "Q2",
+      "channel": "Unknown",
+      "users": 77,
+      "uploaded": 40,
+      "succeeded": 35,
+      "activated": 20,
+      "retained": 5,
+      "paid": 4,
+      "revenue": 296.0
+    }
+  ],
+  "reliability": [
+    {
+      "period": "Q1",
+      "length": "Long >60min",
+      "tasks": 1134,
+      "failures": 110
+    },
+    {
+      "period": "Q1",
+      "length": "Short ≤60min",
+      "tasks": 1567,
+      "failures": 76
+    },
+    {
+      "period": "Q2",
+      "length": "Long >60min",
+      "tasks": 1716,
+      "failures": 433
+    },
+    {
+      "period": "Q2",
+      "length": "Short ≤60min",
+      "tasks": 2237,
+      "failures": 104
+    }
+  ],
+  "experience": [
+    {
+      "first_status": "failed",
+      "segment": "Individual",
+      "users": 538,
+      "uploaded": 538,
+      "succeeded": 190,
+      "activated": 136,
+      "retained": 61,
+      "paid": 29,
+      "revenue": 1176.0
+    },
+    {
+      "first_status": "failed",
+      "segment": "Team",
+      "users": 152,
+      "uploaded": 152,
+      "succeeded": 47,
+      "activated": 45,
+      "retained": 29,
+      "paid": 10,
+      "revenue": 1192.0
+    },
+    {
+      "first_status": "success",
+      "segment": "Individual",
+      "users": 4356,
+      "uploaded": 4356,
+      "succeeded": 4356,
+      "activated": 3110,
+      "retained": 1145,
+      "paid": 498,
+      "revenue": 21609.0
+    },
+    {
+      "first_status": "success",
+      "segment": "Team",
+      "users": 1338,
+      "uploaded": 1338,
+      "succeeded": 1338,
+      "activated": 1167,
+      "retained": 632,
+      "paid": 407,
+      "revenue": 52895.0
+    }
+  ],
+  "decomposition": {
+    "q1": 0.11888888888888889,
+    "q2": 0.080625,
+    "mix": -0.03545295967476869,
+    "within": -0.00281092921412019,
+    "n1": 3600,
+    "n2": 6400
+  },
+  "quality": {
+    "raw_events": 36047,
+    "clean_events": 35785,
+    "duplicates": 250,
+    "orphans": 12,
+    "missing_channels": 116,
+    "feedback": 536
+  },
+  "feedback": [
+    {
+      "category": "editing_effort",
+      "n": 88
+    },
+    {
+      "category": "generation_failure",
+      "n": 197
+    },
+    {
+      "category": "positive",
+      "n": 251
+    }
+  ],
+  "checks": {
+    "10000_unique_users": true,
+    "funnel_monotone": true,
+    "cohorts_mature": true,
+    "decomposition_reconciles": true,
+    "monthly_reconciles": true,
+    "no_pre_signup_events": true,
+    "dedup_count": true
+  }
+}

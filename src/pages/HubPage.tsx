@@ -499,24 +499,6 @@ const pdfById = Object.fromEntries(pdfProjects.map((project) => [project.id, pro
 
 const workProjects: WorkProject[] = [
   {
-    id: 'graduation-trip',
-    title: projectById['graduation-trip'].title,
-    meta: '产品设计 / 移动端原型',
-    description: projectById['graduation-trip'].description,
-    image: '/images/works/graduation-trip.png',
-    href: projectById['graduation-trip'].href,
-    categories: ['产品', '设计', '工程'],
-  },
-  {
-    id: 'lumi',
-    title: 'Lumi',
-    meta: 'AI 产品 / 毕业设计 · 概念阶段',
-    description: projectById.lumi.description,
-    image: '/images/works/lumi.svg',
-    href: '/works/lumi',
-    categories: ['产品', '设计'],
-  },
-  {
     id: 'final-limb-fantasy',
     title: projectById['final-limb-fantasy'].title,
     meta: '视觉设计 / 游戏设计',
@@ -623,6 +605,33 @@ const workProjects: WorkProject[] = [
     description: pdfById['narrative-mutation-lab'].description,
     href: pdfById['narrative-mutation-lab'].href,
     categories: ['设计'],
+  },
+  {
+    id: 'meetnote',
+    title: 'MeetNote 增长质量分析',
+    meta: '数据分析 / 合成数据商业案例',
+    description: projectById.meetnote.description,
+    image: '/images/works/white-cover.svg',
+    href: '/works/meetnote',
+    categories: ['产品', '工程'],
+  },
+  {
+    id: 'graduation-trip',
+    title: projectById['graduation-trip'].title,
+    meta: '产品设计 / 移动端原型',
+    description: projectById['graduation-trip'].description,
+    image: '/images/works/white-cover.svg',
+    href: projectById['graduation-trip'].href,
+    categories: ['产品', '设计', '工程'],
+  },
+  {
+    id: 'lumi',
+    title: 'Lumi',
+    meta: 'AI 产品 / 毕业设计 · 概念阶段',
+    description: projectById.lumi.description,
+    image: '/images/works/white-cover.svg',
+    href: '/works/lumi',
+    categories: ['产品', '设计'],
   },
 ];
 

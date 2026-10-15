@@ -20,7 +20,7 @@
 .resume-canvas {
   position: relative;
   width: 1728px;
-  height: 2350px;
+  height: 2999px;
   overflow: visible;
   background: #fff;
   color: #000;
@@ -99,7 +99,7 @@
   position: absolute;
   left: 534px;
   top: 217px;
-  width: 1049px;
+  width: 1053px;
 }
 
 .resume-section {
@@ -173,15 +173,31 @@
   font-weight: 700;
 }
 
+#resume-about {
+  width: 907px;
+  min-height: 140px;
+}
+
 #resume-education {
   width: 955px;
   min-height: 228px;
+}
+
+.resume-version-designer #resume-education {
+  margin-top: 64px;
 }
 
 #resume-experience {
   width: 1049px;
   min-height: 180px;
   margin-top: 48px;
+}
+
+.resume-version-designer #resume-experience,
+.resume-version-designer #resume-language,
+.resume-version-designer #resume-skills,
+.resume-version-designer #resume-projects {
+  margin-top: 64px;
 }
 
 #resume-language {
@@ -290,6 +306,10 @@
   max-width: 100%;
   flex-direction: column;
   align-items: flex-start;
+  gap: 8px;
+}
+
+.resume-project-has-highlights .resume-project-copy {
   gap: 16px;
 }
 

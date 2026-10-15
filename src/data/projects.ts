@@ -12,6 +12,14 @@ export type Project = {
 /** 首页项目列表 — 在此追加新项目 */
 export const projects: Project[] = [
   {
+    id: 'meetnote',
+    title: 'MeetNote 增长质量分析',
+    titleEn: 'MeetNote Growth Diagnostic',
+    description: '基于 1 万名合成用户，分析渠道结构、激活与付费转化，提出可验证的商业行动方案。',
+    tags: ['数据分析', 'SQL', '商业分析', '合成数据'],
+    href: '/works/meetnote',
+  },
+  {
     id: 'graduation-trip',
     title: '毕业搭子',
     titleEn: 'Graduation Trip',
